@@ -218,5 +218,20 @@
     "asset": 1495185610000,
     "meta": 1498287774000,
     "relativePath": "prefab/webview.prefab"
+  },
+  "dfad0c2f-e1cc-4479-b875-f6705f07cb90": {
+    "asset": 1498287876000,
+    "meta": 1498287876000,
+    "relativePath": "scene"
+  },
+  "86b04f26-e3db-40a3-8ecf-6f160d314fe5": {
+    "asset": 1498287888000,
+    "meta": 1498287888000,
+    "relativePath": "ui"
+  },
+  "15f918db-0c1f-47a9-8c5e-1ef144f9fcd2": {
+    "asset": 1498287903000,
+    "meta": 1498287903000,
+    "relativePath": "res"
   }
 }
