@@ -1,0 +1,55 @@
+2017-06-24T07:03:44.421Z - normal: Load ~/.CocosCreator/settings.json
+2017-06-24T07:03:44.426Z - normal: checking language setting...
+2017-06-24T07:03:44.426Z - normal: Language: zh
+2017-06-24T07:03:44.814Z - success: protocol editor-framework registered
+2017-06-24T07:03:44.814Z - success: protocol app registered
+2017-06-24T07:03:44.814Z - success: protocol theme registered
+2017-06-24T07:03:44.814Z - success: protocol profile registered
+2017-06-24T07:03:44.814Z - success: protocol packages registered
+2017-06-24T07:03:44.817Z - success: protocol unpack registerred
+2017-06-24T07:03:44.817Z - success: protocol disable-commonjs registerred
+2017-06-24T07:03:44.931Z - normal: connected!
+2017-06-24T07:03:44.934Z - normal: Check project /Users/zhaozhantao/qp/client
+2017-06-24T07:03:44.936Z - normal: Initializing Cocos2d
+2017-06-24T07:03:45.110Z - normal: Initializing Asset Database
+2017-06-24T07:03:45.138Z - success: protocol uuid registerred
+2017-06-24T07:03:45.138Z - success: protocol db registerred
+2017-06-24T07:03:45.138Z - success: protocol thumbnail registerred
+2017-06-24T07:03:45.139Z - normal: Loading editor/builtin packages
+2017-06-24T07:03:45.158Z - success: anysdk loaded
+2017-06-24T07:03:45.286Z - success: assets loaded
+2017-06-24T07:03:45.289Z - success: builder loaded
+2017-06-24T07:03:45.293Z - success: hierarchy loaded
+2017-06-24T07:03:45.297Z - success: inspector loaded
+2017-06-24T07:03:45.298Z - success: keystore loaded
+2017-06-24T07:03:45.304Z - success: node-library loaded
+2017-06-24T07:03:45.305Z - success: package-asset loaded
+2017-06-24T07:03:45.307Z - success: preferences loaded
+2017-06-24T07:03:45.321Z - success: project-importer loaded
+2017-06-24T07:03:45.324Z - success: project-settings loaded
+2017-06-24T07:03:45.330Z - success: ui-kit loaded
+2017-06-24T07:03:45.334Z - success: ui-grid loaded
+2017-06-24T07:03:45.338Z - success: scene loaded
+2017-06-24T07:03:45.339Z - success: sprite-editor loaded
+2017-06-24T07:03:45.343Z - success: store loaded
+2017-06-24T07:03:45.348Z - success: timeline loaded
+2017-06-24T07:03:45.348Z - normal: Loading builtin packages
+2017-06-24T07:03:45.353Z - success: asset-db-debugger loaded
+2017-06-24T07:03:45.356Z - success: code-editor loaded
+2017-06-24T07:03:45.357Z - success: color-picker loaded
+2017-06-24T07:03:45.361Z - success: console loaded
+2017-06-24T07:03:45.365Z - success: package-manager loaded
+2017-06-24T07:03:45.373Z - success: sdkbox loaded
+2017-06-24T07:03:45.376Z - success: tester loaded
+2017-06-24T07:03:45.382Z - success: ui-kit-preview-extra loaded
+2017-06-24T07:03:45.386Z - success: ui-kit-preview loaded
+2017-06-24T07:03:45.390Z - success: ui-tree loaded
+2017-06-24T07:03:45.435Z - normal: Initializing project /Users/zhaozhantao/qp/client
+2017-06-24T07:03:45.436Z - warn: Profile profile://local/local.json warning: reset profile field: last-edit
+2017-06-24T07:03:45.438Z - normal: Loading packages
+2017-06-24T07:03:45.447Z - success: packages loaded
+2017-06-24T07:03:45.447Z - normal: Watching packages
+2017-06-24T07:03:45.466Z - normal: Run Application
+2017-06-24T07:03:45.741Z - success: preview server running at http://localhost:7456
+2017-06-24T07:03:49.844Z - normal: 1.5.0
+2017-06-24T07:03:53.944Z - info: shutdown preview server
