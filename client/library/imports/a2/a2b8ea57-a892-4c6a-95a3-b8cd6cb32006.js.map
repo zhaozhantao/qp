@@ -4,8 +4,9 @@
     "unknown"
   ],
   "names": [
-    "Comm",
+    "RoomData",
     "require",
+    "Comm",
     "cc",
     "Class",
     "extends",
@@ -16,12 +17,18 @@
     "request",
     "data",
     "ret",
+    "console",
+    "log",
+    "roomData",
+    "chair",
+    "roomId",
+    "myChair",
     "scene",
     "enterRoom"
   ],
-  "mappings": ";;AAAA,IAAIA,OAAOC,QAAQ,oBAAR,CAAX;AACAC,GAAGC,KAAH,CAAS;AACLC,aAASF,GAAGG,SADP;;AAGLC,gBAAY,EAHP;;AAMLC,kBAAa,wBAAU;AACnBC,eAAOC,OAAP,CAAe,kCAAf,EAAmD,EAAnD,EAAuD,UAASC,IAAT,EAAc;AACjE,gBAAIA,KAAKC,GAAL,IAAY,CAAhB,EAAmB;AACfX,qBAAKY,KAAL,CAAWC,SAAX;AACH;AACJ,SAJD;AAKH;AAZI,CAAT",
+  "mappings": ";;;;AAAA,IAAIA,WAAWC,QAAQ,6BAAR,CAAf;AACA,IAAIC,OAAOD,QAAQ,oBAAR,CAAX;AACAE,GAAGC,KAAH,CAAS;AACLC,aAASF,GAAGG,SADP;;AAGLC,gBAAY,EAHP;;AAMLC,kBAAa,wBAAU;AACnBC,eAAOC,OAAP,CAAe,kCAAf,EAAmD,EAAnD,EAAuD,UAASC,IAAT,EAAc;AACjE,gBAAIA,KAAKC,GAAL,IAAY,CAAhB,EAAmB;AACfC,wBAAQC,GAAR,CAAYH,KAAKA,IAAL,CAAUI,QAAtB;AACAF,wBAAQC,GAAR,CAAYH,KAAKA,IAAL,CAAUK,KAAtB;AACAH,wBAAQC,GAAR,CAAYH,KAAKA,IAAL,CAAUM,MAAtB;AACAjB,yBAASW,IAAT,uBAAkBA,KAAKA,IAAL,CAAUM,MAA5B,EAAoCN,KAAKA,IAAL,CAAUI,QAA9C;AACAf,yBAASkB,OAAT,GAAmBP,KAAKA,IAAL,CAAUK,KAA7B;AACAhB,yBAASiB,MAAT,GAAkBN,KAAKA,IAAL,CAAUM,MAA5B;AACAf,qBAAKiB,KAAL,CAAWC,SAAX;AACH;AACJ,SAVD;AAWH;AAlBI,CAAT",
   "file": "unknown",
   "sourcesContent": [
-    "var Comm = require(\"../../commSrc/Comm\");\ncc.Class({\n    extends: cc.Component,\n\n    properties: {\n    },\n\n    onRoom1Click:function(){\n        pomelo.request(\"connector.entryHandler.enterRoom\", {}, function(data){\n            if (data.ret == 0) {\n                Comm.scene.enterRoom();\n            }\n        });\n    },\n});\n"
+    "var RoomData = require(\"../../commSrc/data/RoomData\");\nvar Comm = require(\"../../commSrc/Comm\");\ncc.Class({\n    extends: cc.Component,\n\n    properties: {\n    },\n\n    onRoom1Click:function(){\n        pomelo.request(\"connector.entryHandler.enterRoom\", {}, function(data){\n            if (data.ret == 0) {\n                console.log(data.data.roomData);\n                console.log(data.data.chair);\n                console.log(data.data.roomId);\n                RoomData.data = {[data.data.roomId]:data.data.roomData};\n                RoomData.myChair = data.data.chair;\n                RoomData.roomId = data.data.roomId;\n                Comm.scene.enterRoom();\n            }\n        });\n    },\n});\n"
   ]
 }

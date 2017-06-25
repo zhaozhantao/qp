@@ -11,7 +11,8 @@ cc.Class({
     onLoginClick: function onLoginClick() {
         var self = this;
         pomelo.init({
-            host: "127.0.0.1",
+            host: "192.168.8.103",
+            // host:"127.0.0.1",
             port: 3010
         }, function (err) {
             pomelo.request("connector.entryHandler.login", { username: self.usernameLabel.string }, function (data) {

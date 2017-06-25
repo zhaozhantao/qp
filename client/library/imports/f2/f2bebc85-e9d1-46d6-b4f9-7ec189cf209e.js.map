@@ -28,9 +28,9 @@
     "scene",
     "login"
   ],
-  "mappings": ";;AAAA,IAAIA,OAAOC,QAAQ,oBAAR,CAAX;AACAC,GAAGC,KAAH,CAAS;AACLC,aAASF,GAAGG,SADP;;AAGLC,gBAAY;AACRC,uBAAcL,GAAGM;AADT,KAHP;;AAOLC,kBAAa,wBAAU;AACnB,YAAIC,OAAO,IAAX;AACAC,eAAOC,IAAP,CAAY;AACRC,kBAAK,WADG;AAERC,kBAAK;AAFG,SAAZ,EAGG,UAASC,GAAT,EAAa;AACZJ,mBAAOK,OAAP,CAAe,8BAAf,EAA+C,EAACC,UAASP,KAAKH,aAAL,CAAmBW,MAA7B,EAA/C,EAAqF,UAASC,IAAT,EAAc;AAC/F,oBAAIA,KAAKC,GAAL,IAAY,CAAhB,EAAmB;AACfpB,yBAAKqB,KAAL,CAAWC,KAAX;AACH;AACJ,aAJD;AAKH,SATD;AAUH;AAnBI,CAAT",
+  "mappings": ";;AAAA,IAAIA,OAAOC,QAAQ,oBAAR,CAAX;AACAC,GAAGC,KAAH,CAAS;AACLC,aAASF,GAAGG,SADP;;AAGLC,gBAAY;AACRC,uBAAcL,GAAGM;AADT,KAHP;;AAOLC,kBAAa,wBAAU;AACnB,YAAIC,OAAO,IAAX;AACAC,eAAOC,IAAP,CAAY;AACRC,kBAAK,eADG;AAER;AACAC,kBAAK;AAHG,SAAZ,EAIG,UAASC,GAAT,EAAa;AACZJ,mBAAOK,OAAP,CAAe,8BAAf,EAA+C,EAACC,UAASP,KAAKH,aAAL,CAAmBW,MAA7B,EAA/C,EAAqF,UAASC,IAAT,EAAc;AAC/F,oBAAIA,KAAKC,GAAL,IAAY,CAAhB,EAAmB;AACfpB,yBAAKqB,KAAL,CAAWC,KAAX;AACH;AACJ,aAJD;AAKH,SAVD;AAWH;AApBI,CAAT",
   "file": "unknown",
   "sourcesContent": [
-    "var Comm = require(\"../../commSrc/Comm\");\ncc.Class({\n    extends: cc.Component,\n\n    properties: {\n        usernameLabel:cc.EditBox,\n    },\n\n    onLoginClick:function(){\n        var self = this;\n        pomelo.init({\n            host:\"127.0.0.1\",\n            port:3010\n        }, function(err){\n            pomelo.request(\"connector.entryHandler.login\", {username:self.usernameLabel.string}, function(data){\n                if (data.ret == 0) {\n                    Comm.scene.login();\n                }\n            });\n        });\n    },\n});\n"
+    "var Comm = require(\"../../commSrc/Comm\");\ncc.Class({\n    extends: cc.Component,\n\n    properties: {\n        usernameLabel:cc.EditBox,\n    },\n\n    onLoginClick:function(){\n        var self = this;\n        pomelo.init({\n            host:\"192.168.8.103\",\n            // host:\"127.0.0.1\",\n            port:3010\n        }, function(err){\n            pomelo.request(\"connector.entryHandler.login\", {username:self.usernameLabel.string}, function(data){\n                if (data.ret == 0) {\n                    Comm.scene.login();\n                }\n            });\n        });\n    },\n});\n"
   ]
 }

@@ -1735,8 +1735,8 @@
     "relativePath": "ui/login"
   },
   "08186786-8425-4dd5-90c4-fed8b95d30b8": {
-    "asset": 1498358274000,
-    "meta": 1498369375000,
+    "asset": 1498401927000,
+    "meta": 1498401927000,
     "relativePath": "ui/game/GameUi.prefab"
   },
   "9367fe22-df2f-4aff-9f8d-178710d388dc": {
@@ -1745,8 +1745,8 @@
     "relativePath": "ui/main"
   },
   "4d2a1483-d888-4777-9207-fd41c6d0dc39": {
-    "asset": 1498372972000,
-    "meta": 1498372972000,
+    "asset": 1498403185000,
+    "meta": 1498403185000,
     "relativePath": "ui/login/LoginUi.prefab"
   },
   "f86552af-2923-43bb-98d9-ab925fc0f602": {
@@ -1780,13 +1780,28 @@
     "relativePath": "pomelo/protocol.js"
   },
   "f2bebc85-e9d1-46d6-b4f9-7ec189cf209e": {
-    "asset": 1498373032000,
-    "meta": 1498373033000,
+    "asset": 1498382746000,
+    "meta": 1498382748000,
     "relativePath": "ui/login/LoginUi.js"
   },
+  "678f772a-3497-4fa7-b83e-d8c8256624e5": {
+    "asset": 1498401619000,
+    "meta": 1498401619000,
+    "relativePath": "commSrc/data"
+  },
+  "79cb2df9-1baa-4258-84da-bde0a703154a": {
+    "asset": 1498402086000,
+    "meta": 1498402125000,
+    "relativePath": "commSrc/data/RoomData.js"
+  },
   "a2b8ea57-a892-4c6a-95a3-b8cd6cb32006": {
-    "asset": 1498373674000,
-    "meta": 1498373675000,
+    "asset": 1498403162000,
+    "meta": 1498403166000,
     "relativePath": "ui/main/MainUi.js"
+  },
+  "cf61e21b-d039-40b8-8d00-61f9b9871163": {
+    "asset": 1498403208000,
+    "meta": 1498403209000,
+    "relativePath": "ui/game/GameUi.js"
   }
 }
