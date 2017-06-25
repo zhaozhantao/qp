@@ -5,26 +5,20 @@ cc.Class({
     extends: cc.Component,
 
     properties: {
-        // foo: {
-        //    default: null,      // The default value will be used only when the component attaching
-        //                           to a node for the first time
-        //    url: cc.Texture2D,  // optional, default is typeof default
-        //    serializable: true, // optional, default is true
-        //    visible: true,      // optional, default is true
-        //    displayName: 'Foo', // optional
-        //    readonly: false,    // optional, default is false
-        // },
-        // ...
+        usernameLabel: cc.EditBox
     },
 
-    // use this for initialization
-    onLoad: function onLoad() {},
-
-    // called every frame, uncomment this function to activate update callback
-    // update: function (dt) {
-
-    // },
     onLoginClick: function onLoginClick() {
-        Comm.scene.login();
+        var self = this;
+        pomelo.init({
+            host: "127.0.0.1",
+            port: 3010
+        }, function (err) {
+            pomelo.request("connector.entryHandler.login", { username: self.usernameLabel.string }, function (data) {
+                if (data.ret == 0) {
+                    Comm.scene.login();
+                }
+            });
+        });
     }
 });

@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
-require('pomelo-cocos2d-js');
+// require('pomelo-cocos2d-js');
 module.exports = {};

@@ -11,14 +11,17 @@
     "extends",
     "Component",
     "properties",
-    "onLoad",
     "onRoom1Click",
+    "pomelo",
+    "request",
+    "data",
+    "ret",
     "scene",
     "enterRoom"
   ],
-  "mappings": ";;AAAA,IAAIA,OAAOC,QAAQ,oBAAR,CAAX;AACAC,GAAGC,KAAH,CAAS;AACLC,aAASF,GAAGG,SADP;;AAGLC,gBAAY;AACR;AACA;AACA;AACA;AACA;AACA;AACA;AACA;AACA;AACA;AAVQ,KAHP;;AAgBL;AACAC,YAAQ,kBAAY,CAEnB,CAnBI;;AAqBL;AACA;;AAEA;AACAC,kBAAa,wBAAU;AACnBR,aAAKS,KAAL,CAAWC,SAAX;AACH;AA3BI,CAAT",
+  "mappings": ";;AAAA,IAAIA,OAAOC,QAAQ,oBAAR,CAAX;AACAC,GAAGC,KAAH,CAAS;AACLC,aAASF,GAAGG,SADP;;AAGLC,gBAAY,EAHP;;AAMLC,kBAAa,wBAAU;AACnBC,eAAOC,OAAP,CAAe,kCAAf,EAAmD,EAAnD,EAAuD,UAASC,IAAT,EAAc;AACjE,gBAAIA,KAAKC,GAAL,IAAY,CAAhB,EAAmB;AACfX,qBAAKY,KAAL,CAAWC,SAAX;AACH;AACJ,SAJD;AAKH;AAZI,CAAT",
   "file": "unknown",
   "sourcesContent": [
-    "var Comm = require(\"../../commSrc/Comm\");\ncc.Class({\n    extends: cc.Component,\n\n    properties: {\n        // foo: {\n        //    default: null,      // The default value will be used only when the component attaching\n        //                           to a node for the first time\n        //    url: cc.Texture2D,  // optional, default is typeof default\n        //    serializable: true, // optional, default is true\n        //    visible: true,      // optional, default is true\n        //    displayName: 'Foo', // optional\n        //    readonly: false,    // optional, default is false\n        // },\n        // ...\n    },\n\n    // use this for initialization\n    onLoad: function () {\n\n    },\n\n    // called every frame, uncomment this function to activate update callback\n    // update: function (dt) {\n\n    // },\n    onRoom1Click:function(){\n        Comm.scene.enterRoom();\n    },\n});\n"
+    "var Comm = require(\"../../commSrc/Comm\");\ncc.Class({\n    extends: cc.Component,\n\n    properties: {\n    },\n\n    onRoom1Click:function(){\n        pomelo.request(\"connector.entryHandler.enterRoom\", {}, function(data){\n            if (data.ret == 0) {\n                Comm.scene.enterRoom();\n            }\n        });\n    },\n});\n"
   ]
 }

@@ -1908,7 +1908,7 @@ function isnan (val) {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"base64-js":1,"ieee754":5,"isarray":3}],3:[function(require,module,exports){
+},{"base64-js":1,"ieee754":4,"isarray":3}],3:[function(require,module,exports){
 var toString = {}.toString;
 
 module.exports = Array.isArray || function (arr) {
@@ -1916,310 +1916,6 @@ module.exports = Array.isArray || function (arr) {
 };
 
 },{}],4:[function(require,module,exports){
-// Copyright Joyent, Inc. and other Node contributors.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the
-// following conditions:
-//
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-function EventEmitter() {
-  this._events = this._events || {};
-  this._maxListeners = this._maxListeners || undefined;
-}
-module.exports = EventEmitter;
-
-// Backwards-compat with node 0.10.x
-EventEmitter.EventEmitter = EventEmitter;
-
-EventEmitter.prototype._events = undefined;
-EventEmitter.prototype._maxListeners = undefined;
-
-// By default EventEmitters will print a warning if more than 10 listeners are
-// added to it. This is a useful default which helps finding memory leaks.
-EventEmitter.defaultMaxListeners = 10;
-
-// Obviously not all Emitters should be limited to 10. This function allows
-// that to be increased. Set to zero for unlimited.
-EventEmitter.prototype.setMaxListeners = function(n) {
-  if (!isNumber(n) || n < 0 || isNaN(n))
-    throw TypeError('n must be a positive number');
-  this._maxListeners = n;
-  return this;
-};
-
-EventEmitter.prototype.emit = function(type) {
-  var er, handler, len, args, i, listeners;
-
-  if (!this._events)
-    this._events = {};
-
-  // If there is no 'error' event listener then throw.
-  if (type === 'error') {
-    if (!this._events.error ||
-        (isObject(this._events.error) && !this._events.error.length)) {
-      er = arguments[1];
-      if (er instanceof Error) {
-        throw er; // Unhandled 'error' event
-      } else {
-        // At least give some kind of context to the user
-        var err = new Error('Uncaught, unspecified "error" event. (' + er + ')');
-        err.context = er;
-        throw err;
-      }
-    }
-  }
-
-  handler = this._events[type];
-
-  if (isUndefined(handler))
-    return false;
-
-  if (isFunction(handler)) {
-    switch (arguments.length) {
-      // fast cases
-      case 1:
-        handler.call(this);
-        break;
-      case 2:
-        handler.call(this, arguments[1]);
-        break;
-      case 3:
-        handler.call(this, arguments[1], arguments[2]);
-        break;
-      // slower
-      default:
-        args = Array.prototype.slice.call(arguments, 1);
-        handler.apply(this, args);
-    }
-  } else if (isObject(handler)) {
-    args = Array.prototype.slice.call(arguments, 1);
-    listeners = handler.slice();
-    len = listeners.length;
-    for (i = 0; i < len; i++)
-      listeners[i].apply(this, args);
-  }
-
-  return true;
-};
-
-EventEmitter.prototype.addListener = function(type, listener) {
-  var m;
-
-  if (!isFunction(listener))
-    throw TypeError('listener must be a function');
-
-  if (!this._events)
-    this._events = {};
-
-  // To avoid recursion in the case that type === "newListener"! Before
-  // adding it to the listeners, first emit "newListener".
-  if (this._events.newListener)
-    this.emit('newListener', type,
-              isFunction(listener.listener) ?
-              listener.listener : listener);
-
-  if (!this._events[type])
-    // Optimize the case of one listener. Don't need the extra array object.
-    this._events[type] = listener;
-  else if (isObject(this._events[type]))
-    // If we've already got an array, just append.
-    this._events[type].push(listener);
-  else
-    // Adding the second element, need to change to array.
-    this._events[type] = [this._events[type], listener];
-
-  // Check for listener leak
-  if (isObject(this._events[type]) && !this._events[type].warned) {
-    if (!isUndefined(this._maxListeners)) {
-      m = this._maxListeners;
-    } else {
-      m = EventEmitter.defaultMaxListeners;
-    }
-
-    if (m && m > 0 && this._events[type].length > m) {
-      this._events[type].warned = true;
-      console.error('(node) warning: possible EventEmitter memory ' +
-                    'leak detected. %d listeners added. ' +
-                    'Use emitter.setMaxListeners() to increase limit.',
-                    this._events[type].length);
-      if (typeof console.trace === 'function') {
-        // not supported in IE 10
-        console.trace();
-      }
-    }
-  }
-
-  return this;
-};
-
-EventEmitter.prototype.on = EventEmitter.prototype.addListener;
-
-EventEmitter.prototype.once = function(type, listener) {
-  if (!isFunction(listener))
-    throw TypeError('listener must be a function');
-
-  var fired = false;
-
-  function g() {
-    this.removeListener(type, g);
-
-    if (!fired) {
-      fired = true;
-      listener.apply(this, arguments);
-    }
-  }
-
-  g.listener = listener;
-  this.on(type, g);
-
-  return this;
-};
-
-// emits a 'removeListener' event iff the listener was removed
-EventEmitter.prototype.removeListener = function(type, listener) {
-  var list, position, length, i;
-
-  if (!isFunction(listener))
-    throw TypeError('listener must be a function');
-
-  if (!this._events || !this._events[type])
-    return this;
-
-  list = this._events[type];
-  length = list.length;
-  position = -1;
-
-  if (list === listener ||
-      (isFunction(list.listener) && list.listener === listener)) {
-    delete this._events[type];
-    if (this._events.removeListener)
-      this.emit('removeListener', type, listener);
-
-  } else if (isObject(list)) {
-    for (i = length; i-- > 0;) {
-      if (list[i] === listener ||
-          (list[i].listener && list[i].listener === listener)) {
-        position = i;
-        break;
-      }
-    }
-
-    if (position < 0)
-      return this;
-
-    if (list.length === 1) {
-      list.length = 0;
-      delete this._events[type];
-    } else {
-      list.splice(position, 1);
-    }
-
-    if (this._events.removeListener)
-      this.emit('removeListener', type, listener);
-  }
-
-  return this;
-};
-
-EventEmitter.prototype.removeAllListeners = function(type) {
-  var key, listeners;
-
-  if (!this._events)
-    return this;
-
-  // not listening for removeListener, no need to emit
-  if (!this._events.removeListener) {
-    if (arguments.length === 0)
-      this._events = {};
-    else if (this._events[type])
-      delete this._events[type];
-    return this;
-  }
-
-  // emit removeListener for all listeners on all events
-  if (arguments.length === 0) {
-    for (key in this._events) {
-      if (key === 'removeListener') continue;
-      this.removeAllListeners(key);
-    }
-    this.removeAllListeners('removeListener');
-    this._events = {};
-    return this;
-  }
-
-  listeners = this._events[type];
-
-  if (isFunction(listeners)) {
-    this.removeListener(type, listeners);
-  } else if (listeners) {
-    // LIFO order
-    while (listeners.length)
-      this.removeListener(type, listeners[listeners.length - 1]);
-  }
-  delete this._events[type];
-
-  return this;
-};
-
-EventEmitter.prototype.listeners = function(type) {
-  var ret;
-  if (!this._events || !this._events[type])
-    ret = [];
-  else if (isFunction(this._events[type]))
-    ret = [this._events[type]];
-  else
-    ret = this._events[type].slice();
-  return ret;
-};
-
-EventEmitter.prototype.listenerCount = function(type) {
-  if (this._events) {
-    var evlistener = this._events[type];
-
-    if (isFunction(evlistener))
-      return 1;
-    else if (evlistener)
-      return evlistener.length;
-  }
-  return 0;
-};
-
-EventEmitter.listenerCount = function(emitter, type) {
-  return emitter.listenerCount(type);
-};
-
-function isFunction(arg) {
-  return typeof arg === 'function';
-}
-
-function isNumber(arg) {
-  return typeof arg === 'number';
-}
-
-function isObject(arg) {
-  return typeof arg === 'object' && arg !== null;
-}
-
-function isUndefined(arg) {
-  return arg === void 0;
-}
-
-},{}],5:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = nBytes * 8 - mLen - 1
@@ -2305,2289 +2001,18 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],6:[function(require,module,exports){
-// shim for using process in browser
-var process = module.exports = {};
-
-// cached from whatever global is present so that test runners that stub it
-// don't break things.  But we need to wrap it in a try catch in case it is
-// wrapped in strict mode code which doesn't define any globals.  It's inside a
-// function because try/catches deoptimize in certain engines.
-
-var cachedSetTimeout;
-var cachedClearTimeout;
-
-function defaultSetTimout() {
-    throw new Error('setTimeout has not been defined');
-}
-function defaultClearTimeout () {
-    throw new Error('clearTimeout has not been defined');
-}
-(function () {
-    try {
-        if (typeof setTimeout === 'function') {
-            cachedSetTimeout = setTimeout;
-        } else {
-            cachedSetTimeout = defaultSetTimout;
-        }
-    } catch (e) {
-        cachedSetTimeout = defaultSetTimout;
-    }
-    try {
-        if (typeof clearTimeout === 'function') {
-            cachedClearTimeout = clearTimeout;
-        } else {
-            cachedClearTimeout = defaultClearTimeout;
-        }
-    } catch (e) {
-        cachedClearTimeout = defaultClearTimeout;
-    }
-} ())
-function runTimeout(fun) {
-    if (cachedSetTimeout === setTimeout) {
-        //normal enviroments in sane situations
-        return setTimeout(fun, 0);
-    }
-    // if setTimeout wasn't available but was latter defined
-    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
-        cachedSetTimeout = setTimeout;
-        return setTimeout(fun, 0);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedSetTimeout(fun, 0);
-    } catch(e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
-            return cachedSetTimeout.call(null, fun, 0);
-        } catch(e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
-            return cachedSetTimeout.call(this, fun, 0);
-        }
-    }
-
-
-}
-function runClearTimeout(marker) {
-    if (cachedClearTimeout === clearTimeout) {
-        //normal enviroments in sane situations
-        return clearTimeout(marker);
-    }
-    // if clearTimeout wasn't available but was latter defined
-    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
-        cachedClearTimeout = clearTimeout;
-        return clearTimeout(marker);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedClearTimeout(marker);
-    } catch (e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
-            return cachedClearTimeout.call(null, marker);
-        } catch (e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
-            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
-            return cachedClearTimeout.call(this, marker);
-        }
-    }
-
-
-
-}
-var queue = [];
-var draining = false;
-var currentQueue;
-var queueIndex = -1;
-
-function cleanUpNextTick() {
-    if (!draining || !currentQueue) {
-        return;
-    }
-    draining = false;
-    if (currentQueue.length) {
-        queue = currentQueue.concat(queue);
-    } else {
-        queueIndex = -1;
-    }
-    if (queue.length) {
-        drainQueue();
-    }
-}
-
-function drainQueue() {
-    if (draining) {
-        return;
-    }
-    var timeout = runTimeout(cleanUpNextTick);
-    draining = true;
-
-    var len = queue.length;
-    while(len) {
-        currentQueue = queue;
-        queue = [];
-        while (++queueIndex < len) {
-            if (currentQueue) {
-                currentQueue[queueIndex].run();
-            }
-        }
-        queueIndex = -1;
-        len = queue.length;
-    }
-    currentQueue = null;
-    draining = false;
-    runClearTimeout(timeout);
-}
-
-process.nextTick = function (fun) {
-    var args = new Array(arguments.length - 1);
-    if (arguments.length > 1) {
-        for (var i = 1; i < arguments.length; i++) {
-            args[i - 1] = arguments[i];
-        }
-    }
-    queue.push(new Item(fun, args));
-    if (queue.length === 1 && !draining) {
-        runTimeout(drainQueue);
-    }
-};
-
-// v8 likes predictible objects
-function Item(fun, array) {
-    this.fun = fun;
-    this.array = array;
-}
-Item.prototype.run = function () {
-    this.fun.apply(null, this.array);
-};
-process.title = 'browser';
-process.browser = true;
-process.env = {};
-process.argv = [];
-process.version = ''; // empty string to avoid regexp issues
-process.versions = {};
-
-function noop() {}
-
-process.on = noop;
-process.addListener = noop;
-process.once = noop;
-process.off = noop;
-process.removeListener = noop;
-process.removeAllListeners = noop;
-process.emit = noop;
-process.prependListener = noop;
-process.prependOnceListener = noop;
-
-process.listeners = function (name) { return [] }
-
-process.binding = function (name) {
-    throw new Error('process.binding is not supported');
-};
-
-process.cwd = function () { return '/' };
-process.chdir = function (dir) {
-    throw new Error('process.chdir is not supported');
-};
-process.umask = function() { return 0; };
-
-},{}],7:[function(require,module,exports){
-if (typeof Object.create === 'function') {
-  // implementation from standard node.js 'util' module
-  module.exports = function inherits(ctor, superCtor) {
-    ctor.super_ = superCtor
-    ctor.prototype = Object.create(superCtor.prototype, {
-      constructor: {
-        value: ctor,
-        enumerable: false,
-        writable: true,
-        configurable: true
-      }
-    });
-  };
-} else {
-  // old school shim for old browsers
-  module.exports = function inherits(ctor, superCtor) {
-    ctor.super_ = superCtor
-    var TempCtor = function () {}
-    TempCtor.prototype = superCtor.prototype
-    ctor.prototype = new TempCtor()
-    ctor.prototype.constructor = ctor
-  }
-}
-
-},{}],8:[function(require,module,exports){
-module.exports = function isBuffer(arg) {
-  return arg && typeof arg === 'object'
-    && typeof arg.copy === 'function'
-    && typeof arg.fill === 'function'
-    && typeof arg.readUInt8 === 'function';
-}
-},{}],9:[function(require,module,exports){
-(function (process,global){
-// Copyright Joyent, Inc. and other Node contributors.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the
-// following conditions:
-//
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-var formatRegExp = /%[sdj%]/g;
-exports.format = function(f) {
-  if (!isString(f)) {
-    var objects = [];
-    for (var i = 0; i < arguments.length; i++) {
-      objects.push(inspect(arguments[i]));
-    }
-    return objects.join(' ');
-  }
-
-  var i = 1;
-  var args = arguments;
-  var len = args.length;
-  var str = String(f).replace(formatRegExp, function(x) {
-    if (x === '%%') return '%';
-    if (i >= len) return x;
-    switch (x) {
-      case '%s': return String(args[i++]);
-      case '%d': return Number(args[i++]);
-      case '%j':
-        try {
-          return JSON.stringify(args[i++]);
-        } catch (_) {
-          return '[Circular]';
-        }
-      default:
-        return x;
-    }
-  });
-  for (var x = args[i]; i < len; x = args[++i]) {
-    if (isNull(x) || !isObject(x)) {
-      str += ' ' + x;
-    } else {
-      str += ' ' + inspect(x);
-    }
-  }
-  return str;
-};
-
-
-// Mark that a method should not be used.
-// Returns a modified function which warns once by default.
-// If --no-deprecation is set, then it is a no-op.
-exports.deprecate = function(fn, msg) {
-  // Allow for deprecating things in the process of starting up.
-  if (isUndefined(global.process)) {
-    return function() {
-      return exports.deprecate(fn, msg).apply(this, arguments);
-    };
-  }
-
-  if (process.noDeprecation === true) {
-    return fn;
-  }
-
-  var warned = false;
-  function deprecated() {
-    if (!warned) {
-      if (process.throwDeprecation) {
-        throw new Error(msg);
-      } else if (process.traceDeprecation) {
-        console.trace(msg);
-      } else {
-        console.error(msg);
-      }
-      warned = true;
-    }
-    return fn.apply(this, arguments);
-  }
-
-  return deprecated;
-};
-
-
-var debugs = {};
-var debugEnviron;
-exports.debuglog = function(set) {
-  if (isUndefined(debugEnviron))
-    debugEnviron = process.env.NODE_DEBUG || '';
-  set = set.toUpperCase();
-  if (!debugs[set]) {
-    if (new RegExp('\\b' + set + '\\b', 'i').test(debugEnviron)) {
-      var pid = process.pid;
-      debugs[set] = function() {
-        var msg = exports.format.apply(exports, arguments);
-        console.error('%s %d: %s', set, pid, msg);
-      };
-    } else {
-      debugs[set] = function() {};
-    }
-  }
-  return debugs[set];
-};
-
-
-/**
- * Echos the value of a value. Trys to print the value out
- * in the best way possible given the different types.
- *
- * @param {Object} obj The object to print out.
- * @param {Object} opts Optional options object that alters the output.
- */
-/* legacy: obj, showHidden, depth, colors*/
-function inspect(obj, opts) {
-  // default options
-  var ctx = {
-    seen: [],
-    stylize: stylizeNoColor
-  };
-  // legacy...
-  if (arguments.length >= 3) ctx.depth = arguments[2];
-  if (arguments.length >= 4) ctx.colors = arguments[3];
-  if (isBoolean(opts)) {
-    // legacy...
-    ctx.showHidden = opts;
-  } else if (opts) {
-    // got an "options" object
-    exports._extend(ctx, opts);
-  }
-  // set default options
-  if (isUndefined(ctx.showHidden)) ctx.showHidden = false;
-  if (isUndefined(ctx.depth)) ctx.depth = 2;
-  if (isUndefined(ctx.colors)) ctx.colors = false;
-  if (isUndefined(ctx.customInspect)) ctx.customInspect = true;
-  if (ctx.colors) ctx.stylize = stylizeWithColor;
-  return formatValue(ctx, obj, ctx.depth);
-}
-exports.inspect = inspect;
-
-
-// http://en.wikipedia.org/wiki/ANSI_escape_code#graphics
-inspect.colors = {
-  'bold' : [1, 22],
-  'italic' : [3, 23],
-  'underline' : [4, 24],
-  'inverse' : [7, 27],
-  'white' : [37, 39],
-  'grey' : [90, 39],
-  'black' : [30, 39],
-  'blue' : [34, 39],
-  'cyan' : [36, 39],
-  'green' : [32, 39],
-  'magenta' : [35, 39],
-  'red' : [31, 39],
-  'yellow' : [33, 39]
-};
-
-// Don't use 'blue' not visible on cmd.exe
-inspect.styles = {
-  'special': 'cyan',
-  'number': 'yellow',
-  'boolean': 'yellow',
-  'undefined': 'grey',
-  'null': 'bold',
-  'string': 'green',
-  'date': 'magenta',
-  // "name": intentionally not styling
-  'regexp': 'red'
-};
-
-
-function stylizeWithColor(str, styleType) {
-  var style = inspect.styles[styleType];
-
-  if (style) {
-    return '\u001b[' + inspect.colors[style][0] + 'm' + str +
-           '\u001b[' + inspect.colors[style][1] + 'm';
-  } else {
-    return str;
-  }
-}
-
-
-function stylizeNoColor(str, styleType) {
-  return str;
-}
-
-
-function arrayToHash(array) {
-  var hash = {};
-
-  array.forEach(function(val, idx) {
-    hash[val] = true;
-  });
-
-  return hash;
-}
-
-
-function formatValue(ctx, value, recurseTimes) {
-  // Provide a hook for user-specified inspect functions.
-  // Check that value is an object with an inspect function on it
-  if (ctx.customInspect &&
-      value &&
-      isFunction(value.inspect) &&
-      // Filter out the util module, it's inspect function is special
-      value.inspect !== exports.inspect &&
-      // Also filter out any prototype objects using the circular check.
-      !(value.constructor && value.constructor.prototype === value)) {
-    var ret = value.inspect(recurseTimes, ctx);
-    if (!isString(ret)) {
-      ret = formatValue(ctx, ret, recurseTimes);
-    }
-    return ret;
-  }
-
-  // Primitive types cannot have properties
-  var primitive = formatPrimitive(ctx, value);
-  if (primitive) {
-    return primitive;
-  }
-
-  // Look up the keys of the object.
-  var keys = Object.keys(value);
-  var visibleKeys = arrayToHash(keys);
-
-  if (ctx.showHidden) {
-    keys = Object.getOwnPropertyNames(value);
-  }
-
-  // IE doesn't make error fields non-enumerable
-  // http://msdn.microsoft.com/en-us/library/ie/dww52sbt(v=vs.94).aspx
-  if (isError(value)
-      && (keys.indexOf('message') >= 0 || keys.indexOf('description') >= 0)) {
-    return formatError(value);
-  }
-
-  // Some type of object without properties can be shortcutted.
-  if (keys.length === 0) {
-    if (isFunction(value)) {
-      var name = value.name ? ': ' + value.name : '';
-      return ctx.stylize('[Function' + name + ']', 'special');
-    }
-    if (isRegExp(value)) {
-      return ctx.stylize(RegExp.prototype.toString.call(value), 'regexp');
-    }
-    if (isDate(value)) {
-      return ctx.stylize(Date.prototype.toString.call(value), 'date');
-    }
-    if (isError(value)) {
-      return formatError(value);
-    }
-  }
-
-  var base = '', array = false, braces = ['{', '}'];
-
-  // Make Array say that they are Array
-  if (isArray(value)) {
-    array = true;
-    braces = ['[', ']'];
-  }
-
-  // Make functions say that they are functions
-  if (isFunction(value)) {
-    var n = value.name ? ': ' + value.name : '';
-    base = ' [Function' + n + ']';
-  }
-
-  // Make RegExps say that they are RegExps
-  if (isRegExp(value)) {
-    base = ' ' + RegExp.prototype.toString.call(value);
-  }
-
-  // Make dates with properties first say the date
-  if (isDate(value)) {
-    base = ' ' + Date.prototype.toUTCString.call(value);
-  }
-
-  // Make error with message first say the error
-  if (isError(value)) {
-    base = ' ' + formatError(value);
-  }
-
-  if (keys.length === 0 && (!array || value.length == 0)) {
-    return braces[0] + base + braces[1];
-  }
-
-  if (recurseTimes < 0) {
-    if (isRegExp(value)) {
-      return ctx.stylize(RegExp.prototype.toString.call(value), 'regexp');
-    } else {
-      return ctx.stylize('[Object]', 'special');
-    }
-  }
-
-  ctx.seen.push(value);
-
-  var output;
-  if (array) {
-    output = formatArray(ctx, value, recurseTimes, visibleKeys, keys);
-  } else {
-    output = keys.map(function(key) {
-      return formatProperty(ctx, value, recurseTimes, visibleKeys, key, array);
-    });
-  }
-
-  ctx.seen.pop();
-
-  return reduceToSingleString(output, base, braces);
-}
-
-
-function formatPrimitive(ctx, value) {
-  if (isUndefined(value))
-    return ctx.stylize('undefined', 'undefined');
-  if (isString(value)) {
-    var simple = '\'' + JSON.stringify(value).replace(/^"|"$/g, '')
-                                             .replace(/'/g, "\\'")
-                                             .replace(/\\"/g, '"') + '\'';
-    return ctx.stylize(simple, 'string');
-  }
-  if (isNumber(value))
-    return ctx.stylize('' + value, 'number');
-  if (isBoolean(value))
-    return ctx.stylize('' + value, 'boolean');
-  // For some reason typeof null is "object", so special case here.
-  if (isNull(value))
-    return ctx.stylize('null', 'null');
-}
-
-
-function formatError(value) {
-  return '[' + Error.prototype.toString.call(value) + ']';
-}
-
-
-function formatArray(ctx, value, recurseTimes, visibleKeys, keys) {
-  var output = [];
-  for (var i = 0, l = value.length; i < l; ++i) {
-    if (hasOwnProperty(value, String(i))) {
-      output.push(formatProperty(ctx, value, recurseTimes, visibleKeys,
-          String(i), true));
-    } else {
-      output.push('');
-    }
-  }
-  keys.forEach(function(key) {
-    if (!key.match(/^\d+$/)) {
-      output.push(formatProperty(ctx, value, recurseTimes, visibleKeys,
-          key, true));
-    }
-  });
-  return output;
-}
-
-
-function formatProperty(ctx, value, recurseTimes, visibleKeys, key, array) {
-  var name, str, desc;
-  desc = Object.getOwnPropertyDescriptor(value, key) || { value: value[key] };
-  if (desc.get) {
-    if (desc.set) {
-      str = ctx.stylize('[Getter/Setter]', 'special');
-    } else {
-      str = ctx.stylize('[Getter]', 'special');
-    }
-  } else {
-    if (desc.set) {
-      str = ctx.stylize('[Setter]', 'special');
-    }
-  }
-  if (!hasOwnProperty(visibleKeys, key)) {
-    name = '[' + key + ']';
-  }
-  if (!str) {
-    if (ctx.seen.indexOf(desc.value) < 0) {
-      if (isNull(recurseTimes)) {
-        str = formatValue(ctx, desc.value, null);
-      } else {
-        str = formatValue(ctx, desc.value, recurseTimes - 1);
-      }
-      if (str.indexOf('\n') > -1) {
-        if (array) {
-          str = str.split('\n').map(function(line) {
-            return '  ' + line;
-          }).join('\n').substr(2);
-        } else {
-          str = '\n' + str.split('\n').map(function(line) {
-            return '   ' + line;
-          }).join('\n');
-        }
-      }
-    } else {
-      str = ctx.stylize('[Circular]', 'special');
-    }
-  }
-  if (isUndefined(name)) {
-    if (array && key.match(/^\d+$/)) {
-      return str;
-    }
-    name = JSON.stringify('' + key);
-    if (name.match(/^"([a-zA-Z_][a-zA-Z_0-9]*)"$/)) {
-      name = name.substr(1, name.length - 2);
-      name = ctx.stylize(name, 'name');
-    } else {
-      name = name.replace(/'/g, "\\'")
-                 .replace(/\\"/g, '"')
-                 .replace(/(^"|"$)/g, "'");
-      name = ctx.stylize(name, 'string');
-    }
-  }
-
-  return name + ': ' + str;
-}
-
-
-function reduceToSingleString(output, base, braces) {
-  var numLinesEst = 0;
-  var length = output.reduce(function(prev, cur) {
-    numLinesEst++;
-    if (cur.indexOf('\n') >= 0) numLinesEst++;
-    return prev + cur.replace(/\u001b\[\d\d?m/g, '').length + 1;
-  }, 0);
-
-  if (length > 60) {
-    return braces[0] +
-           (base === '' ? '' : base + '\n ') +
-           ' ' +
-           output.join(',\n  ') +
-           ' ' +
-           braces[1];
-  }
-
-  return braces[0] + base + ' ' + output.join(', ') + ' ' + braces[1];
-}
-
-
-// NOTE: These type checking functions intentionally don't use `instanceof`
-// because it is fragile and can be easily faked with `Object.create()`.
-function isArray(ar) {
-  return Array.isArray(ar);
-}
-exports.isArray = isArray;
-
-function isBoolean(arg) {
-  return typeof arg === 'boolean';
-}
-exports.isBoolean = isBoolean;
-
-function isNull(arg) {
-  return arg === null;
-}
-exports.isNull = isNull;
-
-function isNullOrUndefined(arg) {
-  return arg == null;
-}
-exports.isNullOrUndefined = isNullOrUndefined;
-
-function isNumber(arg) {
-  return typeof arg === 'number';
-}
-exports.isNumber = isNumber;
-
-function isString(arg) {
-  return typeof arg === 'string';
-}
-exports.isString = isString;
-
-function isSymbol(arg) {
-  return typeof arg === 'symbol';
-}
-exports.isSymbol = isSymbol;
-
-function isUndefined(arg) {
-  return arg === void 0;
-}
-exports.isUndefined = isUndefined;
-
-function isRegExp(re) {
-  return isObject(re) && objectToString(re) === '[object RegExp]';
-}
-exports.isRegExp = isRegExp;
-
-function isObject(arg) {
-  return typeof arg === 'object' && arg !== null;
-}
-exports.isObject = isObject;
-
-function isDate(d) {
-  return isObject(d) && objectToString(d) === '[object Date]';
-}
-exports.isDate = isDate;
-
-function isError(e) {
-  return isObject(e) &&
-      (objectToString(e) === '[object Error]' || e instanceof Error);
-}
-exports.isError = isError;
-
-function isFunction(arg) {
-  return typeof arg === 'function';
-}
-exports.isFunction = isFunction;
-
-function isPrimitive(arg) {
-  return arg === null ||
-         typeof arg === 'boolean' ||
-         typeof arg === 'number' ||
-         typeof arg === 'string' ||
-         typeof arg === 'symbol' ||  // ES6 symbol
-         typeof arg === 'undefined';
-}
-exports.isPrimitive = isPrimitive;
-
-exports.isBuffer = require('./support/isBuffer');
-
-function objectToString(o) {
-  return Object.prototype.toString.call(o);
-}
-
-
-function pad(n) {
-  return n < 10 ? '0' + n.toString(10) : n.toString(10);
-}
-
-
-var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep',
-              'Oct', 'Nov', 'Dec'];
-
-// 26 Feb 16:19:34
-function timestamp() {
-  var d = new Date();
-  var time = [pad(d.getHours()),
-              pad(d.getMinutes()),
-              pad(d.getSeconds())].join(':');
-  return [d.getDate(), months[d.getMonth()], time].join(' ');
-}
-
-
-// log is just a thin wrapper to console.log that prepends a timestamp
-exports.log = function() {
-  console.log('%s - %s', timestamp(), exports.format.apply(exports, arguments));
-};
-
-
-/**
- * Inherit the prototype methods from one constructor into another.
- *
- * The Function.prototype.inherits from lang.js rewritten as a standalone
- * function (not on Function.prototype). NOTE: If this file is to be loaded
- * during bootstrapping this function needs to be rewritten using some native
- * functions as prototype setup using normal JavaScript does not work as
- * expected during bootstrapping (see mirror.js in r114903).
- *
- * @param {function} ctor Constructor function which needs to inherit the
- *     prototype.
- * @param {function} superCtor Constructor function to inherit prototype from.
- */
-exports.inherits = require('inherits');
-
-exports._extend = function(origin, add) {
-  // Don't do anything if add isn't an object
-  if (!add || !isObject(add)) return origin;
-
-  var keys = Object.keys(add);
-  var i = keys.length;
-  while (i--) {
-    origin[keys[i]] = add[keys[i]];
-  }
-  return origin;
-};
-
-function hasOwnProperty(obj, prop) {
-  return Object.prototype.hasOwnProperty.call(obj, prop);
-}
-
-}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-
-},{"./support/isBuffer":8,"_process":6,"inherits":7}],10:[function(require,module,exports){
-var Util = require('util');
-
-function checkCocos2dJsb() {
-	if (typeof cc !== 'undefined' && cc && cc.sys && cc.sys.isNative) {
-		return true;
-	}
-
-	return false;
-}
-
-var Root;
-(function() {
-	Root = this;
-}());
-
-if (checkCocos2dJsb()) {
-	var console = cc;
-	Root.console = console;
-	cc.formatStr = Util.format;
-}
-
-var EventEmitter = require('events').EventEmitter;
-Root.EventEmitter = EventEmitter;
-var protobuf = require('pomelo-protobuf');
-Root.protobuf = protobuf;
-var Protocol = require('pomelo-protocol');
-Root.Protocol = Protocol;
-var pomelo = require('pomelo-jsclient-websocket');
-Root.pomelo = pomelo;
-},{"events":4,"pomelo-jsclient-websocket":11,"pomelo-protobuf":17,"pomelo-protocol":19,"util":9}],11:[function(require,module,exports){
-(function() {
-  var JS_WS_CLIENT_TYPE = 'js-websocket';
-  var JS_WS_CLIENT_VERSION = '0.0.1';
-
-  var Protocol = window.Protocol;
-  var protobuf = window.protobuf;
-  var decodeIO_protobuf = window.decodeIO_protobuf;
-  var decodeIO_encoder = null;
-  var decodeIO_decoder = null;
-  var Package = Protocol.Package;
-  var Message = Protocol.Message;
-  var EventEmitter = window.EventEmitter;
-  var rsa = window.rsa;
-
-  if(typeof(window) != "undefined" && typeof(sys) != 'undefined' && sys.localStorage) {
-    window.localStorage = sys.localStorage;
-  }
-  
-  var RES_OK = 200;
-  var RES_FAIL = 500;
-  var RES_OLD_CLIENT = 501;
-
-  if (typeof Object.create !== 'function') {
-    Object.create = function (o) {
-      function F() {}
-      F.prototype = o;
-      return new F();
-    };
-  }
-
-  var root = window;
-  var pomelo = Object.create(EventEmitter.prototype); // object extend from object
-  root.pomelo = pomelo;
-  var socket = null;
-  var reqId = 0;
-  var callbacks = {};
-  var handlers = {};
-  //Map from request id to route
-  var routeMap = {};
-  var dict = {};    // route string to code
-  var abbrs = {};   // code to route string
-  var serverProtos = {};
-  var clientProtos = {};
-  var protoVersion = 0;
-
-  var heartbeatInterval = 0;
-  var heartbeatTimeout = 0;
-  var nextHeartbeatTimeout = 0;
-  var gapThreshold = 100;   // heartbeat gap threashold
-  var heartbeatId = null;
-  var heartbeatTimeoutId = null;
-  var handshakeCallback = null;
-
-  var decode = null;
-  var encode = null;
-
-  var reconnect = false;
-  var reconncetTimer = null;
-  var reconnectUrl = null;
-  var reconnectAttempts = 0;
-  var reconnectionDelay = 5000;
-  var DEFAULT_MAX_RECONNECT_ATTEMPTS = 10;
-
-  var useCrypto;
-
-  var handshakeBuffer = {
-    'sys': {
-      type: JS_WS_CLIENT_TYPE,
-      version: JS_WS_CLIENT_VERSION,
-      rsa: {}
-    },
-    'user': {
-    }
-  };
-
-  var initCallback = null;
-
-  pomelo.init = function(params, cb) {
-    initCallback = cb;
-    var host = params.host;
-    var port = params.port;
-
-    encode = params.encode || defaultEncode;
-    decode = params.decode || defaultDecode;
-
-    var url = 'ws://' + host;
-    if(port) {
-      url +=  ':' + port;
-    }
-
-    handshakeBuffer.user = params.user;
-    if(params.encrypt) {
-      useCrypto = true;
-      rsa.generate(1024, "10001");
-      var data = {
-        rsa_n: rsa.n.toString(16),
-        rsa_e: rsa.e
-      }
-      handshakeBuffer.sys.rsa = data;
-    }
-    handshakeCallback = params.handshakeCallback;
-    connect(params, url, cb);
-  };
-
-  var defaultDecode = pomelo.decode = function(data) {
-    //probuff decode
-    var msg = Message.decode(data);
-
-    if(msg.id > 0){
-      msg.route = routeMap[msg.id];
-      delete routeMap[msg.id];
-      if(!msg.route){
-        return;
-      }
-    }
-
-    msg.body = deCompose(msg);
-    return msg;
-  };
-
-  var defaultEncode = pomelo.encode = function(reqId, route, msg) {
-    var type = reqId ? Message.TYPE_REQUEST : Message.TYPE_NOTIFY;
-
-    //compress message by protobuf
-    if(protobuf && clientProtos[route]) {
-      msg = protobuf.encode(route, msg);
-    } else if(decodeIO_encoder && decodeIO_encoder.lookup(route)) {
-      var Builder = decodeIO_encoder.build(route);
-      msg = new Builder(msg).encodeNB();
-    } else {
-      msg = Protocol.strencode(JSON.stringify(msg));
-    }
-
-    var compressRoute = 0;
-    if(dict && dict[route]) {
-      route = dict[route];
-      compressRoute = 1;
-    }
-
-    return Message.encode(reqId, type, compressRoute, route, msg);
-  };
-
-  var connect = function(params, url, cb) {
-    console.log('connect to ' + url);
-
-    var params = params || {};
-    var maxReconnectAttempts = params.maxReconnectAttempts || DEFAULT_MAX_RECONNECT_ATTEMPTS;
-    reconnectUrl = url;
-    //Add protobuf version
-    if(window.localStorage && window.localStorage.getItem('protos') && protoVersion === 0) {
-      var protos = JSON.parse(window.localStorage.getItem('protos'));
-
-      protoVersion = protos.version || 0;
-      serverProtos = protos.server || {};
-      clientProtos = protos.client || {};
-
-      if(!!protobuf) {
-        protobuf.init({encoderProtos: clientProtos, decoderProtos: serverProtos});
-      } 
-      if(!!decodeIO_protobuf) {
-        decodeIO_encoder = decodeIO_protobuf.loadJson(clientProtos);
-        decodeIO_decoder = decodeIO_protobuf.loadJson(serverProtos);
-      }
-    }
-    //Set protoversion
-    handshakeBuffer.sys.protoVersion = protoVersion;
-
-    var onopen = function(event) {
-      if(!!reconnect) {
-        pomelo.emit('reconnect');
-      }
-      reset();
-      var obj = Package.encode(Package.TYPE_HANDSHAKE, Protocol.strencode(JSON.stringify(handshakeBuffer)));
-      send(obj);
-    };
-    var onmessage = function(event) {
-      processPackage(Package.decode(event.data), cb);
-      // new package arrived, update the heartbeat timeout
-      if(heartbeatTimeout) {
-        nextHeartbeatTimeout = Date.now() + heartbeatTimeout;
-      }
-    };
-    var onerror = function(event) {
-      pomelo.emit('io-error', event);
-      console.error('socket error: ', event);
-    };
-    var onclose = function(event) {
-      pomelo.emit('close',event);
-      pomelo.emit('disconnect', event);
-      console.error('socket close: ', event);
-      if(!!params.reconnect && reconnectAttempts < maxReconnectAttempts) {
-        reconnect = true;
-        reconnectAttempts++;
-        reconncetTimer = setTimeout(function() {
-          connect(params, reconnectUrl, cb);
-        }, reconnectionDelay);
-        reconnectionDelay *= 2;
-      }
-    };
-    socket = new WebSocket(url);
-    socket.binaryType = 'arraybuffer';
-    socket.onopen = onopen;
-    socket.onmessage = onmessage;
-    socket.onerror = onerror;
-    socket.onclose = onclose;
-  };
-
-  pomelo.disconnect = function() {
-    if(socket) {
-      if(socket.disconnect) socket.disconnect();
-      if(socket.close) socket.close();
-      console.log('disconnect');
-      socket = null;
-    }
-
-    if(heartbeatId) {
-      clearTimeout(heartbeatId);
-      heartbeatId = null;
-    }
-    if(heartbeatTimeoutId) {
-      clearTimeout(heartbeatTimeoutId);
-      heartbeatTimeoutId = null;
-    }
-  };
-
-  var reset = function() {
-    reconnect = false;
-    reconnectionDelay = 1000 * 5;
-    reconnectAttempts = 0;
-    clearTimeout(reconncetTimer);
-  };
-
-  pomelo.request = function(route, msg, cb) {
-    if(arguments.length === 2 && typeof msg === 'function') {
-      cb = msg;
-      msg = {};
-    } else {
-      msg = msg || {};
-    }
-    route = route || msg.route;
-    if(!route) {
-      return;
-    }
-
-    reqId++;
-    sendMessage(reqId, route, msg);
-
-    callbacks[reqId] = cb;
-    routeMap[reqId] = route;
-  };
-
-  pomelo.notify = function(route, msg) {
-    msg = msg || {};
-    sendMessage(0, route, msg);
-  };
-
-  var sendMessage = function(reqId, route, msg) {
-    if(useCrypto) {
-      msg = JSON.stringify(msg);
-      var sig = rsa.signString(msg, "sha256");
-      msg = JSON.parse(msg);
-      msg['__crypto__'] = sig;
-    }
-
-    if(encode) {
-      msg = encode(reqId, route, msg);
-    }
-
-    var packet = Package.encode(Package.TYPE_DATA, msg);
-    send(packet);
-  };
-
-  var send = function(packet) {
-    if(socket)
-      socket.send(packet.buffer);
-  };
-
-  var handler = {};
-
-  var heartbeat = function(data) {
-    if(!heartbeatInterval) {
-      // no heartbeat
-      return;
-    }
-
-    var obj = Package.encode(Package.TYPE_HEARTBEAT);
-    if(heartbeatTimeoutId) {
-      clearTimeout(heartbeatTimeoutId);
-      heartbeatTimeoutId = null;
-    }
-
-    if(heartbeatId) {
-      // already in a heartbeat interval
-      return;
-    }
-    heartbeatId = setTimeout(function() {
-      heartbeatId = null;
-      send(obj);
-
-      nextHeartbeatTimeout = Date.now() + heartbeatTimeout;
-      heartbeatTimeoutId = setTimeout(heartbeatTimeoutCb, heartbeatTimeout);
-    }, heartbeatInterval);
-  };
-
-  var heartbeatTimeoutCb = function() {
-    var gap = nextHeartbeatTimeout - Date.now();
-    if(gap > gapThreshold) {
-      heartbeatTimeoutId = setTimeout(heartbeatTimeoutCb, gap);
-    } else {
-      console.error('server heartbeat timeout');
-      pomelo.emit('heartbeat timeout');
-      pomelo.disconnect();
-    }
-  };
-
-  var handshake = function(data) {
-    data = JSON.parse(Protocol.strdecode(data));
-    if(data.code === RES_OLD_CLIENT) {
-      pomelo.emit('error', 'client version not fullfill');
-      return;
-    }
-
-    if(data.code !== RES_OK) {
-      pomelo.emit('error', 'handshake fail');
-      return;
-    }
-
-    handshakeInit(data);
-
-    var obj = Package.encode(Package.TYPE_HANDSHAKE_ACK);
-    send(obj);
-    if(initCallback) {
-      initCallback(socket);
-    }
-  };
-
-  var onData = function(data) {
-    var msg = data;
-    if(decode) {
-      msg = decode(msg);
-    }
-    processMessage(pomelo, msg);
-  };
-
-  var onKick = function(data) {
-    data = JSON.parse(Protocol.strdecode(data));
-    pomelo.emit('onKick', data);
-  };
-
-  handlers[Package.TYPE_HANDSHAKE] = handshake;
-  handlers[Package.TYPE_HEARTBEAT] = heartbeat;
-  handlers[Package.TYPE_DATA] = onData;
-  handlers[Package.TYPE_KICK] = onKick;
-
-  var processPackage = function(msgs) {
-    if(Array.isArray(msgs)) {
-      for(var i=0; i<msgs.length; i++) {
-        var msg = msgs[i];
-        handlers[msg.type](msg.body);
-      }
-    } else {
-      handlers[msgs.type](msgs.body);
-    }
-  };
-
-  var processMessage = function(pomelo, msg) {
-    if(!msg.id) {
-      // server push message
-      pomelo.emit(msg.route, msg.body);
-      return;
-    }
-
-    //if have a id then find the callback function with the request
-    var cb = callbacks[msg.id];
-
-    delete callbacks[msg.id];
-    if(typeof cb !== 'function') {
-      return;
-    }
-
-    cb(msg.body);
-    return;
-  };
-
-  var processMessageBatch = function(pomelo, msgs) {
-    for(var i=0, l=msgs.length; i<l; i++) {
-      processMessage(pomelo, msgs[i]);
-    }
-  };
-
-  var deCompose = function(msg) {
-    var route = msg.route;
-
-    //Decompose route from dict
-    if(msg.compressRoute) {
-      if(!abbrs[route]){
-        return {};
-      }
-
-      route = msg.route = abbrs[route];
-    }
-    if(protobuf && serverProtos[route]) {
-      return protobuf.decodeStr(route, msg.body);
-    } else if(decodeIO_decoder && decodeIO_decoder.lookup(route)) {
-      return decodeIO_decoder.build(route).decode(msg.body);
-    } else {
-      return JSON.parse(Protocol.strdecode(msg.body));
-    }
-
-    return msg;
-  };
-
-  var handshakeInit = function(data) {
-    if(data.sys && data.sys.heartbeat) {
-      heartbeatInterval = data.sys.heartbeat * 1000;   // heartbeat interval
-      heartbeatTimeout = heartbeatInterval * 2;        // max heartbeat timeout
-    } else {
-      heartbeatInterval = 0;
-      heartbeatTimeout = 0;
-    }
-
-    initData(data);
-
-    if(typeof handshakeCallback === 'function') {
-      handshakeCallback(data.user);
-    }
-  };
-
-  //Initilize data used in pomelo client
-  var initData = function(data) {
-    if(!data || !data.sys) {
-      return;
-    }
-    dict = data.sys.dict;
-    var protos = data.sys.protos;
-
-    //Init compress dict
-    if(dict) {
-      dict = dict;
-      abbrs = {};
-
-      for(var route in dict) {
-        abbrs[dict[route]] = route;
-      }
-    }
-
-    //Init protobuf protos
-    if(protos) {
-      protoVersion = protos.version || 0;
-      serverProtos = protos.server || {};
-      clientProtos = protos.client || {};
-
-        //Save protobuf protos to localStorage
-        window.localStorage.setItem('protos', JSON.stringify(protos));
-
-        if(!!protobuf) {
-          protobuf.init({encoderProtos: protos.client, decoderProtos: protos.server});
-        }
-        if(!!decodeIO_protobuf) {
-          decodeIO_encoder = decodeIO_protobuf.loadJson(clientProtos);
-          decodeIO_decoder = decodeIO_protobuf.loadJson(serverProtos);
-        }
-      }
-    };
-
-    module.exports = pomelo;
-  })();
-
-},{}],12:[function(require,module,exports){
-var Encoder = module.exports;
-
-/**
- * [encode an uInt32, return a array of bytes]
- * @param  {[integer]} num
- * @return {[array]}
- */
-Encoder.encodeUInt32 = function(num){
-	var n = parseInt(num);
-	if(isNaN(n) || n < 0){
-		console.log(n);
-		return null;
-	}
-
-	var result = [];
-	do{
-		var tmp = n % 128;
-		var next = Math.floor(n/128);
-
-		if(next !== 0){
-			tmp = tmp + 128;
-		}
-		result.push(tmp);
-		n = next;
-	} while(n !== 0);
-
-	return result;
-};
-
-/**
- * [encode a sInt32, return a byte array]
- * @param  {[sInt32]} num  The sInt32 need to encode
- * @return {[array]} A byte array represent the integer
- */
-Encoder.encodeSInt32 = function(num){
-	var n = parseInt(num);
-	if(isNaN(n)){
-		return null;
-	}
-	n = n<0?(Math.abs(n)*2-1):n*2;
-
-	return Encoder.encodeUInt32(n);
-};
-
-Encoder.decodeUInt32 = function(bytes){
-	var n = 0;
-
-	for(var i = 0; i < bytes.length; i++){
-		var m = parseInt(bytes[i]);
-		n = n + ((m & 0x7f) * Math.pow(2,(7*i)));
-		if(m < 128){
-			return n;
-		}
-	}
-
-	return n;
-};
-
-
-Encoder.decodeSInt32 = function(bytes){
-	var n = this.decodeUInt32(bytes);
-	var flag = ((n%2) === 1)?-1:1;
-
-	n = ((n%2 + n)/2)*flag;
-
-	return n;
-};
-
-},{}],13:[function(require,module,exports){
-module.exports = {
-	TYPES : {
-		uInt32 : 0,
-		sInt32 : 0,
-		int32 : 0,
-		double : 1,
-		string : 2,
-		message : 2,
-		float : 5
-	}
-}
-},{}],14:[function(require,module,exports){
-var codec = require('./codec');
-var util = require('./util');
-
-var Decoder = module.exports;
-
-var buffer;
-var offset = 0;
-
-Decoder.init = function(protos){
-	this.protos = protos || {};
-};
-
-Decoder.setProtos = function(protos){
-	if(!!protos){
-		this.protos = protos;
-	}
-};
-
-Decoder.decode = function(route, buf){
-	var protos = this.protos[route];
-
-	buffer = buf;
-	offset = 0;
-
-	if(!!protos){
-		return decodeMsg({}, protos, buffer.length);
-	}
-
-	return null;
-};
-
-function decodeMsg(msg, protos, length){
-	while(offset<length){
-		var head = getHead();
-		var type = head.type;
-		var tag = head.tag;
-		var name = protos.__tags[tag];
-
-		switch(protos[name].option){
-			case 'optional' :
-			case 'required' :
-				msg[name] = decodeProp(protos[name].type, protos);
-			break;
-			case 'repeated' :
-				if(!msg[name]){
-					msg[name] = [];
-				}
-				decodeArray(msg[name], protos[name].type, protos);
-			break;
-		}
-	}
-
-	return msg;
-}
-
-/**
- * Test if the given msg is finished
- */
-function isFinish(msg, protos){
-	return (!protos.__tags[peekHead().tag]);
-}
-/**
- * Get property head from protobuf
- */
-function getHead(){
-	var tag = codec.decodeUInt32(getBytes());
-
-	return {
-		type : tag&0x7,
-		tag	: tag>>3
-	};
-}
-
-/**
- * Get tag head without move the offset
- */
-function peekHead(){
-	var tag = codec.decodeUInt32(peekBytes());
-
-	return {
-		type : tag&0x7,
-		tag	: tag>>3
-	};
-}
-
-function decodeProp(type, protos){
-	switch(type){
-		case 'uInt32':
-			return codec.decodeUInt32(getBytes());
-		case 'int32' :
-		case 'sInt32' :
-			return codec.decodeSInt32(getBytes());
-		case 'float' :
-			var float = buffer.readFloatLE(offset);
-			offset += 4;
-			return float;
-		case 'double' :
-			var double = buffer.readDoubleLE(offset);
-			offset += 8;
-			return double;
-		case 'string' :
-			var length = codec.decodeUInt32(getBytes());
-
-			var str =  buffer.toString('utf8', offset, offset+length);
-			offset += length;
-
-			return str;
-		default :
-			var message = protos && (protos.__messages[type] || Decoder.protos['message ' + type]);
-			if(message){
-				var length = codec.decodeUInt32(getBytes());
-				var msg = {};
-				decodeMsg(msg, message, offset+length);
-				return msg;
-			}
-		break;
-	}
-}
-
-function decodeArray(array, type, protos){
-	if(util.isSimpleType(type)){
-		var length = codec.decodeUInt32(getBytes());
-
-		for(var i = 0; i < length; i++){
-			array.push(decodeProp(type));
-		}
-	}else{
-		array.push(decodeProp(type, protos));
-	}
-}
-
-function getBytes(flag){
-	var bytes = [];
-	var pos = offset;
-	flag = flag || false;
-
-	var b;
-	do{
-		var b = buffer.readUInt8(pos);
-		bytes.push(b);
-		pos++;
-	}while(b >= 128);
-
-	if(!flag){
-		offset = pos;
-	}
-	return bytes;
-}
-
-function peekBytes(){
-	return getBytes(true);
-}
-},{"./codec":12,"./util":18}],15:[function(require,module,exports){
-(function (Buffer){
-var codec = require('./codec');
-var constant = require('./constant');
-var util = require('./util');
-
-var Encoder = module.exports;
-
-Encoder.init = function(protos){
-	this.protos = protos || {};
-};
-
-Encoder.encode = function(route, msg){
-	if(!route || !msg){
-		console.warn('Route or msg can not be null! route : %j, msg %j', route, msg);
-		return null;
-	}
-
-	//Get protos from protos map use the route as key
-	var protos = this.protos[route];
-
-	//Check msg
-	if(!checkMsg(msg, protos)){
-		console.warn('check msg failed! msg : %j, proto : %j', msg, protos);
-		return null;
-	}
-
-	//Set the length of the buffer 2 times bigger to prevent overflow
-	var length = Buffer.byteLength(JSON.stringify(msg))*2;
-
-	//Init buffer and offset
-	var buffer = new Buffer(length);
-	var offset = 0;
-
-	if(!!protos){
-		offset = encodeMsg(buffer, offset, protos, msg);
-		if(offset > 0){
-			return buffer.slice(0, offset);
-		}
-	}
-
-	return null;
-};
-
-/**
- * Check if the msg follow the defination in the protos
- */
-function checkMsg(msg, protos){
-	if(!protos || !msg){
-		console.warn('no protos or msg exist! msg : %j, protos : %j', msg, protos);
-		return false;
-	}
-
-	for(var name in protos){
-		var proto = protos[name];
-
-		//All required element must exist
-		switch(proto.option){
-			case 'required' :
-				if(typeof(msg[name]) === 'undefined'){
-					console.warn('no property exist for required! name: %j, proto: %j, msg: %j', name, proto, msg);
-					return false;
-				}
-			case 'optional' :
-				if(typeof(msg[name]) !== 'undefined'){
-					var message = protos.__messages[proto.type] || Encoder.protos['message ' + proto.type];
-					if(!!message && !checkMsg(msg[name], message)){
-						console.warn('inner proto error! name: %j, proto: %j, msg: %j', name, proto, msg);
-						return false;
-					}
-				}
-			break;
-			case 'repeated' :
-				//Check nest message in repeated elements
-				var message = protos.__messages[proto.type] || Encoder.protos['message ' + proto.type];
-				if(!!msg[name] && !!message){
-					for(var i = 0; i < msg[name].length; i++){
-						if(!checkMsg(msg[name][i], message)){
-							return false;
-						}
-					}
-				}
-			break;
-		}
-	}
-
-	return true;
-}
-
-function encodeMsg(buffer, offset, protos, msg){
-	for(var name in msg){
-		if(!!protos[name]){
-			var proto = protos[name];
-
-			switch(proto.option){
-				case 'required' :
-				case 'optional' :
-					offset = writeBytes(buffer, offset, encodeTag(proto.type, proto.tag));
-					offset = encodeProp(msg[name], proto.type, offset, buffer, protos);
-				break;
-				case 'repeated' :
-					if(!!msg[name] && msg[name].length > 0){
-						offset = encodeArray(msg[name], proto, offset, buffer, protos);
-					}
-				break;
-			}
-		}
-	}
-
-	return offset;
-}
-
-function encodeProp(value, type, offset, buffer, protos){
-	var length = 0;
-
-	switch(type){
-		case 'uInt32':
-			offset = writeBytes(buffer, offset, codec.encodeUInt32(value));
-		break;
-		case 'int32' :
-		case 'sInt32':
-			offset = writeBytes(buffer, offset, codec.encodeSInt32(value));
-		break;
-		case 'float':
-			buffer.writeFloatLE(value, offset);
-			offset += 4;
-		break;
-		case 'double':
-			buffer.writeDoubleLE(value, offset);
-			offset += 8;
-		break;
-		case 'string':
-			length = Buffer.byteLength(value);
-
-			//Encode length
-			offset = writeBytes(buffer, offset, codec.encodeUInt32(length));
-			//write string
-			buffer.write(value, offset, length);
-			offset += length;
-		break;
-		default :
-			var message = protos.__messages[type] || Encoder.protos['message ' + type];
-			if(!!message){
-				//Use a tmp buffer to build an internal msg
-				var tmpBuffer = new Buffer(Buffer.byteLength(JSON.stringify(value))*2);
-				length = 0;
-
-				length = encodeMsg(tmpBuffer, length, message, value);
-				//Encode length
-				offset = writeBytes(buffer, offset, codec.encodeUInt32(length));
-				//contact the object
-				tmpBuffer.copy(buffer, offset, 0, length);
-
-				offset += length;
-			}
-		break;
-	}
-
-	return offset;
-}
-
-/**
- * Encode reapeated properties, simple msg and object are decode differented
- */
-function encodeArray(array, proto, offset, buffer, protos){
-	var i = 0;
-	if(util.isSimpleType(proto.type)){
-		offset = writeBytes(buffer, offset, encodeTag(proto.type, proto.tag));
-		offset = writeBytes(buffer, offset, codec.encodeUInt32(array.length));
-		for(i = 0; i < array.length; i++){
-			offset = encodeProp(array[i], proto.type, offset, buffer);
-		}
-	}else{
-		for(i = 0; i < array.length; i++){
-			offset = writeBytes(buffer, offset, encodeTag(proto.type, proto.tag));
-			offset = encodeProp(array[i], proto.type, offset, buffer, protos);
-		}
-	}
-
-	return offset;
-}
-
-function writeBytes(buffer, offset, bytes){
-	for(var i = 0; i < bytes.length; i++){
-		buffer.writeUInt8(bytes[i], offset);
-		offset++;
-	}
-
-	return offset;
-}
-
-function encodeTag(type, tag){
-	var value = constant.TYPES[type];
-
-	if(value === undefined) value = 2;
-
-	return codec.encodeUInt32((tag<<3)|value);
-}
-
-}).call(this,require("buffer").Buffer)
-
-},{"./codec":12,"./constant":13,"./util":18,"buffer":2}],16:[function(require,module,exports){
-var Parser = module.exports;
-
-/**
- * [parse the original protos, give the paresed result can be used by protobuf encode/decode.]
- * @param  {[Object]} protos Original protos, in a js map.
- * @return {[Object]} The presed result, a js object represent all the meta data of the given protos.
- */
-Parser.parse = function(protos){
-	var maps = {};
-	for(var key in protos){
-		maps[key] = parseObject(protos[key]);
-	}
-
-	return maps;
-};
-
-/**
- * [parse a single protos, return a object represent the result. The method can be invocked recursively.]
- * @param  {[Object]} obj The origin proto need to parse.
- * @return {[Object]} The parsed result, a js object.
- */
-function parseObject(obj){
-	var proto = {};
-	var nestProtos = {};
-	var tags = {};
-
-	for(var name in obj){
-		var tag = obj[name];
-		var params = name.split(' ');
-
-		switch(params[0]){
-			case 'message':
-				if(params.length !== 2){
-					continue;
-				}
-				nestProtos[params[1]] = parseObject(tag);
-				continue;
-			case 'required':
-			case 'optional':
-			case 'repeated':{
-				//params length should be 3 and tag can't be duplicated
-				if(params.length !== 3 || !!tags[tag]){
-					continue;
-				}
-				proto[params[2]] = {
-					option : params[0],
-					type : params[1],
-					tag : tag
-				};
-				tags[tag] = params[2];
-			}
-		}
-	}
-
-	proto.__messages = nestProtos;
-	proto.__tags = tags;
-	return proto;
-}
-},{}],17:[function(require,module,exports){
-(function (Buffer){
-var encoder = require('./encoder');
-var decoder = require('./decoder');
-var parser = require('./parser');
-
-var Protobuf = module.exports;
-
-/**
- * [encode the given message, return a Buffer represent the message encoded by protobuf]
- * @param  {[type]} key The key to identify the message type.
- * @param  {[type]} msg The message body, a js object.
- * @return {[type]} The binary encode result in a Buffer.
- */
-Protobuf.encode = function(key, msg){
-	return encoder.encode(key, msg);
-};
-
-Protobuf.encode2Bytes = function(key, msg){
-	var buffer = this.encode(key, msg);
-	if(!buffer || !buffer.length){
-		console.warn('encode msg failed! key : %j, msg : %j', key, msg);
-		return null;
-	}
-	var bytes = new Uint8Array(buffer.length);
-	for(var offset = 0; offset < buffer.length; offset++){
-		bytes[offset] = buffer.readUInt8(offset);
-	}
-
-	return bytes;
-};
-
-Protobuf.encodeStr = function(key, msg, code){
-	code = code || 'base64';
-	var buffer = Protobuf.encode(key, msg);
-	return !!buffer?buffer.toString(code):buffer;
-};
-
-Protobuf.decode = function(key, msg){
-	return decoder.decode(key, msg);
-};
-
-Protobuf.decodeStr = function(key, str, code){
-	code = code || 'base64';
-	var buffer = new Buffer(str, code);
-
-	return !!buffer?Protobuf.decode(key, buffer):buffer;
-};
-
-Protobuf.parse = function(json){
-	return parser.parse(json);
-};
-
-Protobuf.setEncoderProtos = function(protos){
-	encoder.init(protos);
-};
-
-Protobuf.setDecoderProtos = function(protos){
-	decoder.init(protos);
-};
-
-Protobuf.init = function(opts){
-	//On the serverside, use serverProtos to encode messages send to client
-	encoder.init(opts.encoderProtos);
-
-	//On the serverside, user clientProtos to decode messages receive from clients
-	decoder.init(opts.decoderProtos);
-
-};
-}).call(this,require("buffer").Buffer)
-
-},{"./decoder":14,"./encoder":15,"./parser":16,"buffer":2}],18:[function(require,module,exports){
-var util = module.exports;
-
-util.isSimpleType = function(type){
-	return ( type === 'uInt32' ||
-					 type === 'sInt32' ||
-					 type === 'int32'  ||
-					 type === 'uInt64' ||
-					 type === 'sInt64' ||
-					 type === 'float'  ||
-					 type === 'double');
-};
-
-util.equal = function(obj0, obj1){
-	for(var key in obj0){
-		var m = obj0[key];
-		var n = obj1[key];
-
-		if(typeof(m) === 'object'){
-			if(!util.equal(m, n)){
-				return false;
-			}
-		}else if(m !== n){
-			return false;
-		}
-	}
-
-	return true;
-};
-},{}],19:[function(require,module,exports){
-module.exports = require('./lib/protocol');
-},{"./lib/protocol":20}],20:[function(require,module,exports){
-(function (Buffer){
-(function (exports, ByteArray, global) {
-  var Protocol = exports;
-
-  var PKG_HEAD_BYTES = 4;
-  var MSG_FLAG_BYTES = 1;
-  var MSG_ROUTE_CODE_BYTES = 2;
-  var MSG_ID_MAX_BYTES = 5;
-  var MSG_ROUTE_LEN_BYTES = 1;
-
-  var MSG_ROUTE_CODE_MAX = 0xffff;
-
-  var MSG_COMPRESS_ROUTE_MASK = 0x1;
-  var MSG_TYPE_MASK = 0x7;
-
-  var Package = Protocol.Package = {};
-  var Message = Protocol.Message = {};
-
-  Package.TYPE_HANDSHAKE = 1;
-  Package.TYPE_HANDSHAKE_ACK = 2;
-  Package.TYPE_HEARTBEAT = 3;
-  Package.TYPE_DATA = 4;
-  Package.TYPE_KICK = 5;
-
-  Message.TYPE_REQUEST = 0;
-  Message.TYPE_NOTIFY = 1;
-  Message.TYPE_RESPONSE = 2;
-  Message.TYPE_PUSH = 3;
-
-  /**
-   * pomele client encode
-   * id message id;
-   * route message route
-   * msg message body
-   * socketio current support string
-   */
-  Protocol.strencode = function(str) {
-    if(typeof Buffer !== "undefined" && ByteArray === Buffer) {
-      // encoding defaults to 'utf8'
-      return (new Buffer(str));
-    } else {
-      var byteArray = new ByteArray(str.length * 3);
-      var offset = 0;
-      for(var i = 0; i < str.length; i++){
-        var charCode = str.charCodeAt(i);
-        var codes = null;
-        if(charCode <= 0x7f){
-          codes = [charCode];
-        }else if(charCode <= 0x7ff){
-          codes = [0xc0|(charCode>>6), 0x80|(charCode & 0x3f)];
-        }else{
-          codes = [0xe0|(charCode>>12), 0x80|((charCode & 0xfc0)>>6), 0x80|(charCode & 0x3f)];
-        }
-        for(var j = 0; j < codes.length; j++){
-          byteArray[offset] = codes[j];
-          ++offset;
-        }
-      }
-      var _buffer = new ByteArray(offset);
-      copyArray(_buffer, 0, byteArray, 0, offset);
-      return _buffer;
-    }
-  };
-
-  /**
-   * client decode
-   * msg String data
-   * return Message Object
-   */
-  Protocol.strdecode = function(buffer) {
-    if(typeof Buffer !== "undefined" && ByteArray === Buffer) {
-      // encoding defaults to 'utf8'
-      return buffer.toString();
-    } else {
-      var bytes = new ByteArray(buffer);
-      var array = [];
-      var offset = 0;
-      var charCode = 0;
-      var end = bytes.length;
-      while(offset < end){
-        if(bytes[offset] < 128){
-          charCode = bytes[offset];
-          offset += 1;
-        }else if(bytes[offset] < 224){
-          charCode = ((bytes[offset] & 0x1f)<<6) + (bytes[offset+1] & 0x3f);
-          offset += 2;
-        }else{
-          charCode = ((bytes[offset] & 0x0f)<<12) + ((bytes[offset+1] & 0x3f)<<6) + (bytes[offset+2] & 0x3f);
-          offset += 3;
-        }
-        array.push(charCode);
-      }
-      return String.fromCharCode.apply(null, array);
-    }
-  };
-
-  /**
-   * Package protocol encode.
-   *
-   * Pomelo package format:
-   * +------+-------------+------------------+
-   * | type | body length |       body       |
-   * +------+-------------+------------------+
-   *
-   * Head: 4bytes
-   *   0: package type,
-   *      1 - handshake,
-   *      2 - handshake ack,
-   *      3 - heartbeat,
-   *      4 - data
-   *      5 - kick
-   *   1 - 3: big-endian body length
-   * Body: body length bytes
-   *
-   * @param  {Number}    type   package type
-   * @param  {ByteArray} body   body content in bytes
-   * @return {ByteArray}        new byte array that contains encode result
-   */
-  Package.encode = function(type, body){
-    var length = body ? body.length : 0;
-    var buffer = new ByteArray(PKG_HEAD_BYTES + length);
-    var index = 0;
-    buffer[index++] = type & 0xff;
-    buffer[index++] = (length >> 16) & 0xff;
-    buffer[index++] = (length >> 8) & 0xff;
-    buffer[index++] = length & 0xff;
-    if(body) {
-      copyArray(buffer, index, body, 0, length);
-    }
-    return buffer;
-  };
-
-  /**
-   * Package protocol decode.
-   * See encode for package format.
-   *
-   * @param  {ByteArray} buffer byte array containing package content
-   * @return {Object}           {type: package type, buffer: body byte array}
-   */
-  Package.decode = function(buffer){
-    var offset = 0;
-    var bytes = new ByteArray(buffer);
-    var length = 0;
-    var rs = [];
-    while(offset < bytes.length) {
-      var type = bytes[offset++];
-      length = ((bytes[offset++]) << 16 | (bytes[offset++]) << 8 | bytes[offset++]) >>> 0;
-      var body = length ? new ByteArray(length) : null;
-      if(body) {
-        copyArray(body, 0, bytes, offset, length);
-      }
-      offset += length;
-      rs.push({'type': type, 'body': body});
-    }
-    return rs.length === 1 ? rs[0]: rs;
-  };
-
-  /**
-   * Message protocol encode.
-   *
-   * @param  {Number} id            message id
-   * @param  {Number} type          message type
-   * @param  {Number} compressRoute whether compress route
-   * @param  {Number|String} route  route code or route string
-   * @param  {Buffer} msg           message body bytes
-   * @return {Buffer}               encode result
-   */
-  Message.encode = function(id, type, compressRoute, route, msg){
-    // caculate message max length
-    var idBytes = msgHasId(type) ? caculateMsgIdBytes(id) : 0;
-    var msgLen = MSG_FLAG_BYTES + idBytes;
-
-    if(msgHasRoute(type)) {
-      if(compressRoute) {
-        if(typeof route !== 'number'){
-          throw new Error('error flag for number route!');
-        }
-        msgLen += MSG_ROUTE_CODE_BYTES;
-      } else {
-        msgLen += MSG_ROUTE_LEN_BYTES;
-        if(route) {
-          route = Protocol.strencode(route);
-          if(route.length>255) {
-            throw new Error('route maxlength is overflow');
-          }
-          msgLen += route.length;
-        }
-      }
-    }
-
-    if(msg) {
-      msgLen += msg.length;
-    }
-
-    var buffer = new ByteArray(msgLen);
-    var offset = 0;
-
-    // add flag
-    offset = encodeMsgFlag(type, compressRoute, buffer, offset);
-
-    // add message id
-    if(msgHasId(type)) {
-      offset = encodeMsgId(id, buffer, offset);
-    }
-
-    // add route
-    if(msgHasRoute(type)) {
-      offset = encodeMsgRoute(compressRoute, route, buffer, offset);
-    }
-
-    // add body
-    if(msg) {
-      offset = encodeMsgBody(msg, buffer, offset);
-    }
-
-    return buffer;
-  };
-
-  /**
-   * Message protocol decode.
-   *
-   * @param  {Buffer|Uint8Array} buffer message bytes
-   * @return {Object}            message object
-   */
-  Message.decode = function(buffer) {
-    var bytes =  new ByteArray(buffer);
-    var bytesLen = bytes.length || bytes.byteLength;
-    var offset = 0;
-    var id = 0;
-    var route = null;
-
-    // parse flag
-    var flag = bytes[offset++];
-    var compressRoute = flag & MSG_COMPRESS_ROUTE_MASK;
-    var type = (flag >> 1) & MSG_TYPE_MASK;
-
-    // parse id
-    if(msgHasId(type)) {
-      var m = 0;
-      var i = 0;
-      do{
-        m = parseInt(bytes[offset]);
-        id += (m & 0x7f) << (7 * i);
-        offset++;
-        i++;
-      }while(m >= 128);
-    }
-
-    // parse route
-    if(msgHasRoute(type)) {
-      if(compressRoute) {
-        route = (bytes[offset++]) << 8 | bytes[offset++];
-      } else {
-        var routeLen = bytes[offset++];
-        if(routeLen) {
-          route = new ByteArray(routeLen);
-          copyArray(route, 0, bytes, offset, routeLen);
-          route = Protocol.strdecode(route);
-        } else {
-          route = '';
-        }
-        offset += routeLen;
-      }
-    }
-
-    // parse body
-    var bodyLen = bytesLen - offset;
-    var body = new ByteArray(bodyLen);
-
-    copyArray(body, 0, bytes, offset, bodyLen);
-
-    return {'id': id, 'type': type, 'compressRoute': compressRoute,
-            'route': route, 'body': body};
-  };
-
-  var copyArray = function(dest, doffset, src, soffset, length) {
-    if('function' === typeof src.copy) {
-      // Buffer
-      src.copy(dest, doffset, soffset, soffset + length);
-    } else {
-      // Uint8Array
-      for(var index=0; index<length; index++){
-        dest[doffset++] = src[soffset++];
-      }
-    }
-  };
-
-  var msgHasId = function(type) {
-    return type === Message.TYPE_REQUEST || type === Message.TYPE_RESPONSE;
-  };
-
-  var msgHasRoute = function(type) {
-    return type === Message.TYPE_REQUEST || type === Message.TYPE_NOTIFY ||
-           type === Message.TYPE_PUSH;
-  };
-
-  var caculateMsgIdBytes = function(id) {
-    var len = 0;
-    do {
-      len += 1;
-      id >>= 7;
-    } while(id > 0);
-    return len;
-  };
-
-  var encodeMsgFlag = function(type, compressRoute, buffer, offset) {
-    if(type !== Message.TYPE_REQUEST && type !== Message.TYPE_NOTIFY &&
-       type !== Message.TYPE_RESPONSE && type !== Message.TYPE_PUSH) {
-      throw new Error('unkonw message type: ' + type);
-    }
-
-    buffer[offset] = (type << 1) | (compressRoute ? 1 : 0);
-
-    return offset + MSG_FLAG_BYTES;
-  };
-
-  var encodeMsgId = function(id, buffer, offset) {
-    do{
-      var tmp = id % 128;
-      var next = Math.floor(id/128);
-
-      if(next !== 0){
-        tmp = tmp + 128;
-      }
-      buffer[offset++] = tmp;
-
-      id = next;
-    } while(id !== 0);
-
-    return offset;
-  };
-
-  var encodeMsgRoute = function(compressRoute, route, buffer, offset) {
-    if (compressRoute) {
-      if(route > MSG_ROUTE_CODE_MAX){
-        throw new Error('route number is overflow');
-      }
-
-      buffer[offset++] = (route >> 8) & 0xff;
-      buffer[offset++] = route & 0xff;
-    } else {
-      if(route) {
-        buffer[offset++] = route.length & 0xff;
-        copyArray(buffer, offset, route, 0, route.length);
-        offset += route.length;
-      } else {
-        buffer[offset++] = 0;
-      }
-    }
-
-    return offset;
-  };
-
-  var encodeMsgBody = function(msg, buffer, offset) {
-    copyArray(buffer, offset, msg, 0, msg.length);
-    return offset + msg.length;
-  };
-
-  module.exports = Protocol;
-  if(typeof(window) != "undefined") {
-    window.Protocol = Protocol;
-  }
-})(typeof(window)=="undefined" ? module.exports : (this.Protocol = {}),typeof(window)=="undefined"  ? Buffer : Uint8Array, this);
-
-}).call(this,require("buffer").Buffer)
-
-},{"buffer":2}],"Comm":[function(require,module,exports){
+},{}],"Comm":[function(require,module,exports){
 "use strict";
 cc._RF.push(module, 'e4b30QLjPFAdp7aIGBFGWx/', 'Comm');
 // commSrc/Comm.js
 
-'use strict';
+"use strict";
 
-require('pomelo-cocos2d-js');
+// require('pomelo-cocos2d-js');
 module.exports = {};
 
 cc._RF.pop();
-},{"pomelo-cocos2d-js":10}],"LoginUi":[function(require,module,exports){
+},{}],"LoginUi":[function(require,module,exports){
 "use strict";
 cc._RF.push(module, 'f2bebyF6dFG1rT5fsGJzyCe', 'LoginUi');
 // ui/login/LoginUi.js
@@ -4599,27 +2024,21 @@ cc.Class({
     extends: cc.Component,
 
     properties: {
-        // foo: {
-        //    default: null,      // The default value will be used only when the component attaching
-        //                           to a node for the first time
-        //    url: cc.Texture2D,  // optional, default is typeof default
-        //    serializable: true, // optional, default is true
-        //    visible: true,      // optional, default is true
-        //    displayName: 'Foo', // optional
-        //    readonly: false,    // optional, default is false
-        // },
-        // ...
+        usernameLabel: cc.EditBox
     },
 
-    // use this for initialization
-    onLoad: function onLoad() {},
-
-    // called every frame, uncomment this function to activate update callback
-    // update: function (dt) {
-
-    // },
     onLoginClick: function onLoginClick() {
-        Comm.scene.login();
+        var self = this;
+        pomelo.init({
+            host: "127.0.0.1",
+            port: 3010
+        }, function (err) {
+            pomelo.request("connector.entryHandler.login", { username: self.usernameLabel.string }, function (data) {
+                if (data.ret == 0) {
+                    Comm.scene.login();
+                }
+            });
+        });
     }
 });
 
@@ -4635,28 +2054,14 @@ var Comm = require("../../commSrc/Comm");
 cc.Class({
     extends: cc.Component,
 
-    properties: {
-        // foo: {
-        //    default: null,      // The default value will be used only when the component attaching
-        //                           to a node for the first time
-        //    url: cc.Texture2D,  // optional, default is typeof default
-        //    serializable: true, // optional, default is true
-        //    visible: true,      // optional, default is true
-        //    displayName: 'Foo', // optional
-        //    readonly: false,    // optional, default is false
-        // },
-        // ...
-    },
+    properties: {},
 
-    // use this for initialization
-    onLoad: function onLoad() {},
-
-    // called every frame, uncomment this function to activate update callback
-    // update: function (dt) {
-
-    // },
     onRoom1Click: function onRoom1Click() {
-        Comm.scene.enterRoom();
+        pomelo.request("connector.entryHandler.enterRoom", {}, function (data) {
+            if (data.ret == 0) {
+                Comm.scene.enterRoom();
+            }
+        });
     }
 });
 
@@ -4706,6 +2111,1521 @@ cc.Class({
 });
 
 cc._RF.pop();
-},{"../commSrc/Comm":"Comm"}]},{},["Comm","Scene","LoginUi","MainUi"])
+},{"../commSrc/Comm":"Comm"}],"emitter":[function(require,module,exports){
+"use strict";
+cc._RF.push(module, '2f7d8B81zNPp5XGaEBxva6N', 'emitter');
+// pomelo/emitter.js
 
-//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImFzc2V0cy9jb21tU3JjL0NvbW0uanMiLCJhc3NldHMvdWkvbG9naW4vTG9naW5VaS5qcyIsImFzc2V0cy91aS9tYWluL01haW5VaS5qcyIsImFzc2V0cy9zY2VuZS9TY2VuZS5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7O0FBQUE7QUFDQTs7Ozs7Ozs7OztBQ0RBO0FBQ0E7QUFDSTs7QUFFQTtBQUNJO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBVlE7O0FBYVo7QUFDQTs7QUFJQTtBQUNBOztBQUVBO0FBQ0E7QUFDSTtBQUNIO0FBM0JJOzs7Ozs7Ozs7O0FDRFQ7QUFDQTtBQUNJOztBQUVBO0FBQ0k7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFWUTs7QUFhWjtBQUNBOztBQUlBO0FBQ0E7O0FBRUE7QUFDQTtBQUNJO0FBQ0g7QUEzQkk7Ozs7Ozs7Ozs7QUNEVDtBQUNBO0FBQ0k7O0FBRUE7QUFDSTtBQUNBO0FBQ0E7QUFIUTs7QUFNWjtBQUNBO0FBQ0k7QUFDQTtBQUNBO0FBQ0g7O0FBRUQ7QUFDQTs7QUFFQTtBQUNBO0FBQ0k7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNIO0FBQ0Q7QUFDSTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0g7QUFqQ0kiLCJzb3VyY2VzQ29udGVudCI6WyJyZXF1aXJlKCdwb21lbG8tY29jb3MyZC1qcycpO1xubW9kdWxlLmV4cG9ydHM9e307IiwidmFyIENvbW0gPSByZXF1aXJlKFwiLi4vLi4vY29tbVNyYy9Db21tXCIpO1xuY2MuQ2xhc3Moe1xuICAgIGV4dGVuZHM6IGNjLkNvbXBvbmVudCxcblxuICAgIHByb3BlcnRpZXM6IHtcbiAgICAgICAgLy8gZm9vOiB7XG4gICAgICAgIC8vICAgIGRlZmF1bHQ6IG51bGwsICAgICAgLy8gVGhlIGRlZmF1bHQgdmFsdWUgd2lsbCBiZSB1c2VkIG9ubHkgd2hlbiB0aGUgY29tcG9uZW50IGF0dGFjaGluZ1xuICAgICAgICAvLyAgICAgICAgICAgICAgICAgICAgICAgICAgIHRvIGEgbm9kZSBmb3IgdGhlIGZpcnN0IHRpbWVcbiAgICAgICAgLy8gICAgdXJsOiBjYy5UZXh0dXJlMkQsICAvLyBvcHRpb25hbCwgZGVmYXVsdCBpcyB0eXBlb2YgZGVmYXVsdFxuICAgICAgICAvLyAgICBzZXJpYWxpemFibGU6IHRydWUsIC8vIG9wdGlvbmFsLCBkZWZhdWx0IGlzIHRydWVcbiAgICAgICAgLy8gICAgdmlzaWJsZTogdHJ1ZSwgICAgICAvLyBvcHRpb25hbCwgZGVmYXVsdCBpcyB0cnVlXG4gICAgICAgIC8vICAgIGRpc3BsYXlOYW1lOiAnRm9vJywgLy8gb3B0aW9uYWxcbiAgICAgICAgLy8gICAgcmVhZG9ubHk6IGZhbHNlLCAgICAvLyBvcHRpb25hbCwgZGVmYXVsdCBpcyBmYWxzZVxuICAgICAgICAvLyB9LFxuICAgICAgICAvLyAuLi5cbiAgICB9LFxuXG4gICAgLy8gdXNlIHRoaXMgZm9yIGluaXRpYWxpemF0aW9uXG4gICAgb25Mb2FkOiBmdW5jdGlvbiAoKSB7XG5cbiAgICB9LFxuXG4gICAgLy8gY2FsbGVkIGV2ZXJ5IGZyYW1lLCB1bmNvbW1lbnQgdGhpcyBmdW5jdGlvbiB0byBhY3RpdmF0ZSB1cGRhdGUgY2FsbGJhY2tcbiAgICAvLyB1cGRhdGU6IGZ1bmN0aW9uIChkdCkge1xuXG4gICAgLy8gfSxcbiAgICBvbkxvZ2luQ2xpY2s6ZnVuY3Rpb24oKXtcbiAgICAgICAgQ29tbS5zY2VuZS5sb2dpbigpO1xuICAgIH0sXG59KTtcbiIsInZhciBDb21tID0gcmVxdWlyZShcIi4uLy4uL2NvbW1TcmMvQ29tbVwiKTtcbmNjLkNsYXNzKHtcbiAgICBleHRlbmRzOiBjYy5Db21wb25lbnQsXG5cbiAgICBwcm9wZXJ0aWVzOiB7XG4gICAgICAgIC8vIGZvbzoge1xuICAgICAgICAvLyAgICBkZWZhdWx0OiBudWxsLCAgICAgIC8vIFRoZSBkZWZhdWx0IHZhbHVlIHdpbGwgYmUgdXNlZCBvbmx5IHdoZW4gdGhlIGNvbXBvbmVudCBhdHRhY2hpbmdcbiAgICAgICAgLy8gICAgICAgICAgICAgICAgICAgICAgICAgICB0byBhIG5vZGUgZm9yIHRoZSBmaXJzdCB0aW1lXG4gICAgICAgIC8vICAgIHVybDogY2MuVGV4dHVyZTJELCAgLy8gb3B0aW9uYWwsIGRlZmF1bHQgaXMgdHlwZW9mIGRlZmF1bHRcbiAgICAgICAgLy8gICAgc2VyaWFsaXphYmxlOiB0cnVlLCAvLyBvcHRpb25hbCwgZGVmYXVsdCBpcyB0cnVlXG4gICAgICAgIC8vICAgIHZpc2libGU6IHRydWUsICAgICAgLy8gb3B0aW9uYWwsIGRlZmF1bHQgaXMgdHJ1ZVxuICAgICAgICAvLyAgICBkaXNwbGF5TmFtZTogJ0ZvbycsIC8vIG9wdGlvbmFsXG4gICAgICAgIC8vICAgIHJlYWRvbmx5OiBmYWxzZSwgICAgLy8gb3B0aW9uYWwsIGRlZmF1bHQgaXMgZmFsc2VcbiAgICAgICAgLy8gfSxcbiAgICAgICAgLy8gLi4uXG4gICAgfSxcblxuICAgIC8vIHVzZSB0aGlzIGZvciBpbml0aWFsaXphdGlvblxuICAgIG9uTG9hZDogZnVuY3Rpb24gKCkge1xuXG4gICAgfSxcblxuICAgIC8vIGNhbGxlZCBldmVyeSBmcmFtZSwgdW5jb21tZW50IHRoaXMgZnVuY3Rpb24gdG8gYWN0aXZhdGUgdXBkYXRlIGNhbGxiYWNrXG4gICAgLy8gdXBkYXRlOiBmdW5jdGlvbiAoZHQpIHtcblxuICAgIC8vIH0sXG4gICAgb25Sb29tMUNsaWNrOmZ1bmN0aW9uKCl7XG4gICAgICAgIENvbW0uc2NlbmUuZW50ZXJSb29tKCk7XG4gICAgfSxcbn0pO1xuIiwidmFyIENvbW0gPSByZXF1aXJlKFwiLi4vY29tbVNyYy9Db21tXCIpO1xuY2MuQ2xhc3Moe1xuICAgIGV4dGVuZHM6IGNjLkNvbXBvbmVudCxcblxuICAgIHByb3BlcnRpZXM6IHtcbiAgICAgICAgbG9naW5VaVByZWZhYjpjYy5QcmVmYWIsXG4gICAgICAgIG1haW5VaVByZWZhYjpjYy5QcmVmYWIsXG4gICAgICAgIGdhbWVVaVByZWZhYjpjYy5QcmVmYWIsXG4gICAgfSxcblxuICAgIC8vIHVzZSB0aGlzIGZvciBpbml0aWFsaXphdGlvblxuICAgIG9uTG9hZDogZnVuY3Rpb24gKCkge1xuICAgICAgICBDb21tLnNjZW5lID0gdGhpcztcbiAgICAgICAgdGhpcy5sb2dpblVpID0gY2MuaW5zdGFudGlhdGUodGhpcy5sb2dpblVpUHJlZmFiKTtcbiAgICAgICAgdGhpcy5sb2dpblVpLnBhcmVudCA9IHRoaXMubm9kZTtcbiAgICB9LFxuXG4gICAgLy8gY2FsbGVkIGV2ZXJ5IGZyYW1lLCB1bmNvbW1lbnQgdGhpcyBmdW5jdGlvbiB0byBhY3RpdmF0ZSB1cGRhdGUgY2FsbGJhY2tcbiAgICAvLyB1cGRhdGU6IGZ1bmN0aW9uIChkdCkge1xuXG4gICAgLy8gfSxcbiAgICBsb2dpbjpmdW5jdGlvbigpIHtcbiAgICAgICAgY29uc29sZS5sb2coXCJsb2dpblwiKTtcbiAgICAgICAgdGhpcy5sb2dpblVpLmRlc3Ryb3koKTtcbiAgICAgICAgdGhpcy5sb2dpblVpID0gbnVsbDtcbiAgICAgICAgdGhpcy5tYWluVWkgPSBjYy5pbnN0YW50aWF0ZSh0aGlzLm1haW5VaVByZWZhYik7XG4gICAgICAgIHRoaXMubWFpblVpLnBhcmVudCA9IHRoaXMubm9kZTtcbiAgICB9LFxuICAgIGVudGVyUm9vbTpmdW5jdGlvbigpIHtcbiAgICAgICAgY29uc29sZS5sb2coXCJlbnRlclJvb21cIik7XG4gICAgICAgIHRoaXMubWFpblVpLmRlc3Ryb3koKTtcbiAgICAgICAgdGhpcy5tYWluVWkgPSBudWxsO1xuICAgICAgICB0aGlzLmdhbWVVaSA9IGNjLmluc3RhbnRpYXRlKHRoaXMuZ2FtZVVpUHJlZmFiKTtcbiAgICAgICAgdGhpcy5nYW1lVWkucGFyZW50ID0gdGhpcy5ub2RlO1xuICAgIH0sXG59KTtcbiJdLCJzb3VyY2VSb290IjoiIn0=
+"use strict";
+
+/**
+ * Expose `Emitter`.
+ */
+
+module.exports = Emitter;
+
+window.EventEmitter = Emitter;
+
+/**
+ * Initialize a new `Emitter`.
+ *
+ * @api public
+ */
+
+function Emitter(obj) {
+  if (obj) return mixin(obj);
+};
+
+/**
+ * Mixin the emitter properties.
+ *
+ * @param {Object} obj
+ * @return {Object}
+ * @api private
+ */
+
+function mixin(obj) {
+  for (var key in Emitter.prototype) {
+    obj[key] = Emitter.prototype[key];
+  }
+  return obj;
+}
+
+/**
+ * Listen on the given `event` with `fn`.
+ *
+ * @param {String} event
+ * @param {Function} fn
+ * @return {Emitter}
+ * @api public
+ */
+
+Emitter.prototype.on = Emitter.prototype.addEventListener = function (event, fn) {
+  this._callbacks = this._callbacks || {};
+  (this._callbacks[event] = this._callbacks[event] || []).push(fn);
+  return this;
+};
+
+/**
+ * Adds an `event` listener that will be invoked a single
+ * time then automatically removed.
+ *
+ * @param {String} event
+ * @param {Function} fn
+ * @return {Emitter}
+ * @api public
+ */
+
+Emitter.prototype.once = function (event, fn) {
+  var self = this;
+  this._callbacks = this._callbacks || {};
+
+  function on() {
+    self.off(event, on);
+    fn.apply(this, arguments);
+  }
+
+  on.fn = fn;
+  this.on(event, on);
+  return this;
+};
+
+/**
+ * Remove the given callback for `event` or all
+ * registered callbacks.
+ *
+ * @param {String} event
+ * @param {Function} fn
+ * @return {Emitter}
+ * @api public
+ */
+
+Emitter.prototype.off = Emitter.prototype.removeListener = Emitter.prototype.removeAllListeners = Emitter.prototype.removeEventListener = function (event, fn) {
+  this._callbacks = this._callbacks || {};
+
+  // all
+  if (0 == arguments.length) {
+    this._callbacks = {};
+    return this;
+  }
+
+  // specific event
+  var callbacks = this._callbacks[event];
+  if (!callbacks) return this;
+
+  // remove all handlers
+  if (1 == arguments.length) {
+    delete this._callbacks[event];
+    return this;
+  }
+
+  // remove specific handler
+  var cb;
+  for (var i = 0; i < callbacks.length; i++) {
+    cb = callbacks[i];
+    if (cb === fn || cb.fn === fn) {
+      callbacks.splice(i, 1);
+      break;
+    }
+  }
+  return this;
+};
+
+/**
+ * Emit `event` with the given args.
+ *
+ * @param {String} event
+ * @param {Mixed} ...
+ * @return {Emitter}
+ */
+
+Emitter.prototype.emit = function (event) {
+  this._callbacks = this._callbacks || {};
+  var args = [].slice.call(arguments, 1),
+      callbacks = this._callbacks[event];
+
+  if (callbacks) {
+    callbacks = callbacks.slice(0);
+    for (var i = 0, len = callbacks.length; i < len; ++i) {
+      callbacks[i].apply(this, args);
+    }
+  }
+
+  return this;
+};
+
+/**
+ * Return array of callbacks for `event`.
+ *
+ * @param {String} event
+ * @return {Array}
+ * @api public
+ */
+
+Emitter.prototype.listeners = function (event) {
+  this._callbacks = this._callbacks || {};
+  return this._callbacks[event] || [];
+};
+
+/**
+ * Check if this emitter has `event` handlers.
+ *
+ * @param {String} event
+ * @return {Boolean}
+ * @api public
+ */
+
+Emitter.prototype.hasListeners = function (event) {
+  return !!this.listeners(event).length;
+};
+
+cc._RF.pop();
+},{}],"pomelo-client":[function(require,module,exports){
+"use strict";
+cc._RF.push(module, '5a16615+jhNwKnTwHjYOx9W', 'pomelo-client');
+// pomelo/pomelo-client.js
+
+'use strict';
+
+(function () {
+  var JS_WS_CLIENT_TYPE = 'js-websocket';
+  var JS_WS_CLIENT_VERSION = '0.0.1';
+
+  var Proctocol = require("protocol");
+  var Package = Protocol.Package;
+  var Message = Protocol.Message;
+  var EventEmitter = window.EventEmitter;
+
+  if (typeof window != "undefined" && typeof sys != 'undefined' && sys.localStorage) {
+    window.localStorage = sys.localStorage;
+  }
+
+  var RES_OK = 200;
+  var RES_FAIL = 500;
+  var RES_OLD_CLIENT = 501;
+
+  if (typeof Object.create !== 'function') {
+    Object.create = function (o) {
+      function F() {}
+      F.prototype = o;
+      return new F();
+    };
+  }
+
+  var root = window;
+  var pomelo = Object.create(EventEmitter.prototype); // object extend from object
+  root.pomelo = pomelo;
+  var socket = null;
+  var reqId = 0;
+  var callbacks = {};
+  var handlers = {};
+  //Map from request id to route
+  var routeMap = {};
+
+  var heartbeatInterval = 0;
+  var heartbeatTimeout = 0;
+  var nextHeartbeatTimeout = 0;
+  var gapThreshold = 100; // heartbeat gap threashold
+  var heartbeatId = null;
+  var heartbeatTimeoutId = null;
+
+  var handshakeCallback = null;
+
+  var decode = null;
+  var encode = null;
+
+  var useCrypto;
+
+  var handshakeBuffer = {
+    'sys': {
+      type: JS_WS_CLIENT_TYPE,
+      version: JS_WS_CLIENT_VERSION
+    },
+    'user': {}
+  };
+
+  var initCallback = null;
+
+  pomelo.init = function (params, cb) {
+    initCallback = cb;
+    var host = params.host;
+    var port = params.port;
+
+    var url = 'ws://' + host;
+    if (port) {
+      url += ':' + port;
+    }
+
+    handshakeBuffer.user = params.user;
+    handshakeCallback = params.handshakeCallback;
+    initWebSocket(url, cb);
+  };
+
+  var initWebSocket = function initWebSocket(url, cb) {
+    var onopen = function onopen(event) {
+      var obj = Package.encode(Package.TYPE_HANDSHAKE, Protocol.strencode(JSON.stringify(handshakeBuffer)));
+      send(obj);
+    };
+    var onmessage = function onmessage(event) {
+      processPackage(Package.decode(event.data), cb);
+      // new package arrived, update the heartbeat timeout
+      if (heartbeatTimeout) {
+        nextHeartbeatTimeout = Date.now() + heartbeatTimeout;
+      }
+    };
+    var onerror = function onerror(event) {
+      pomelo.emit('io-error', event);
+      cc.error('socket error: ', event);
+    };
+    var onclose = function onclose(event) {
+      pomelo.emit('close', event);
+      pomelo.emit('disconnect', event);
+      cc.error('socket close: ', event);
+    };
+    socket = new WebSocket(url);
+    socket.binaryType = 'arraybuffer';
+    socket.onopen = onopen;
+    socket.onmessage = onmessage;
+    socket.onerror = onerror;
+    socket.onclose = onclose;
+  };
+
+  pomelo.disconnect = function () {
+    if (socket) {
+      if (socket.disconnect) socket.disconnect();
+      if (socket.close) socket.close();
+      cc.log('disconnect');
+      socket = null;
+    }
+
+    if (heartbeatId) {
+      clearTimeout(heartbeatId);
+      heartbeatId = null;
+    }
+    if (heartbeatTimeoutId) {
+      clearTimeout(heartbeatTimeoutId);
+      heartbeatTimeoutId = null;
+    }
+  };
+
+  pomelo.request = function (route, msg, cb) {
+    if (arguments.length === 2 && typeof msg === 'function') {
+      cb = msg;
+      msg = {};
+    } else {
+      msg = msg || {};
+    }
+    route = route || msg.route;
+    if (!route) {
+      return;
+    }
+
+    reqId++;
+    sendMessage(reqId, route, msg);
+
+    callbacks[reqId] = cb;
+    routeMap[reqId] = route;
+  };
+
+  pomelo.notify = function (route, msg) {
+    msg = msg || {};
+    sendMessage(0, route, msg);
+  };
+
+  var sendMessage = function sendMessage(reqId, route, msg) {
+    var type = reqId ? Message.TYPE_REQUEST : Message.TYPE_NOTIFY;
+
+    //compress message by protobuf
+    var protos = !!pomelo.data.protos ? pomelo.data.protos.client : {};
+    if (!!protos[route]) {
+      msg = protobuf.encode(route, msg);
+    } else {
+      msg = Protocol.strencode(JSON.stringify(msg));
+    }
+
+    var compressRoute = 0;
+    if (pomelo.dict && pomelo.dict[route]) {
+      route = pomelo.dict[route];
+      compressRoute = 1;
+    }
+
+    msg = Message.encode(reqId, type, compressRoute, route, msg);
+    var packet = Package.encode(Package.TYPE_DATA, msg);
+    send(packet);
+  };
+
+  var send = function send(packet) {
+    socket.send(packet.buffer);
+  };
+
+  var handler = {};
+
+  var heartbeat = function heartbeat(data) {
+    if (!heartbeatInterval) {
+      // no heartbeat
+      return;
+    }
+
+    var obj = Package.encode(Package.TYPE_HEARTBEAT);
+    if (heartbeatTimeoutId) {
+      clearTimeout(heartbeatTimeoutId);
+      heartbeatTimeoutId = null;
+    }
+
+    if (heartbeatId) {
+      // already in a heartbeat interval
+      return;
+    }
+
+    heartbeatId = setTimeout(function () {
+      heartbeatId = null;
+      send(obj);
+
+      nextHeartbeatTimeout = Date.now() + heartbeatTimeout;
+      heartbeatTimeoutId = setTimeout(heartbeatTimeoutCb, heartbeatTimeout);
+    }, heartbeatInterval);
+  };
+
+  var heartbeatTimeoutCb = function heartbeatTimeoutCb() {
+    var gap = nextHeartbeatTimeout - Date.now();
+    if (gap > gapThreshold) {
+      heartbeatTimeoutId = setTimeout(heartbeatTimeoutCb, gap);
+    } else {
+      cc.error('server heartbeat timeout');
+      pomelo.emit('heartbeat timeout');
+      pomelo.disconnect();
+    }
+  };
+
+  var handshake = function handshake(data) {
+    data = JSON.parse(Protocol.strdecode(data));
+    if (data.code === RES_OLD_CLIENT) {
+      pomelo.emit('error', 'client version not fullfill');
+      return;
+    }
+
+    if (data.code !== RES_OK) {
+      pomelo.emit('error', 'handshake fail');
+      return;
+    }
+
+    handshakeInit(data);
+
+    var obj = Package.encode(Package.TYPE_HANDSHAKE_ACK);
+    send(obj);
+    if (initCallback) {
+      initCallback(socket);
+      initCallback = null;
+    }
+  };
+
+  var onData = function onData(data) {
+    //probuff decode
+    var msg = Message.decode(data);
+
+    if (msg.id > 0) {
+      msg.route = routeMap[msg.id];
+      delete routeMap[msg.id];
+      if (!msg.route) {
+        return;
+      }
+    }
+
+    msg.body = deCompose(msg);
+
+    processMessage(pomelo, msg);
+  };
+
+  var onKick = function onKick(data) {
+    data = JSON.parse(Protocol.strdecode(data));
+    pomelo.emit('onKick', data);
+  };
+
+  handlers[Package.TYPE_HANDSHAKE] = handshake;
+  handlers[Package.TYPE_HEARTBEAT] = heartbeat;
+  handlers[Package.TYPE_DATA] = onData;
+  handlers[Package.TYPE_KICK] = onKick;
+
+  var processPackage = function processPackage(msgs) {
+    if (Array.isArray(msgs)) {
+      for (var i = 0; i < msgs.length; i++) {
+        var msg = msgs[i];
+        handlers[msg.type](msg.body);
+      }
+    } else {
+      handlers[msgs.type](msgs.body);
+    }
+  };
+
+  var processMessage = function processMessage(pomelo, msg) {
+    if (!msg.id) {
+      // server push message
+      pomelo.emit(msg.route, msg.body);
+    }
+
+    //if have a id then find the callback function with the request
+    var cb = callbacks[msg.id];
+
+    delete callbacks[msg.id];
+    if (typeof cb !== 'function') {
+      return;
+    }
+
+    cb(msg.body);
+    return;
+  };
+
+  var processMessageBatch = function processMessageBatch(pomelo, msgs) {
+    for (var i = 0, l = msgs.length; i < l; i++) {
+      processMessage(pomelo, msgs[i]);
+    }
+  };
+
+  var deCompose = function deCompose(msg) {
+    var protos = !!pomelo.data.protos ? pomelo.data.protos.server : {};
+    var abbrs = pomelo.data.abbrs;
+    var route = msg.route;
+
+    //Decompose route from dict
+    if (msg.compressRoute) {
+      if (!abbrs[route]) {
+        return {};
+      }
+
+      route = msg.route = abbrs[route];
+    }
+    if (!!protos[route]) {
+      return protobuf.decode(route, msg.body);
+    } else {
+      return JSON.parse(Protocol.strdecode(msg.body));
+    }
+
+    return msg;
+  };
+
+  var handshakeInit = function handshakeInit(data) {
+    if (data.sys && data.sys.heartbeat) {
+      heartbeatInterval = data.sys.heartbeat * 1000; // heartbeat interval
+      heartbeatTimeout = heartbeatInterval * 2; // max heartbeat timeout
+    } else {
+      heartbeatInterval = 0;
+      heartbeatTimeout = 0;
+    }
+
+    initData(data);
+
+    if (typeof handshakeCallback === 'function') {
+      handshakeCallback(data.user);
+    }
+  };
+
+  //Initilize data used in pomelo client
+  var initData = function initData(data) {
+    if (!data || !data.sys) {
+      return;
+    }
+    pomelo.data = pomelo.data || {};
+    var dict = data.sys.dict;
+    var protos = data.sys.protos;
+
+    //Init compress dict
+    if (dict) {
+      pomelo.data.dict = dict;
+      pomelo.data.abbrs = {};
+
+      for (var route in dict) {
+        pomelo.data.abbrs[dict[route]] = route;
+      }
+    }
+
+    //Init protobuf protos
+    if (protos) {
+      pomelo.data.protos = {
+        server: protos.server || {},
+        client: protos.client || {}
+      };
+      if (!!protobuf) {
+        protobuf.init({ encoderProtos: protos.client, decoderProtos: protos.server });
+      }
+    }
+  };
+
+  module.exports = pomelo;
+})();
+
+cc._RF.pop();
+},{"protocol":"protocol"}],"protobuf":[function(require,module,exports){
+"use strict";
+cc._RF.push(module, 'd82faejXmBEDaAIDZf4clkO', 'protobuf');
+// pomelo/protobuf.js
+
+"use strict";
+
+/* ProtocolBuffer client 0.1.0*/
+
+/**
+ * pomelo-protobuf
+ * @author <zhang0935@gmail.com>
+ */
+
+/**
+ * Protocol buffer root
+ * In browser, it will be window.protbuf
+ */
+(function (exports, global) {
+  var Protobuf = exports;
+
+  Protobuf.init = function (opts) {
+    //On the serverside, use serverProtos to encode messages send to client
+    Protobuf.encoder.init(opts.encoderProtos);
+
+    //On the serverside, user clientProtos to decode messages receive from clients
+    Protobuf.decoder.init(opts.decoderProtos);
+  };
+
+  Protobuf.encode = function (key, msg) {
+    return Protobuf.encoder.encode(key, msg);
+  };
+
+  Protobuf.decode = function (key, msg) {
+    return Protobuf.decoder.decode(key, msg);
+  };
+
+  // exports to support for components
+  module.exports = Protobuf;
+  if (typeof window != "undefined") {
+    window.protobuf = Protobuf;
+  }
+})(typeof window == "undefined" ? module.exports : {}, undefined);
+
+/**
+ * constants
+ */
+(function (exports, global) {
+  var constants = exports.constants = {};
+
+  constants.TYPES = {
+    uInt32: 0,
+    sInt32: 0,
+    int32: 0,
+    double: 1,
+    string: 2,
+    message: 2,
+    float: 5
+  };
+})('undefined' !== typeof protobuf ? protobuf : module.exports, undefined);
+
+/**
+ * util module
+ */
+(function (exports, global) {
+
+  var Util = exports.util = {};
+
+  Util.isSimpleType = function (type) {
+    return type === 'uInt32' || type === 'sInt32' || type === 'int32' || type === 'uInt64' || type === 'sInt64' || type === 'float' || type === 'double';
+  };
+})('undefined' !== typeof protobuf ? protobuf : module.exports, undefined);
+
+/**
+ * codec module
+ */
+(function (exports, global) {
+
+  var Codec = exports.codec = {};
+
+  var buffer = new ArrayBuffer(8);
+  var float32Array = new Float32Array(buffer);
+  var float64Array = new Float64Array(buffer);
+  var uInt8Array = new Uint8Array(buffer);
+
+  Codec.encodeUInt32 = function (n) {
+    var n = parseInt(n);
+    if (isNaN(n) || n < 0) {
+      return null;
+    }
+
+    var result = [];
+    do {
+      var tmp = n % 128;
+      var next = Math.floor(n / 128);
+
+      if (next !== 0) {
+        tmp = tmp + 128;
+      }
+      result.push(tmp);
+      n = next;
+    } while (n !== 0);
+
+    return result;
+  };
+
+  Codec.encodeSInt32 = function (n) {
+    var n = parseInt(n);
+    if (isNaN(n)) {
+      return null;
+    }
+    n = n < 0 ? Math.abs(n) * 2 - 1 : n * 2;
+
+    return Codec.encodeUInt32(n);
+  };
+
+  Codec.decodeUInt32 = function (bytes) {
+    var n = 0;
+
+    for (var i = 0; i < bytes.length; i++) {
+      var m = parseInt(bytes[i]);
+      n = n + (m & 0x7f) * Math.pow(2, 7 * i);
+      if (m < 128) {
+        return n;
+      }
+    }
+
+    return n;
+  };
+
+  Codec.decodeSInt32 = function (bytes) {
+    var n = this.decodeUInt32(bytes);
+    var flag = n % 2 === 1 ? -1 : 1;
+
+    n = (n % 2 + n) / 2 * flag;
+
+    return n;
+  };
+
+  Codec.encodeFloat = function (float) {
+    float32Array[0] = float;
+    return uInt8Array;
+  };
+
+  Codec.decodeFloat = function (bytes, offset) {
+    if (!bytes || bytes.length < offset + 4) {
+      return null;
+    }
+
+    for (var i = 0; i < 4; i++) {
+      uInt8Array[i] = bytes[offset + i];
+    }
+
+    return float32Array[0];
+  };
+
+  Codec.encodeDouble = function (double) {
+    float64Array[0] = double;
+    return uInt8Array.subarray(0, 8);
+  };
+
+  Codec.decodeDouble = function (bytes, offset) {
+    if (!bytes || bytes.length < 8 + offset) {
+      return null;
+    }
+
+    for (var i = 0; i < 8; i++) {
+      uInt8Array[i] = bytes[offset + i];
+    }
+
+    return float64Array[0];
+  };
+
+  Codec.encodeStr = function (bytes, offset, str) {
+    for (var i = 0; i < str.length; i++) {
+      var code = str.charCodeAt(i);
+      var codes = encode2UTF8(code);
+
+      for (var j = 0; j < codes.length; j++) {
+        bytes[offset] = codes[j];
+        offset++;
+      }
+    }
+
+    return offset;
+  };
+
+  /**
+   * Decode string from utf8 bytes
+   */
+  Codec.decodeStr = function (bytes, offset, length) {
+    var array = [];
+    var end = offset + length;
+
+    while (offset < end) {
+      var code = 0;
+
+      if (bytes[offset] < 128) {
+        code = bytes[offset];
+
+        offset += 1;
+      } else if (bytes[offset] < 224) {
+        code = ((bytes[offset] & 0x3f) << 6) + (bytes[offset + 1] & 0x3f);
+        offset += 2;
+      } else {
+        code = ((bytes[offset] & 0x0f) << 12) + ((bytes[offset + 1] & 0x3f) << 6) + (bytes[offset + 2] & 0x3f);
+        offset += 3;
+      }
+
+      array.push(code);
+    }
+
+    var str = '';
+    for (var i = 0; i < array.length;) {
+      str += String.fromCharCode.apply(null, array.slice(i, i + 10000));
+      i += 10000;
+    }
+
+    return str;
+  };
+
+  /**
+   * Return the byte length of the str use utf8
+   */
+  Codec.byteLength = function (str) {
+    if (typeof str !== 'string') {
+      return -1;
+    }
+
+    var length = 0;
+
+    for (var i = 0; i < str.length; i++) {
+      var code = str.charCodeAt(i);
+      length += codeLength(code);
+    }
+
+    return length;
+  };
+
+  /**
+   * Encode a unicode16 char code to utf8 bytes
+   */
+  function encode2UTF8(charCode) {
+    if (charCode <= 0x7f) {
+      return [charCode];
+    } else if (charCode <= 0x7ff) {
+      return [0xc0 | charCode >> 6, 0x80 | charCode & 0x3f];
+    } else {
+      return [0xe0 | charCode >> 12, 0x80 | (charCode & 0xfc0) >> 6, 0x80 | charCode & 0x3f];
+    }
+  }
+
+  function codeLength(code) {
+    if (code <= 0x7f) {
+      return 1;
+    } else if (code <= 0x7ff) {
+      return 2;
+    } else {
+      return 3;
+    }
+  }
+})('undefined' !== typeof protobuf ? protobuf : module.exports, undefined);
+
+/**
+ * encoder module
+ */
+(function (exports, global) {
+
+  var protobuf = exports;
+  var MsgEncoder = exports.encoder = {};
+
+  var codec = protobuf.codec;
+  var constant = protobuf.constants;
+  var util = protobuf.util;
+
+  MsgEncoder.init = function (protos) {
+    this.protos = protos || {};
+  };
+
+  MsgEncoder.encode = function (route, msg) {
+    //Get protos from protos map use the route as key
+    var protos = this.protos[route];
+
+    //Check msg
+    if (!checkMsg(msg, protos)) {
+      return null;
+    }
+
+    //Set the length of the buffer 2 times bigger to prevent overflow
+    var length = codec.byteLength(JSON.stringify(msg));
+
+    //Init buffer and offset
+    var buffer = new ArrayBuffer(length);
+    var uInt8Array = new Uint8Array(buffer);
+    var offset = 0;
+
+    if (!!protos) {
+      offset = encodeMsg(uInt8Array, offset, protos, msg);
+      if (offset > 0) {
+        return uInt8Array.subarray(0, offset);
+      }
+    }
+
+    return null;
+  };
+
+  /**
+   * Check if the msg follow the defination in the protos
+   */
+  function checkMsg(msg, protos) {
+    if (!protos) {
+      return false;
+    }
+
+    for (var name in protos) {
+      var proto = protos[name];
+
+      //All required element must exist
+      switch (proto.option) {
+        case 'required':
+          if (typeof msg[name] === 'undefined') {
+            return false;
+          }
+        case 'optional':
+          if (typeof msg[name] !== 'undefined') {
+            if (!!protos.__messages[proto.type]) {
+              checkMsg(msg[name], protos.__messages[proto.type]);
+            }
+          }
+          break;
+        case 'repeated':
+          //Check nest message in repeated elements
+          if (!!msg[name] && !!protos.__messages[proto.type]) {
+            for (var i = 0; i < msg[name].length; i++) {
+              if (!checkMsg(msg[name][i], protos.__messages[proto.type])) {
+                return false;
+              }
+            }
+          }
+          break;
+      }
+    }
+
+    return true;
+  }
+
+  function encodeMsg(buffer, offset, protos, msg) {
+    for (var name in msg) {
+      if (!!protos[name]) {
+        var proto = protos[name];
+
+        switch (proto.option) {
+          case 'required':
+          case 'optional':
+            offset = writeBytes(buffer, offset, encodeTag(proto.type, proto.tag));
+            offset = encodeProp(msg[name], proto.type, offset, buffer, protos);
+            break;
+          case 'repeated':
+            if (msg[name].length > 0) {
+              offset = encodeArray(msg[name], proto, offset, buffer, protos);
+            }
+            break;
+        }
+      }
+    }
+
+    return offset;
+  }
+
+  function encodeProp(value, type, offset, buffer, protos) {
+    switch (type) {
+      case 'uInt32':
+        offset = writeBytes(buffer, offset, codec.encodeUInt32(value));
+        break;
+      case 'int32':
+      case 'sInt32':
+        offset = writeBytes(buffer, offset, codec.encodeSInt32(value));
+        break;
+      case 'float':
+        writeBytes(buffer, offset, codec.encodeFloat(value));
+        offset += 4;
+        break;
+      case 'double':
+        writeBytes(buffer, offset, codec.encodeDouble(value));
+        offset += 8;
+        break;
+      case 'string':
+        var length = codec.byteLength(value);
+
+        //Encode length
+        offset = writeBytes(buffer, offset, codec.encodeUInt32(length));
+        //write string
+        codec.encodeStr(buffer, offset, value);
+        offset += length;
+        break;
+      default:
+        if (!!protos.__messages[type]) {
+          //Use a tmp buffer to build an internal msg
+          var tmpBuffer = new ArrayBuffer(codec.byteLength(JSON.stringify(value)));
+          var length = 0;
+
+          length = encodeMsg(tmpBuffer, length, protos.__messages[type], value);
+          //Encode length
+          offset = writeBytes(buffer, offset, codec.encodeUInt32(length));
+          //contact the object
+          for (var i = 0; i < length; i++) {
+            buffer[offset] = tmpBuffer[i];
+            offset++;
+          }
+        }
+        break;
+    }
+
+    return offset;
+  }
+
+  /**
+   * Encode reapeated properties, simple msg and object are decode differented
+   */
+  function encodeArray(array, proto, offset, buffer, protos) {
+    var i = 0;
+
+    if (util.isSimpleType(proto.type)) {
+      offset = writeBytes(buffer, offset, encodeTag(proto.type, proto.tag));
+      offset = writeBytes(buffer, offset, codec.encodeUInt32(array.length));
+      for (i = 0; i < array.length; i++) {
+        offset = encodeProp(array[i], proto.type, offset, buffer);
+      }
+    } else {
+      for (i = 0; i < array.length; i++) {
+        offset = writeBytes(buffer, offset, encodeTag(proto.type, proto.tag));
+        offset = encodeProp(array[i], proto.type, offset, buffer, protos);
+      }
+    }
+
+    return offset;
+  }
+
+  function writeBytes(buffer, offset, bytes) {
+    for (var i = 0; i < bytes.length; i++, offset++) {
+      buffer[offset] = bytes[i];
+    }
+
+    return offset;
+  }
+
+  function encodeTag(type, tag) {
+    var value = constant.TYPES[type] || 2;
+    return codec.encodeUInt32(tag << 3 | value);
+  }
+})('undefined' !== typeof protobuf ? protobuf : module.exports, undefined);
+
+/**
+ * decoder module
+ */
+(function (exports, global) {
+  var protobuf = exports;
+  var MsgDecoder = exports.decoder = {};
+
+  var codec = protobuf.codec;
+  var util = protobuf.util;
+
+  var buffer;
+  var offset = 0;
+
+  MsgDecoder.init = function (protos) {
+    this.protos = protos || {};
+  };
+
+  MsgDecoder.setProtos = function (protos) {
+    if (!!protos) {
+      this.protos = protos;
+    }
+  };
+
+  MsgDecoder.decode = function (route, buf) {
+    var protos = this.protos[route];
+
+    buffer = buf;
+    offset = 0;
+
+    if (!!protos) {
+      return decodeMsg({}, protos, buffer.length);
+    }
+
+    return null;
+  };
+
+  function decodeMsg(msg, protos, length) {
+    while (offset < length) {
+      var head = getHead();
+      var type = head.type;
+      var tag = head.tag;
+      var name = protos.__tags[tag];
+
+      switch (protos[name].option) {
+        case 'optional':
+        case 'required':
+          msg[name] = decodeProp(protos[name].type, protos);
+          break;
+        case 'repeated':
+          if (!msg[name]) {
+            msg[name] = [];
+          }
+          decodeArray(msg[name], protos[name].type, protos);
+          break;
+      }
+    }
+
+    return msg;
+  }
+
+  /**
+   * Test if the given msg is finished
+   */
+  function isFinish(msg, protos) {
+    return !protos.__tags[peekHead().tag];
+  }
+  /**
+   * Get property head from protobuf
+   */
+  function getHead() {
+    var tag = codec.decodeUInt32(getBytes());
+
+    return {
+      type: tag & 0x7,
+      tag: tag >> 3
+    };
+  }
+
+  /**
+   * Get tag head without move the offset
+   */
+  function peekHead() {
+    var tag = codec.decodeUInt32(peekBytes());
+
+    return {
+      type: tag & 0x7,
+      tag: tag >> 3
+    };
+  }
+
+  function decodeProp(type, protos) {
+    switch (type) {
+      case 'uInt32':
+        return codec.decodeUInt32(getBytes());
+      case 'int32':
+      case 'sInt32':
+        return codec.decodeSInt32(getBytes());
+      case 'float':
+        var float = codec.decodeFloat(buffer, offset);
+        offset += 4;
+        return float;
+      case 'double':
+        var double = codec.decodeDouble(buffer, offset);
+        offset += 8;
+        return double;
+      case 'string':
+        var length = codec.decodeUInt32(getBytes());
+
+        var str = codec.decodeStr(buffer, offset, length);
+        offset += length;
+
+        return str;
+      default:
+        if (!!protos && !!protos.__messages[type]) {
+          var length = codec.decodeUInt32(getBytes());
+          var msg = {};
+          decodeMsg(msg, protos.__messages[type], offset + length);
+          return msg;
+        }
+        break;
+    }
+  }
+
+  function decodeArray(array, type, protos) {
+    if (util.isSimpleType(type)) {
+      var length = codec.decodeUInt32(getBytes());
+
+      for (var i = 0; i < length; i++) {
+        array.push(decodeProp(type));
+      }
+    } else {
+      array.push(decodeProp(type, protos));
+    }
+  }
+
+  function getBytes(flag) {
+    var bytes = [];
+    var pos = offset;
+    flag = flag || false;
+
+    var b;
+
+    do {
+      b = buffer[pos];
+      bytes.push(b);
+      pos++;
+    } while (b >= 128);
+
+    if (!flag) {
+      offset = pos;
+    }
+    return bytes;
+  }
+
+  function peekBytes() {
+    return getBytes(true);
+  }
+})('undefined' !== typeof protobuf ? protobuf : module.exports, undefined);
+
+cc._RF.pop();
+},{}],"protocol":[function(require,module,exports){
+(function (Buffer){
+"use strict";
+cc._RF.push(module, '703b7tytHNG/JlkjCFHpGRD', 'protocol');
+// pomelo/protocol.js
+
+'use strict';
+
+(function (exports, ByteArray, global) {
+  var Protocol = exports;
+
+  var PKG_HEAD_BYTES = 4;
+  var MSG_FLAG_BYTES = 1;
+  var MSG_ROUTE_CODE_BYTES = 2;
+  var MSG_ID_MAX_BYTES = 5;
+  var MSG_ROUTE_LEN_BYTES = 1;
+
+  var MSG_ROUTE_CODE_MAX = 0xffff;
+
+  var MSG_COMPRESS_ROUTE_MASK = 0x1;
+  var MSG_TYPE_MASK = 0x7;
+
+  var Package = Protocol.Package = {};
+  var Message = Protocol.Message = {};
+
+  Package.TYPE_HANDSHAKE = 1;
+  Package.TYPE_HANDSHAKE_ACK = 2;
+  Package.TYPE_HEARTBEAT = 3;
+  Package.TYPE_DATA = 4;
+  Package.TYPE_KICK = 5;
+
+  Message.TYPE_REQUEST = 0;
+  Message.TYPE_NOTIFY = 1;
+  Message.TYPE_RESPONSE = 2;
+  Message.TYPE_PUSH = 3;
+
+  /**
+   * pomele client encode
+   * id message id;
+   * route message route
+   * msg message body
+   * socketio current support string
+   */
+  Protocol.strencode = function (str) {
+    var byteArray = new ByteArray(str.length * 3);
+    var offset = 0;
+    for (var i = 0; i < str.length; i++) {
+      var charCode = str.charCodeAt(i);
+      var codes = null;
+      if (charCode <= 0x7f) {
+        codes = [charCode];
+      } else if (charCode <= 0x7ff) {
+        codes = [0xc0 | charCode >> 6, 0x80 | charCode & 0x3f];
+      } else {
+        codes = [0xe0 | charCode >> 12, 0x80 | (charCode & 0xfc0) >> 6, 0x80 | charCode & 0x3f];
+      }
+      for (var j = 0; j < codes.length; j++) {
+        byteArray[offset] = codes[j];
+        ++offset;
+      }
+    }
+    var _buffer = new ByteArray(offset);
+    copyArray(_buffer, 0, byteArray, 0, offset);
+    return _buffer;
+  };
+
+  /**
+   * client decode
+   * msg String data
+   * return Message Object
+   */
+  Protocol.strdecode = function (buffer) {
+    var bytes = new ByteArray(buffer);
+    var array = [];
+    var offset = 0;
+    var charCode = 0;
+    var end = bytes.length;
+    while (offset < end) {
+      if (bytes[offset] < 128) {
+        charCode = bytes[offset];
+        offset += 1;
+      } else if (bytes[offset] < 224) {
+        charCode = ((bytes[offset] & 0x3f) << 6) + (bytes[offset + 1] & 0x3f);
+        offset += 2;
+      } else {
+        charCode = ((bytes[offset] & 0x0f) << 12) + ((bytes[offset + 1] & 0x3f) << 6) + (bytes[offset + 2] & 0x3f);
+        offset += 3;
+      }
+      array.push(charCode);
+    }
+    return String.fromCharCode.apply(null, array);
+  };
+
+  /**
+   * Package protocol encode.
+   *
+   * Pomelo package format:
+   * +------+-------------+------------------+
+   * | type | body length |       body       |
+   * +------+-------------+------------------+
+   *
+   * Head: 4bytes
+   *   0: package type,
+   *      1 - handshake,
+   *      2 - handshake ack,
+   *      3 - heartbeat,
+   *      4 - data
+   *      5 - kick
+   *   1 - 3: big-endian body length
+   * Body: body length bytes
+   *
+   * @param  {Number}    type   package type
+   * @param  {ByteArray} body   body content in bytes
+   * @return {ByteArray}        new byte array that contains encode result
+   */
+  Package.encode = function (type, body) {
+    var length = body ? body.length : 0;
+    var buffer = new ByteArray(PKG_HEAD_BYTES + length);
+    var index = 0;
+    buffer[index++] = type & 0xff;
+    buffer[index++] = length >> 16 & 0xff;
+    buffer[index++] = length >> 8 & 0xff;
+    buffer[index++] = length & 0xff;
+    if (body) {
+      copyArray(buffer, index, body, 0, length);
+    }
+    return buffer;
+  };
+
+  /**
+   * Package protocol decode.
+   * See encode for package format.
+   *
+   * @param  {ByteArray} buffer byte array containing package content
+   * @return {Object}           {type: package type, buffer: body byte array}
+   */
+  Package.decode = function (buffer) {
+    var offset = 0;
+    var bytes = new ByteArray(buffer);
+    var length = 0;
+    var rs = [];
+    while (offset < bytes.length) {
+      var type = bytes[offset++];
+      length = (bytes[offset++] << 16 | bytes[offset++] << 8 | bytes[offset++]) >>> 0;
+      var body = length ? new ByteArray(length) : null;
+      copyArray(body, 0, bytes, offset, length);
+      offset += length;
+      rs.push({ 'type': type, 'body': body });
+    }
+    return rs.length === 1 ? rs[0] : rs;
+  };
+
+  /**
+   * Message protocol encode.
+   *
+   * @param  {Number} id            message id
+   * @param  {Number} type          message type
+   * @param  {Number} compressRoute whether compress route
+   * @param  {Number|String} route  route code or route string
+   * @param  {Buffer} msg           message body bytes
+   * @return {Buffer}               encode result
+   */
+  Message.encode = function (id, type, compressRoute, route, msg) {
+    // caculate message max length
+    var idBytes = msgHasId(type) ? caculateMsgIdBytes(id) : 0;
+    var msgLen = MSG_FLAG_BYTES + idBytes;
+
+    if (msgHasRoute(type)) {
+      if (compressRoute) {
+        if (typeof route !== 'number') {
+          throw new Error('error flag for number route!');
+        }
+        msgLen += MSG_ROUTE_CODE_BYTES;
+      } else {
+        msgLen += MSG_ROUTE_LEN_BYTES;
+        if (route) {
+          route = Protocol.strencode(route);
+          if (route.length > 255) {
+            throw new Error('route maxlength is overflow');
+          }
+          msgLen += route.length;
+        }
+      }
+    }
+
+    if (msg) {
+      msgLen += msg.length;
+    }
+
+    var buffer = new ByteArray(msgLen);
+    var offset = 0;
+
+    // add flag
+    offset = encodeMsgFlag(type, compressRoute, buffer, offset);
+
+    // add message id
+    if (msgHasId(type)) {
+      offset = encodeMsgId(id, buffer, offset);
+    }
+
+    // add route
+    if (msgHasRoute(type)) {
+      offset = encodeMsgRoute(compressRoute, route, buffer, offset);
+    }
+
+    // add body
+    if (msg) {
+      offset = encodeMsgBody(msg, buffer, offset);
+    }
+
+    return buffer;
+  };
+
+  /**
+   * Message protocol decode.
+   *
+   * @param  {Buffer|Uint8Array} buffer message bytes
+   * @return {Object}            message object
+   */
+  Message.decode = function (buffer) {
+    var bytes = new ByteArray(buffer);
+    var bytesLen = bytes.length || bytes.byteLength;
+    var offset = 0;
+    var id = 0;
+    var route = null;
+
+    // parse flag
+    var flag = bytes[offset++];
+    var compressRoute = flag & MSG_COMPRESS_ROUTE_MASK;
+    var type = flag >> 1 & MSG_TYPE_MASK;
+
+    // parse id
+    if (msgHasId(type)) {
+      var m = parseInt(bytes[offset]);
+      var i = 0;
+      do {
+        var m = parseInt(bytes[offset]);
+        id = id + (m & 0x7f) * Math.pow(2, 7 * i);
+        offset++;
+        i++;
+      } while (m >= 128);
+    }
+
+    // parse route
+    if (msgHasRoute(type)) {
+      if (compressRoute) {
+        route = bytes[offset++] << 8 | bytes[offset++];
+      } else {
+        var routeLen = bytes[offset++];
+        if (routeLen) {
+          route = new ByteArray(routeLen);
+          copyArray(route, 0, bytes, offset, routeLen);
+          route = Protocol.strdecode(route);
+        } else {
+          route = '';
+        }
+        offset += routeLen;
+      }
+    }
+
+    // parse body
+    var bodyLen = bytesLen - offset;
+    var body = new ByteArray(bodyLen);
+
+    copyArray(body, 0, bytes, offset, bodyLen);
+
+    return { 'id': id, 'type': type, 'compressRoute': compressRoute,
+      'route': route, 'body': body };
+  };
+
+  var copyArray = function copyArray(dest, doffset, src, soffset, length) {
+    if ('function' === typeof src.copy) {
+      // Buffer
+      src.copy(dest, doffset, soffset, soffset + length);
+    } else {
+      // Uint8Array
+      for (var index = 0; index < length; index++) {
+        dest[doffset++] = src[soffset++];
+      }
+    }
+  };
+
+  var msgHasId = function msgHasId(type) {
+    return type === Message.TYPE_REQUEST || type === Message.TYPE_RESPONSE;
+  };
+
+  var msgHasRoute = function msgHasRoute(type) {
+    return type === Message.TYPE_REQUEST || type === Message.TYPE_NOTIFY || type === Message.TYPE_PUSH;
+  };
+
+  var caculateMsgIdBytes = function caculateMsgIdBytes(id) {
+    var len = 0;
+    do {
+      len += 1;
+      id >>= 7;
+    } while (id > 0);
+    return len;
+  };
+
+  var encodeMsgFlag = function encodeMsgFlag(type, compressRoute, buffer, offset) {
+    if (type !== Message.TYPE_REQUEST && type !== Message.TYPE_NOTIFY && type !== Message.TYPE_RESPONSE && type !== Message.TYPE_PUSH) {
+      throw new Error('unkonw message type: ' + type);
+    }
+
+    buffer[offset] = type << 1 | (compressRoute ? 1 : 0);
+
+    return offset + MSG_FLAG_BYTES;
+  };
+
+  var encodeMsgId = function encodeMsgId(id, buffer, offset) {
+    do {
+      var tmp = id % 128;
+      var next = Math.floor(id / 128);
+
+      if (next !== 0) {
+        tmp = tmp + 128;
+      }
+      buffer[offset++] = tmp;
+
+      id = next;
+    } while (id !== 0);
+
+    return offset;
+  };
+
+  var encodeMsgRoute = function encodeMsgRoute(compressRoute, route, buffer, offset) {
+    if (compressRoute) {
+      if (route > MSG_ROUTE_CODE_MAX) {
+        throw new Error('route number is overflow');
+      }
+
+      buffer[offset++] = route >> 8 & 0xff;
+      buffer[offset++] = route & 0xff;
+    } else {
+      if (route) {
+        buffer[offset++] = route.length & 0xff;
+        copyArray(buffer, offset, route, 0, route.length);
+        offset += route.length;
+      } else {
+        buffer[offset++] = 0;
+      }
+    }
+
+    return offset;
+  };
+
+  var encodeMsgBody = function encodeMsgBody(msg, buffer, offset) {
+    copyArray(buffer, offset, msg, 0, msg.length);
+    return offset + msg.length;
+  };
+
+  module.exports = Protocol;
+  if (typeof window != "undefined") {
+    window.Protocol = Protocol;
+  }
+})(typeof window == "undefined" ? module.exports : {}, typeof window == "undefined" ? Buffer : Uint8Array, undefined);
+
+cc._RF.pop();
+}).call(this,require("buffer").Buffer)
+
+},{"buffer":2}]},{},["Comm","emitter","pomelo-client","protobuf","protocol","Scene","LoginUi","MainUi"])
+
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImFzc2V0cy9jb21tU3JjL0NvbW0uanMiLCJhc3NldHMvdWkvbG9naW4vTG9naW5VaS5qcyIsImFzc2V0cy91aS9tYWluL01haW5VaS5qcyIsImFzc2V0cy9zY2VuZS9TY2VuZS5qcyIsImFzc2V0cy9wb21lbG8vZW1pdHRlci5qcyIsImFzc2V0cy9wb21lbG8vcG9tZWxvLWNsaWVudC5qcyIsImFzc2V0cy9wb21lbG8vcHJvdG9idWYuanMiLCJhc3NldHMvcG9tZWxvL3Byb3RvY29sLmpzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OztBQUFBO0FBQ0E7Ozs7Ozs7Ozs7QUNEQTtBQUNBO0FBQ0k7O0FBRUE7QUFDSTtBQURROztBQUlaO0FBQ0k7QUFDQTtBQUNJO0FBQ0E7QUFGUTtBQUlSO0FBQ0k7QUFDSTtBQUNIO0FBQ0o7QUFDSjtBQUNKO0FBbkJJOzs7Ozs7Ozs7O0FDRFQ7QUFDQTtBQUNJOztBQUVBOztBQUdBO0FBQ0k7QUFDSTtBQUNJO0FBQ0g7QUFDSjtBQUNKO0FBWkk7Ozs7Ozs7Ozs7QUNEVDtBQUNBO0FBQ0k7O0FBRUE7QUFDSTtBQUNBO0FBQ0E7QUFIUTs7QUFNWjtBQUNBO0FBQ0k7QUFDQTtBQUNBO0FBQ0g7O0FBRUQ7QUFDQTs7QUFFQTtBQUNBO0FBQ0k7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNIO0FBQ0Q7QUFDSTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0g7QUFqQ0k7Ozs7Ozs7Ozs7QUNBVDs7OztBQUlBOztBQUVBOztBQUVBOzs7Ozs7QUFNQTtBQUNFO0FBQ0Q7O0FBRUQ7Ozs7Ozs7O0FBUUE7QUFDRTtBQUNFO0FBQ0Q7QUFDRDtBQUNEOztBQUVEOzs7Ozs7Ozs7QUFTQTtBQUVFO0FBQ0E7QUFFQTtBQUNEOztBQUVEOzs7Ozs7Ozs7O0FBVUE7QUFDRTtBQUNBOztBQUVBO0FBQ0U7QUFDQTtBQUNEOztBQUVEO0FBQ0E7QUFDQTtBQUNEOztBQUVEOzs7Ozs7Ozs7O0FBVUE7QUFJRTs7QUFFQTtBQUNBO0FBQ0U7QUFDQTtBQUNEOztBQUVEO0FBQ0E7QUFDQTs7QUFFQTtBQUNBO0FBQ0U7QUFDQTtBQUNEOztBQUVEO0FBQ0E7QUFDQTtBQUNFO0FBQ0E7QUFDRTtBQUNBO0FBQ0Q7QUFDRjtBQUNEO0FBQ0Q7O0FBRUQ7Ozs7Ozs7O0FBUUE7QUFDRTtBQUNBO0FBQUE7O0FBR0E7QUFDRTtBQUNBO0FBQ0U7QUFDRDtBQUNGOztBQUVEO0FBQ0Q7O0FBRUQ7Ozs7Ozs7O0FBUUE7QUFDRTtBQUNBO0FBQ0Q7O0FBRUQ7Ozs7Ozs7O0FBUUE7QUFDRTtBQUNEOzs7Ozs7Ozs7O0FDcktEO0FBQ0U7QUFDQTs7QUFFQTtBQUNBO0FBQ0E7QUFDQTs7QUFFQTtBQUNFO0FBQ0Q7O0FBRUQ7QUFDQTtBQUNBOztBQUVBO0FBQ0U7QUFDRTtBQUNBO0FBQ0E7QUFDRDtBQUNGOztBQUVEO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTs7QUFFQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7O0FBRUE7O0FBRUE7QUFDQTs7QUFFQTs7QUFFQTtBQUNFO0FBQ0U7QUFDQTtBQUZLO0FBSVA7QUFMb0I7O0FBU3RCOztBQUVBO0FBQ0U7QUFDQTtBQUNBOztBQUVBO0FBQ0E7QUFDRTtBQUNEOztBQUVEO0FBQ0E7QUFDQTtBQUNEOztBQUVEO0FBQ0U7QUFDRTtBQUNBO0FBQ0Q7QUFDRDtBQUNFO0FBQ0E7QUFDQTtBQUNFO0FBQ0Q7QUFDRjtBQUNEO0FBQ0U7QUFDQTtBQUNEO0FBQ0Q7QUFDRTtBQUNBO0FBQ0E7QUFDRDtBQUNEO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNEOztBQUVEO0FBQ0U7QUFDRTtBQUNBO0FBQ0E7QUFDQTtBQUNEOztBQUVEO0FBQ0U7QUFDQTtBQUNEO0FBQ0Q7QUFDRTtBQUNBO0FBQ0Q7QUFDRjs7QUFFRDtBQUNFO0FBQ0U7QUFDQTtBQUNEO0FBQ0M7QUFDRDtBQUNEO0FBQ0E7QUFDRTtBQUNEOztBQUVEO0FBQ0E7O0FBRUE7QUFDQTtBQUNEOztBQUVEO0FBQ0U7QUFDQTtBQUNEOztBQUVEO0FBQ0U7O0FBRUE7QUFDQTtBQUNBO0FBQ0U7QUFDRDtBQUNDO0FBQ0Q7O0FBR0Q7QUFDQTtBQUNFO0FBQ0E7QUFDRDs7QUFFRDtBQUNBO0FBQ0E7QUFDRDs7QUFFRDtBQUNFO0FBQ0Q7O0FBR0Q7O0FBRUE7QUFDRTtBQUNFO0FBQ0E7QUFDRDs7QUFFRDtBQUNBO0FBQ0U7QUFDQTtBQUNEOztBQUVEO0FBQ0U7QUFDQTtBQUNEOztBQUVEO0FBQ0U7QUFDQTs7QUFFQTtBQUNBO0FBQ0Q7QUFDRjs7QUFFRDtBQUNFO0FBQ0E7QUFDRTtBQUNEO0FBQ0M7QUFDQTtBQUNBO0FBQ0Q7QUFDRjs7QUFFRDtBQUNFO0FBQ0E7QUFDRTtBQUNBO0FBQ0Q7O0FBRUQ7QUFDRTtBQUNBO0FBQ0Q7O0FBRUQ7O0FBRUE7QUFDQTtBQUNBO0FBQ0U7QUFDQTtBQUNEO0FBQ0Y7O0FBRUQ7QUFDRTtBQUNBOztBQUVBO0FBQ0U7QUFDQTtBQUNBO0FBQ0U7QUFDRDtBQUNGOztBQUVEOztBQUVBO0FBQ0Q7O0FBRUQ7QUFDRTtBQUNBO0FBQ0Q7O0FBRUQ7QUFDQTtBQUNBO0FBQ0E7O0FBRUE7QUFDRTtBQUNFO0FBQ0U7QUFDQTtBQUNEO0FBQ0Y7QUFDQztBQUNEO0FBQ0Y7O0FBRUQ7QUFDRTtBQUNFO0FBQ0E7QUFDRDs7QUFFRDtBQUNBOztBQUVBO0FBQ0E7QUFDRTtBQUNEOztBQUVEO0FBQ0E7QUFDRDs7QUFFRDtBQUNFO0FBQ0U7QUFDRDtBQUNGOztBQUVEO0FBQ0U7QUFDQTtBQUNBOztBQUVBO0FBQ0E7QUFDRTtBQUNFO0FBQ0Q7O0FBRUQ7QUFDRDtBQUNEO0FBQ0U7QUFDRDtBQUNDO0FBQ0Q7O0FBRUQ7QUFDRDs7QUFFRDtBQUNFO0FBQ0U7QUFDQTtBQUNEO0FBQ0M7QUFDQTtBQUNEOztBQUVEOztBQUVBO0FBQ0U7QUFDRDtBQUNGOztBQUVEO0FBQ0E7QUFDRTtBQUNFO0FBQ0Q7QUFDRDtBQUNBO0FBQ0E7O0FBRUE7QUFDQTtBQUNFO0FBQ0E7O0FBRUE7QUFDRTtBQUNEO0FBQ0Y7O0FBRUQ7QUFDQTtBQUNFO0FBQ0U7QUFDQTtBQUZtQjtBQUlyQjtBQUNFO0FBQ0Q7QUFDRjtBQUNGOztBQUVEO0FBQ0Q7Ozs7Ozs7Ozs7QUMvV0Q7O0FBRUE7Ozs7O0FBS0E7Ozs7QUFJQTtBQUNFOztBQUVBO0FBQ0U7QUFDQTs7QUFFQTtBQUNBO0FBQ0Q7O0FBRUQ7QUFDRTtBQUNEOztBQUVEO0FBQ0U7QUFDRDs7QUFFRDtBQUNBO0FBQ0E7QUFDRTtBQUNEO0FBRUY7O0FBRUQ7OztBQUdBO0FBQ0U7O0FBRUE7QUFDRTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQVBnQjtBQVVuQjs7QUFFRDs7O0FBR0E7O0FBRUU7O0FBRUE7QUFDRTtBQU9EO0FBRUY7O0FBRUQ7OztBQUdBOztBQUVFOztBQUVBO0FBQ0E7QUFDQTtBQUNBOztBQUVBO0FBQ0U7QUFDQTtBQUNFO0FBQ0Q7O0FBRUQ7QUFDQTtBQUNFO0FBQ0E7O0FBRUE7QUFDRTtBQUNEO0FBQ0Q7QUFDQTtBQUNEOztBQUVEO0FBQ0Q7O0FBRUQ7QUFDRTtBQUNBO0FBQ0U7QUFDRDtBQUNEOztBQUVBO0FBQ0Q7O0FBRUQ7QUFDRTs7QUFFQTtBQUNFO0FBQ0E7QUFDQTtBQUNFO0FBQ0Q7QUFDRjs7QUFFRDtBQUNEOztBQUdEO0FBQ0U7QUFDQTs7QUFFQTs7QUFFQTtBQUNEOztBQUVEO0FBQ0U7QUFDQTtBQUNEOztBQUVEO0FBQ0U7QUFDRTtBQUNEOztBQUVEO0FBQ0U7QUFDRDs7QUFFRDtBQUNEOztBQUVEO0FBQ0U7QUFDQTtBQUNEOztBQUVEO0FBQ0U7QUFDRTtBQUNEOztBQUVEO0FBQ0U7QUFDRDs7QUFFRDtBQUNEOztBQUVEO0FBQ0U7QUFDRTtBQUNBOztBQUVBO0FBQ0U7QUFDQTtBQUNEO0FBQ0Y7O0FBRUQ7QUFDRDs7QUFFRDs7O0FBR0E7QUFDRTtBQUNBOztBQUVBO0FBQ0U7O0FBRUE7QUFDRTs7QUFFQTtBQUNEO0FBQ0M7QUFDQTtBQUNEO0FBQ0M7QUFDQTtBQUNEOztBQUVEO0FBRUQ7O0FBRUQ7QUFDQTtBQUNFO0FBQ0E7QUFDRDs7QUFFRDtBQUNEOztBQUVEOzs7QUFHQTtBQUNFO0FBQ0U7QUFDRDs7QUFFRDs7QUFFQTtBQUNFO0FBQ0E7QUFDRDs7QUFFRDtBQUNEOztBQUVEOzs7QUFHQTtBQUNFO0FBQ0U7QUFDRDtBQUNDO0FBQ0Q7QUFDQztBQUNEO0FBQ0Y7O0FBRUQ7QUFDRTtBQUNFO0FBQ0Q7QUFDQztBQUNEO0FBQ0M7QUFDRDtBQUNGO0FBQ0Y7O0FBRUQ7OztBQUdBOztBQUVFO0FBQ0E7O0FBRUE7QUFDQTtBQUNBOztBQUVBO0FBQ0U7QUFDRDs7QUFFRDtBQUNFO0FBQ0E7O0FBRUE7QUFDQTtBQUNFO0FBQ0Q7O0FBRUQ7QUFDQTs7QUFFQTtBQUNBO0FBQ0E7QUFDQTs7QUFFQTtBQUNFO0FBQ0E7QUFDRTtBQUNEO0FBQ0Y7O0FBRUQ7QUFDRDs7QUFFRDs7O0FBR0E7QUFDRTtBQUNFO0FBQ0Q7O0FBRUQ7QUFDRTs7QUFFQTtBQUNBO0FBQ0U7QUFDRTtBQUNFO0FBQ0Q7QUFDSDtBQUNFO0FBQ0U7QUFDRTtBQUNEO0FBQ0Y7QUFDSDtBQUNBO0FBQ0U7QUFDQTtBQUNFO0FBQ0U7QUFDRTtBQUNEO0FBQ0Y7QUFDRjtBQUNIO0FBckJGO0FBdUJEOztBQUVEO0FBQ0Q7O0FBRUQ7QUFDRTtBQUNFO0FBQ0U7O0FBRUE7QUFDRTtBQUNBO0FBQ0U7QUFDQTtBQUNGO0FBQ0E7QUFDRTtBQUNFO0FBQ0Q7QUFDSDtBQVZGO0FBWUQ7QUFDRjs7QUFFRDtBQUNEOztBQUVEO0FBQ0U7QUFDRTtBQUNFO0FBQ0Y7QUFDQTtBQUNBO0FBQ0U7QUFDRjtBQUNBO0FBQ0U7QUFDQTtBQUNGO0FBQ0E7QUFDRTtBQUNBO0FBQ0Y7QUFDQTtBQUNFOztBQUVBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDRjtBQUNBO0FBQ0U7QUFDRTtBQUNBO0FBQ0E7O0FBRUE7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNFO0FBQ0E7QUFDRDtBQUNGO0FBQ0g7QUF4Q0Y7O0FBMkNBO0FBQ0Q7O0FBRUQ7OztBQUdBO0FBQ0U7O0FBRUE7QUFDRTtBQUNBO0FBQ0E7QUFDRTtBQUNEO0FBQ0Y7QUFDQztBQUNFO0FBQ0E7QUFDRDtBQUNGOztBQUVEO0FBQ0Q7O0FBRUQ7QUFDRTtBQUNFO0FBQ0Q7O0FBRUQ7QUFDRDs7QUFFRDtBQUNFO0FBQ0E7QUFDRDtBQUNGOztBQUVEOzs7QUFHQTtBQUNFO0FBQ0E7O0FBRUE7QUFDQTs7QUFFQTtBQUNBOztBQUVBO0FBQ0U7QUFDRDs7QUFFRDtBQUNFO0FBQ0U7QUFDRDtBQUNGOztBQUVEO0FBQ0U7O0FBRUE7QUFDQTs7QUFFQTtBQUNFO0FBQ0Q7O0FBRUQ7QUFDRDs7QUFFRDtBQUNFO0FBQ0U7QUFDQTtBQUNBO0FBQ0E7O0FBRUE7QUFDRTtBQUNBO0FBQ0U7QUFDRjtBQUNBO0FBQ0U7QUFDRTtBQUNEO0FBQ0Q7QUFDRjtBQVZGO0FBWUQ7O0FBRUQ7QUFDRDs7QUFFRDs7O0FBR0E7QUFDRTtBQUNEO0FBQ0Q7OztBQUdBO0FBQ0U7O0FBRUE7QUFDRTtBQUNBO0FBRks7QUFJUjs7QUFFRDs7O0FBR0E7QUFDRTs7QUFFQTtBQUNFO0FBQ0E7QUFGSztBQUlSOztBQUVEO0FBQ0U7QUFDRTtBQUNFO0FBQ0Y7QUFDQTtBQUNFO0FBQ0Y7QUFDRTtBQUNBO0FBQ0E7QUFDRjtBQUNFO0FBQ0E7QUFDQTtBQUNGO0FBQ0U7O0FBRUE7QUFDQTs7QUFFQTtBQUNGO0FBQ0U7QUFDRTtBQUNBO0FBQ0E7QUFDQTtBQUNEO0FBQ0g7QUE1QkY7QUE4QkQ7O0FBRUQ7QUFDRTtBQUNFOztBQUVBO0FBQ0U7QUFDRDtBQUNGO0FBQ0M7QUFDRDtBQUNGOztBQUVEO0FBQ0U7QUFDQTtBQUNBOztBQUVBOztBQUVBO0FBQ0U7QUFDQTtBQUNBO0FBQ0Q7O0FBRUQ7QUFDRTtBQUNEO0FBQ0Q7QUFDRDs7QUFFRDtBQUNFO0FBQ0Q7QUFFRjs7Ozs7Ozs7Ozs7QUN0bUJEO0FBQ0U7O0FBRUE7QUFDQTtBQUNBO0FBQ0E7QUFDQTs7QUFFQTs7QUFFQTtBQUNBOztBQUVBO0FBQ0E7O0FBRUE7QUFDQTtBQUNBO0FBQ0E7QUFDQTs7QUFFQTtBQUNBO0FBQ0E7QUFDQTs7QUFFQTs7Ozs7OztBQU9BO0FBQ0U7QUFDQTtBQUNBO0FBQ0U7QUFDQTtBQUNBO0FBQ0U7QUFDRDtBQUNDO0FBQ0Q7QUFDQztBQUNEO0FBQ0Q7QUFDRTtBQUNBO0FBQ0Q7QUFDRjtBQUNEO0FBQ0E7QUFDQTtBQUNEOztBQUVEOzs7OztBQUtBO0FBQ0U7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0U7QUFDRTtBQUNBO0FBQ0Q7QUFDQztBQUNBO0FBQ0Q7QUFDQztBQUNBO0FBQ0Q7QUFDRDtBQUNEO0FBQ0Q7QUFDRDs7QUFFRDs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OztBQXNCQTtBQUNFO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDRTtBQUNEO0FBQ0Q7QUFDRDs7QUFFRDs7Ozs7OztBQU9BO0FBQ0U7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNFO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNEO0FBQ0Q7QUFDRDs7QUFFRDs7Ozs7Ozs7OztBQVVBO0FBQ0U7QUFDQTtBQUNBOztBQUVBO0FBQ0U7QUFDRTtBQUNFO0FBQ0Q7QUFDRDtBQUNEO0FBQ0M7QUFDQTtBQUNFO0FBQ0E7QUFDRTtBQUNEO0FBQ0Q7QUFDRDtBQUNGO0FBQ0Y7O0FBRUQ7QUFDRTtBQUNEOztBQUVEO0FBQ0E7O0FBRUE7QUFDQTs7QUFFQTtBQUNBO0FBQ0U7QUFDRDs7QUFFRDtBQUNBO0FBQ0U7QUFDRDs7QUFFRDtBQUNBO0FBQ0U7QUFDRDs7QUFFRDtBQUNEOztBQUVEOzs7Ozs7QUFNQTtBQUNFO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7O0FBRUE7QUFDQTtBQUNBO0FBQ0E7O0FBRUE7QUFDQTtBQUNFO0FBQ0E7QUFDQTtBQUNFO0FBQ0E7QUFDQTtBQUNBO0FBQ0Q7QUFDRjs7QUFFRDtBQUNBO0FBQ0U7QUFDRTtBQUNEO0FBQ0M7QUFDQTtBQUNFO0FBQ0E7QUFDQTtBQUNEO0FBQ0M7QUFDRDtBQUNEO0FBQ0Q7QUFDRjs7QUFFRDtBQUNBO0FBQ0E7O0FBRUE7O0FBRUE7QUFDUTtBQUNUOztBQUVEO0FBQ0U7QUFDRTtBQUNBO0FBQ0Q7QUFDQztBQUNBO0FBQ0U7QUFDRDtBQUNGO0FBQ0Y7O0FBRUQ7QUFDRTtBQUNEOztBQUVEO0FBQ0U7QUFFRDs7QUFFRDtBQUNFO0FBQ0E7QUFDRTtBQUNBO0FBQ0Q7QUFDRDtBQUNEOztBQUVEO0FBQ0U7QUFFRTtBQUNEOztBQUVEOztBQUVBO0FBQ0Q7O0FBRUQ7QUFDRTtBQUNFO0FBQ0E7O0FBRUE7QUFDRTtBQUNEO0FBQ0Q7O0FBRUE7QUFDRDs7QUFFRDtBQUNEOztBQUVEO0FBQ0U7QUFDRTtBQUNFO0FBQ0Q7O0FBRUQ7QUFDQTtBQUNEO0FBQ0M7QUFDRTtBQUNBO0FBQ0E7QUFDRDtBQUNDO0FBQ0Q7QUFDRjs7QUFFRDtBQUNEOztBQUVEO0FBQ0U7QUFDQTtBQUNEOztBQUVEO0FBQ0E7QUFDRTtBQUNEO0FBQ0YiLCJzb3VyY2VzQ29udGVudCI6WyIvLyByZXF1aXJlKCdwb21lbG8tY29jb3MyZC1qcycpO1xubW9kdWxlLmV4cG9ydHM9e307IiwidmFyIENvbW0gPSByZXF1aXJlKFwiLi4vLi4vY29tbVNyYy9Db21tXCIpO1xuY2MuQ2xhc3Moe1xuICAgIGV4dGVuZHM6IGNjLkNvbXBvbmVudCxcblxuICAgIHByb3BlcnRpZXM6IHtcbiAgICAgICAgdXNlcm5hbWVMYWJlbDpjYy5FZGl0Qm94LFxuICAgIH0sXG5cbiAgICBvbkxvZ2luQ2xpY2s6ZnVuY3Rpb24oKXtcbiAgICAgICAgdmFyIHNlbGYgPSB0aGlzO1xuICAgICAgICBwb21lbG8uaW5pdCh7XG4gICAgICAgICAgICBob3N0OlwiMTI3LjAuMC4xXCIsXG4gICAgICAgICAgICBwb3J0OjMwMTBcbiAgICAgICAgfSwgZnVuY3Rpb24oZXJyKXtcbiAgICAgICAgICAgIHBvbWVsby5yZXF1ZXN0KFwiY29ubmVjdG9yLmVudHJ5SGFuZGxlci5sb2dpblwiLCB7dXNlcm5hbWU6c2VsZi51c2VybmFtZUxhYmVsLnN0cmluZ30sIGZ1bmN0aW9uKGRhdGEpe1xuICAgICAgICAgICAgICAgIGlmIChkYXRhLnJldCA9PSAwKSB7XG4gICAgICAgICAgICAgICAgICAgIENvbW0uc2NlbmUubG9naW4oKTtcbiAgICAgICAgICAgICAgICB9XG4gICAgICAgICAgICB9KTtcbiAgICAgICAgfSk7XG4gICAgfSxcbn0pO1xuIiwidmFyIENvbW0gPSByZXF1aXJlKFwiLi4vLi4vY29tbVNyYy9Db21tXCIpO1xuY2MuQ2xhc3Moe1xuICAgIGV4dGVuZHM6IGNjLkNvbXBvbmVudCxcblxuICAgIHByb3BlcnRpZXM6IHtcbiAgICB9LFxuXG4gICAgb25Sb29tMUNsaWNrOmZ1bmN0aW9uKCl7XG4gICAgICAgIHBvbWVsby5yZXF1ZXN0KFwiY29ubmVjdG9yLmVudHJ5SGFuZGxlci5lbnRlclJvb21cIiwge30sIGZ1bmN0aW9uKGRhdGEpe1xuICAgICAgICAgICAgaWYgKGRhdGEucmV0ID09IDApIHtcbiAgICAgICAgICAgICAgICBDb21tLnNjZW5lLmVudGVyUm9vbSgpO1xuICAgICAgICAgICAgfVxuICAgICAgICB9KTtcbiAgICB9LFxufSk7XG4iLCJ2YXIgQ29tbSA9IHJlcXVpcmUoXCIuLi9jb21tU3JjL0NvbW1cIik7XG5jYy5DbGFzcyh7XG4gICAgZXh0ZW5kczogY2MuQ29tcG9uZW50LFxuXG4gICAgcHJvcGVydGllczoge1xuICAgICAgICBsb2dpblVpUHJlZmFiOmNjLlByZWZhYixcbiAgICAgICAgbWFpblVpUHJlZmFiOmNjLlByZWZhYixcbiAgICAgICAgZ2FtZVVpUHJlZmFiOmNjLlByZWZhYixcbiAgICB9LFxuXG4gICAgLy8gdXNlIHRoaXMgZm9yIGluaXRpYWxpemF0aW9uXG4gICAgb25Mb2FkOiBmdW5jdGlvbiAoKSB7XG4gICAgICAgIENvbW0uc2NlbmUgPSB0aGlzO1xuICAgICAgICB0aGlzLmxvZ2luVWkgPSBjYy5pbnN0YW50aWF0ZSh0aGlzLmxvZ2luVWlQcmVmYWIpO1xuICAgICAgICB0aGlzLmxvZ2luVWkucGFyZW50ID0gdGhpcy5ub2RlO1xuICAgIH0sXG5cbiAgICAvLyBjYWxsZWQgZXZlcnkgZnJhbWUsIHVuY29tbWVudCB0aGlzIGZ1bmN0aW9uIHRvIGFjdGl2YXRlIHVwZGF0ZSBjYWxsYmFja1xuICAgIC8vIHVwZGF0ZTogZnVuY3Rpb24gKGR0KSB7XG5cbiAgICAvLyB9LFxuICAgIGxvZ2luOmZ1bmN0aW9uKCkge1xuICAgICAgICBjb25zb2xlLmxvZyhcImxvZ2luXCIpO1xuICAgICAgICB0aGlzLmxvZ2luVWkuZGVzdHJveSgpO1xuICAgICAgICB0aGlzLmxvZ2luVWkgPSBudWxsO1xuICAgICAgICB0aGlzLm1haW5VaSA9IGNjLmluc3RhbnRpYXRlKHRoaXMubWFpblVpUHJlZmFiKTtcbiAgICAgICAgdGhpcy5tYWluVWkucGFyZW50ID0gdGhpcy5ub2RlO1xuICAgIH0sXG4gICAgZW50ZXJSb29tOmZ1bmN0aW9uKCkge1xuICAgICAgICBjb25zb2xlLmxvZyhcImVudGVyUm9vbVwiKTtcbiAgICAgICAgdGhpcy5tYWluVWkuZGVzdHJveSgpO1xuICAgICAgICB0aGlzLm1haW5VaSA9IG51bGw7XG4gICAgICAgIHRoaXMuZ2FtZVVpID0gY2MuaW5zdGFudGlhdGUodGhpcy5nYW1lVWlQcmVmYWIpO1xuICAgICAgICB0aGlzLmdhbWVVaS5wYXJlbnQgPSB0aGlzLm5vZGU7XG4gICAgfSxcbn0pO1xuIiwiXG4vKipcbiAqIEV4cG9zZSBgRW1pdHRlcmAuXG4gKi9cblxubW9kdWxlLmV4cG9ydHMgPSBFbWl0dGVyO1xuXG53aW5kb3cuRXZlbnRFbWl0dGVyID0gRW1pdHRlcjtcblxuLyoqXG4gKiBJbml0aWFsaXplIGEgbmV3IGBFbWl0dGVyYC5cbiAqXG4gKiBAYXBpIHB1YmxpY1xuICovXG5cbmZ1bmN0aW9uIEVtaXR0ZXIob2JqKSB7XG4gIGlmIChvYmopIHJldHVybiBtaXhpbihvYmopO1xufTtcblxuLyoqXG4gKiBNaXhpbiB0aGUgZW1pdHRlciBwcm9wZXJ0aWVzLlxuICpcbiAqIEBwYXJhbSB7T2JqZWN0fSBvYmpcbiAqIEByZXR1cm4ge09iamVjdH1cbiAqIEBhcGkgcHJpdmF0ZVxuICovXG5cbmZ1bmN0aW9uIG1peGluKG9iaikge1xuICBmb3IgKHZhciBrZXkgaW4gRW1pdHRlci5wcm90b3R5cGUpIHtcbiAgICBvYmpba2V5XSA9IEVtaXR0ZXIucHJvdG90eXBlW2tleV07XG4gIH1cbiAgcmV0dXJuIG9iajtcbn1cblxuLyoqXG4gKiBMaXN0ZW4gb24gdGhlIGdpdmVuIGBldmVudGAgd2l0aCBgZm5gLlxuICpcbiAqIEBwYXJhbSB7U3RyaW5nfSBldmVudFxuICogQHBhcmFtIHtGdW5jdGlvbn0gZm5cbiAqIEByZXR1cm4ge0VtaXR0ZXJ9XG4gKiBAYXBpIHB1YmxpY1xuICovXG5cbkVtaXR0ZXIucHJvdG90eXBlLm9uID1cbkVtaXR0ZXIucHJvdG90eXBlLmFkZEV2ZW50TGlzdGVuZXIgPSBmdW5jdGlvbihldmVudCwgZm4pe1xuICB0aGlzLl9jYWxsYmFja3MgPSB0aGlzLl9jYWxsYmFja3MgfHwge307XG4gICh0aGlzLl9jYWxsYmFja3NbZXZlbnRdID0gdGhpcy5fY2FsbGJhY2tzW2V2ZW50XSB8fCBbXSlcbiAgICAucHVzaChmbik7XG4gIHJldHVybiB0aGlzO1xufTtcblxuLyoqXG4gKiBBZGRzIGFuIGBldmVudGAgbGlzdGVuZXIgdGhhdCB3aWxsIGJlIGludm9rZWQgYSBzaW5nbGVcbiAqIHRpbWUgdGhlbiBhdXRvbWF0aWNhbGx5IHJlbW92ZWQuXG4gKlxuICogQHBhcmFtIHtTdHJpbmd9IGV2ZW50XG4gKiBAcGFyYW0ge0Z1bmN0aW9ufSBmblxuICogQHJldHVybiB7RW1pdHRlcn1cbiAqIEBhcGkgcHVibGljXG4gKi9cblxuRW1pdHRlci5wcm90b3R5cGUub25jZSA9IGZ1bmN0aW9uKGV2ZW50LCBmbil7XG4gIHZhciBzZWxmID0gdGhpcztcbiAgdGhpcy5fY2FsbGJhY2tzID0gdGhpcy5fY2FsbGJhY2tzIHx8IHt9O1xuXG4gIGZ1bmN0aW9uIG9uKCkge1xuICAgIHNlbGYub2ZmKGV2ZW50LCBvbik7XG4gICAgZm4uYXBwbHkodGhpcywgYXJndW1lbnRzKTtcbiAgfVxuXG4gIG9uLmZuID0gZm47XG4gIHRoaXMub24oZXZlbnQsIG9uKTtcbiAgcmV0dXJuIHRoaXM7XG59O1xuXG4vKipcbiAqIFJlbW92ZSB0aGUgZ2l2ZW4gY2FsbGJhY2sgZm9yIGBldmVudGAgb3IgYWxsXG4gKiByZWdpc3RlcmVkIGNhbGxiYWNrcy5cbiAqXG4gKiBAcGFyYW0ge1N0cmluZ30gZXZlbnRcbiAqIEBwYXJhbSB7RnVuY3Rpb259IGZuXG4gKiBAcmV0dXJuIHtFbWl0dGVyfVxuICogQGFwaSBwdWJsaWNcbiAqL1xuXG5FbWl0dGVyLnByb3RvdHlwZS5vZmYgPVxuRW1pdHRlci5wcm90b3R5cGUucmVtb3ZlTGlzdGVuZXIgPVxuRW1pdHRlci5wcm90b3R5cGUucmVtb3ZlQWxsTGlzdGVuZXJzID1cbkVtaXR0ZXIucHJvdG90eXBlLnJlbW92ZUV2ZW50TGlzdGVuZXIgPSBmdW5jdGlvbihldmVudCwgZm4pe1xuICB0aGlzLl9jYWxsYmFja3MgPSB0aGlzLl9jYWxsYmFja3MgfHwge307XG5cbiAgLy8gYWxsXG4gIGlmICgwID09IGFyZ3VtZW50cy5sZW5ndGgpIHtcbiAgICB0aGlzLl9jYWxsYmFja3MgPSB7fTtcbiAgICByZXR1cm4gdGhpcztcbiAgfVxuXG4gIC8vIHNwZWNpZmljIGV2ZW50XG4gIHZhciBjYWxsYmFja3MgPSB0aGlzLl9jYWxsYmFja3NbZXZlbnRdO1xuICBpZiAoIWNhbGxiYWNrcykgcmV0dXJuIHRoaXM7XG5cbiAgLy8gcmVtb3ZlIGFsbCBoYW5kbGVyc1xuICBpZiAoMSA9PSBhcmd1bWVudHMubGVuZ3RoKSB7XG4gICAgZGVsZXRlIHRoaXMuX2NhbGxiYWNrc1tldmVudF07XG4gICAgcmV0dXJuIHRoaXM7XG4gIH1cblxuICAvLyByZW1vdmUgc3BlY2lmaWMgaGFuZGxlclxuICB2YXIgY2I7XG4gIGZvciAodmFyIGkgPSAwOyBpIDwgY2FsbGJhY2tzLmxlbmd0aDsgaSsrKSB7XG4gICAgY2IgPSBjYWxsYmFja3NbaV07XG4gICAgaWYgKGNiID09PSBmbiB8fCBjYi5mbiA9PT0gZm4pIHtcbiAgICAgIGNhbGxiYWNrcy5zcGxpY2UoaSwgMSk7XG4gICAgICBicmVhaztcbiAgICB9XG4gIH1cbiAgcmV0dXJuIHRoaXM7XG59O1xuXG4vKipcbiAqIEVtaXQgYGV2ZW50YCB3aXRoIHRoZSBnaXZlbiBhcmdzLlxuICpcbiAqIEBwYXJhbSB7U3RyaW5nfSBldmVudFxuICogQHBhcmFtIHtNaXhlZH0gLi4uXG4gKiBAcmV0dXJuIHtFbWl0dGVyfVxuICovXG5cbkVtaXR0ZXIucHJvdG90eXBlLmVtaXQgPSBmdW5jdGlvbihldmVudCl7XG4gIHRoaXMuX2NhbGxiYWNrcyA9IHRoaXMuX2NhbGxiYWNrcyB8fCB7fTtcbiAgdmFyIGFyZ3MgPSBbXS5zbGljZS5jYWxsKGFyZ3VtZW50cywgMSlcbiAgICAsIGNhbGxiYWNrcyA9IHRoaXMuX2NhbGxiYWNrc1tldmVudF07XG5cbiAgaWYgKGNhbGxiYWNrcykge1xuICAgIGNhbGxiYWNrcyA9IGNhbGxiYWNrcy5zbGljZSgwKTtcbiAgICBmb3IgKHZhciBpID0gMCwgbGVuID0gY2FsbGJhY2tzLmxlbmd0aDsgaSA8IGxlbjsgKytpKSB7XG4gICAgICBjYWxsYmFja3NbaV0uYXBwbHkodGhpcywgYXJncyk7XG4gICAgfVxuICB9XG5cbiAgcmV0dXJuIHRoaXM7XG59O1xuXG4vKipcbiAqIFJldHVybiBhcnJheSBvZiBjYWxsYmFja3MgZm9yIGBldmVudGAuXG4gKlxuICogQHBhcmFtIHtTdHJpbmd9IGV2ZW50XG4gKiBAcmV0dXJuIHtBcnJheX1cbiAqIEBhcGkgcHVibGljXG4gKi9cblxuRW1pdHRlci5wcm90b3R5cGUubGlzdGVuZXJzID0gZnVuY3Rpb24oZXZlbnQpe1xuICB0aGlzLl9jYWxsYmFja3MgPSB0aGlzLl9jYWxsYmFja3MgfHwge307XG4gIHJldHVybiB0aGlzLl9jYWxsYmFja3NbZXZlbnRdIHx8IFtdO1xufTtcblxuLyoqXG4gKiBDaGVjayBpZiB0aGlzIGVtaXR0ZXIgaGFzIGBldmVudGAgaGFuZGxlcnMuXG4gKlxuICogQHBhcmFtIHtTdHJpbmd9IGV2ZW50XG4gKiBAcmV0dXJuIHtCb29sZWFufVxuICogQGFwaSBwdWJsaWNcbiAqL1xuXG5FbWl0dGVyLnByb3RvdHlwZS5oYXNMaXN0ZW5lcnMgPSBmdW5jdGlvbihldmVudCl7XG4gIHJldHVybiAhISB0aGlzLmxpc3RlbmVycyhldmVudCkubGVuZ3RoO1xufTtcbiIsIihmdW5jdGlvbigpIHtcbiAgdmFyIEpTX1dTX0NMSUVOVF9UWVBFID0gJ2pzLXdlYnNvY2tldCc7XG4gIHZhciBKU19XU19DTElFTlRfVkVSU0lPTiA9ICcwLjAuMSc7XG5cbiAgdmFyIFByb2N0b2NvbCA9IHJlcXVpcmUoXCJwcm90b2NvbFwiKTtcbiAgdmFyIFBhY2thZ2UgPSBQcm90b2NvbC5QYWNrYWdlO1xuICB2YXIgTWVzc2FnZSA9IFByb3RvY29sLk1lc3NhZ2U7XG4gIHZhciBFdmVudEVtaXR0ZXIgPSB3aW5kb3cuRXZlbnRFbWl0dGVyO1xuXG4gIGlmKHR5cGVvZih3aW5kb3cpICE9IFwidW5kZWZpbmVkXCIgJiYgdHlwZW9mKHN5cykgIT0gJ3VuZGVmaW5lZCcgJiYgc3lzLmxvY2FsU3RvcmFnZSkge1xuICAgIHdpbmRvdy5sb2NhbFN0b3JhZ2UgPSBzeXMubG9jYWxTdG9yYWdlO1xuICB9XG5cbiAgdmFyIFJFU19PSyA9IDIwMDtcbiAgdmFyIFJFU19GQUlMID0gNTAwO1xuICB2YXIgUkVTX09MRF9DTElFTlQgPSA1MDE7XG5cbiAgaWYgKHR5cGVvZiBPYmplY3QuY3JlYXRlICE9PSAnZnVuY3Rpb24nKSB7XG4gICAgT2JqZWN0LmNyZWF0ZSA9IGZ1bmN0aW9uIChvKSB7XG4gICAgICBmdW5jdGlvbiBGKCkge31cbiAgICAgIEYucHJvdG90eXBlID0gbztcbiAgICAgIHJldHVybiBuZXcgRigpO1xuICAgIH07XG4gIH1cblxuICB2YXIgcm9vdCA9IHdpbmRvdztcbiAgdmFyIHBvbWVsbyA9IE9iamVjdC5jcmVhdGUoRXZlbnRFbWl0dGVyLnByb3RvdHlwZSk7IC8vIG9iamVjdCBleHRlbmQgZnJvbSBvYmplY3RcbiAgcm9vdC5wb21lbG8gPSBwb21lbG87XG4gIHZhciBzb2NrZXQgPSBudWxsO1xuICB2YXIgcmVxSWQgPSAwO1xuICB2YXIgY2FsbGJhY2tzID0ge307XG4gIHZhciBoYW5kbGVycyA9IHt9O1xuICAvL01hcCBmcm9tIHJlcXVlc3QgaWQgdG8gcm91dGVcbiAgdmFyIHJvdXRlTWFwID0ge307XG5cbiAgdmFyIGhlYXJ0YmVhdEludGVydmFsID0gMDtcbiAgdmFyIGhlYXJ0YmVhdFRpbWVvdXQgPSAwO1xuICB2YXIgbmV4dEhlYXJ0YmVhdFRpbWVvdXQgPSAwO1xuICB2YXIgZ2FwVGhyZXNob2xkID0gMTAwOyAgIC8vIGhlYXJ0YmVhdCBnYXAgdGhyZWFzaG9sZFxuICB2YXIgaGVhcnRiZWF0SWQgPSBudWxsO1xuICB2YXIgaGVhcnRiZWF0VGltZW91dElkID0gbnVsbDtcblxuICB2YXIgaGFuZHNoYWtlQ2FsbGJhY2sgPSBudWxsO1xuXG4gIHZhciBkZWNvZGUgPSBudWxsO1xuICB2YXIgZW5jb2RlID0gbnVsbDtcblxuICB2YXIgdXNlQ3J5cHRvO1xuXG4gIHZhciBoYW5kc2hha2VCdWZmZXIgPSB7XG4gICAgJ3N5cyc6IHtcbiAgICAgIHR5cGU6IEpTX1dTX0NMSUVOVF9UWVBFLFxuICAgICAgdmVyc2lvbjogSlNfV1NfQ0xJRU5UX1ZFUlNJT05cbiAgICB9LFxuICAgICd1c2VyJzoge1xuICAgIH1cbiAgfTtcblxuICB2YXIgaW5pdENhbGxiYWNrID0gbnVsbDtcblxuICBwb21lbG8uaW5pdCA9IGZ1bmN0aW9uKHBhcmFtcywgY2Ipe1xuICAgIGluaXRDYWxsYmFjayA9IGNiO1xuICAgIHZhciBob3N0ID0gcGFyYW1zLmhvc3Q7XG4gICAgdmFyIHBvcnQgPSBwYXJhbXMucG9ydDtcblxuICAgIHZhciB1cmwgPSAnd3M6Ly8nICsgaG9zdDtcbiAgICBpZihwb3J0KSB7XG4gICAgICB1cmwgKz0gICc6JyArIHBvcnQ7XG4gICAgfVxuXG4gICAgaGFuZHNoYWtlQnVmZmVyLnVzZXIgPSBwYXJhbXMudXNlcjtcbiAgICBoYW5kc2hha2VDYWxsYmFjayA9IHBhcmFtcy5oYW5kc2hha2VDYWxsYmFjaztcbiAgICBpbml0V2ViU29ja2V0KHVybCwgY2IpO1xuICB9O1xuXG4gIHZhciBpbml0V2ViU29ja2V0ID0gZnVuY3Rpb24odXJsLGNiKXtcbiAgICB2YXIgb25vcGVuID0gZnVuY3Rpb24oZXZlbnQpe1xuICAgICAgdmFyIG9iaiA9IFBhY2thZ2UuZW5jb2RlKFBhY2thZ2UuVFlQRV9IQU5EU0hBS0UsIFByb3RvY29sLnN0cmVuY29kZShKU09OLnN0cmluZ2lmeShoYW5kc2hha2VCdWZmZXIpKSk7XG4gICAgICBzZW5kKG9iaik7XG4gICAgfTtcbiAgICB2YXIgb25tZXNzYWdlID0gZnVuY3Rpb24oZXZlbnQpIHtcbiAgICAgIHByb2Nlc3NQYWNrYWdlKFBhY2thZ2UuZGVjb2RlKGV2ZW50LmRhdGEpLCBjYik7XG4gICAgICAvLyBuZXcgcGFja2FnZSBhcnJpdmVkLCB1cGRhdGUgdGhlIGhlYXJ0YmVhdCB0aW1lb3V0XG4gICAgICBpZihoZWFydGJlYXRUaW1lb3V0KSB7XG4gICAgICAgIG5leHRIZWFydGJlYXRUaW1lb3V0ID0gRGF0ZS5ub3coKSArIGhlYXJ0YmVhdFRpbWVvdXQ7XG4gICAgICB9XG4gICAgfTtcbiAgICB2YXIgb25lcnJvciA9IGZ1bmN0aW9uKGV2ZW50KSB7XG4gICAgICBwb21lbG8uZW1pdCgnaW8tZXJyb3InLCBldmVudCk7XG4gICAgICBjYy5lcnJvcignc29ja2V0IGVycm9yOiAnLCBldmVudCk7XG4gICAgfTtcbiAgICB2YXIgb25jbG9zZSA9IGZ1bmN0aW9uKGV2ZW50KXtcbiAgICAgIHBvbWVsby5lbWl0KCdjbG9zZScsZXZlbnQpO1xuICAgICAgcG9tZWxvLmVtaXQoJ2Rpc2Nvbm5lY3QnLCBldmVudCk7XG4gICAgICBjYy5lcnJvcignc29ja2V0IGNsb3NlOiAnLCBldmVudCk7XG4gICAgfTtcbiAgICBzb2NrZXQgPSBuZXcgV2ViU29ja2V0KHVybCk7XG4gICAgc29ja2V0LmJpbmFyeVR5cGUgPSAnYXJyYXlidWZmZXInO1xuICAgIHNvY2tldC5vbm9wZW4gPSBvbm9wZW47XG4gICAgc29ja2V0Lm9ubWVzc2FnZSA9IG9ubWVzc2FnZTtcbiAgICBzb2NrZXQub25lcnJvciA9IG9uZXJyb3I7XG4gICAgc29ja2V0Lm9uY2xvc2UgPSBvbmNsb3NlO1xuICB9O1xuXG4gIHBvbWVsby5kaXNjb25uZWN0ID0gZnVuY3Rpb24oKSB7XG4gICAgaWYoc29ja2V0KSB7XG4gICAgICBpZihzb2NrZXQuZGlzY29ubmVjdCkgc29ja2V0LmRpc2Nvbm5lY3QoKTtcbiAgICAgIGlmKHNvY2tldC5jbG9zZSkgc29ja2V0LmNsb3NlKCk7XG4gICAgICBjYy5sb2coJ2Rpc2Nvbm5lY3QnKTtcbiAgICAgIHNvY2tldCA9IG51bGw7XG4gICAgfVxuXG4gICAgaWYoaGVhcnRiZWF0SWQpIHtcbiAgICAgIGNsZWFyVGltZW91dChoZWFydGJlYXRJZCk7XG4gICAgICBoZWFydGJlYXRJZCA9IG51bGw7XG4gICAgfVxuICAgIGlmKGhlYXJ0YmVhdFRpbWVvdXRJZCkge1xuICAgICAgY2xlYXJUaW1lb3V0KGhlYXJ0YmVhdFRpbWVvdXRJZCk7XG4gICAgICBoZWFydGJlYXRUaW1lb3V0SWQgPSBudWxsO1xuICAgIH1cbiAgfTtcblxuICBwb21lbG8ucmVxdWVzdCA9IGZ1bmN0aW9uKHJvdXRlLCBtc2csIGNiKSB7XG4gICAgaWYoYXJndW1lbnRzLmxlbmd0aCA9PT0gMiAmJiB0eXBlb2YgbXNnID09PSAnZnVuY3Rpb24nKSB7XG4gICAgICBjYiA9IG1zZztcbiAgICAgIG1zZyA9IHt9O1xuICAgIH0gZWxzZSB7XG4gICAgICBtc2cgPSBtc2cgfHwge307XG4gICAgfVxuICAgIHJvdXRlID0gcm91dGUgfHwgbXNnLnJvdXRlO1xuICAgIGlmKCFyb3V0ZSkge1xuICAgICAgcmV0dXJuO1xuICAgIH1cblxuICAgIHJlcUlkKys7XG4gICAgc2VuZE1lc3NhZ2UocmVxSWQsIHJvdXRlLCBtc2cpO1xuXG4gICAgY2FsbGJhY2tzW3JlcUlkXSA9IGNiO1xuICAgIHJvdXRlTWFwW3JlcUlkXSA9IHJvdXRlO1xuICB9O1xuXG4gIHBvbWVsby5ub3RpZnkgPSBmdW5jdGlvbihyb3V0ZSwgbXNnKSB7XG4gICAgbXNnID0gbXNnIHx8IHt9O1xuICAgIHNlbmRNZXNzYWdlKDAsIHJvdXRlLCBtc2cpO1xuICB9O1xuXG4gIHZhciBzZW5kTWVzc2FnZSA9IGZ1bmN0aW9uKHJlcUlkLCByb3V0ZSwgbXNnKSB7XG4gICAgdmFyIHR5cGUgPSByZXFJZCA/IE1lc3NhZ2UuVFlQRV9SRVFVRVNUIDogTWVzc2FnZS5UWVBFX05PVElGWTtcblxuICAgIC8vY29tcHJlc3MgbWVzc2FnZSBieSBwcm90b2J1ZlxuICAgIHZhciBwcm90b3MgPSAhIXBvbWVsby5kYXRhLnByb3Rvcz9wb21lbG8uZGF0YS5wcm90b3MuY2xpZW50Ont9O1xuICAgIGlmKCEhcHJvdG9zW3JvdXRlXSl7XG4gICAgICBtc2cgPSBwcm90b2J1Zi5lbmNvZGUocm91dGUsIG1zZyk7XG4gICAgfWVsc2V7XG4gICAgICBtc2cgPSBQcm90b2NvbC5zdHJlbmNvZGUoSlNPTi5zdHJpbmdpZnkobXNnKSk7XG4gICAgfVxuXG5cbiAgICB2YXIgY29tcHJlc3NSb3V0ZSA9IDA7XG4gICAgaWYocG9tZWxvLmRpY3QgJiYgcG9tZWxvLmRpY3Rbcm91dGVdKXtcbiAgICAgIHJvdXRlID0gcG9tZWxvLmRpY3Rbcm91dGVdO1xuICAgICAgY29tcHJlc3NSb3V0ZSA9IDE7XG4gICAgfVxuXG4gICAgbXNnID0gTWVzc2FnZS5lbmNvZGUocmVxSWQsIHR5cGUsIGNvbXByZXNzUm91dGUsIHJvdXRlLCBtc2cpO1xuICAgIHZhciBwYWNrZXQgPSBQYWNrYWdlLmVuY29kZShQYWNrYWdlLlRZUEVfREFUQSwgbXNnKTtcbiAgICBzZW5kKHBhY2tldCk7XG4gIH07XG5cbiAgdmFyIHNlbmQgPSBmdW5jdGlvbihwYWNrZXQpe1xuICAgIHNvY2tldC5zZW5kKHBhY2tldC5idWZmZXIpO1xuICB9O1xuXG5cbiAgdmFyIGhhbmRsZXIgPSB7fTtcblxuICB2YXIgaGVhcnRiZWF0ID0gZnVuY3Rpb24oZGF0YSkge1xuICAgIGlmKCFoZWFydGJlYXRJbnRlcnZhbCkge1xuICAgICAgLy8gbm8gaGVhcnRiZWF0XG4gICAgICByZXR1cm47XG4gICAgfVxuXG4gICAgdmFyIG9iaiA9IFBhY2thZ2UuZW5jb2RlKFBhY2thZ2UuVFlQRV9IRUFSVEJFQVQpO1xuICAgIGlmKGhlYXJ0YmVhdFRpbWVvdXRJZCkge1xuICAgICAgY2xlYXJUaW1lb3V0KGhlYXJ0YmVhdFRpbWVvdXRJZCk7XG4gICAgICBoZWFydGJlYXRUaW1lb3V0SWQgPSBudWxsO1xuICAgIH1cblxuICAgIGlmKGhlYXJ0YmVhdElkKSB7XG4gICAgICAvLyBhbHJlYWR5IGluIGEgaGVhcnRiZWF0IGludGVydmFsXG4gICAgICByZXR1cm47XG4gICAgfVxuXG4gICAgaGVhcnRiZWF0SWQgPSBzZXRUaW1lb3V0KGZ1bmN0aW9uKCkge1xuICAgICAgaGVhcnRiZWF0SWQgPSBudWxsO1xuICAgICAgc2VuZChvYmopO1xuXG4gICAgICBuZXh0SGVhcnRiZWF0VGltZW91dCA9IERhdGUubm93KCkgKyBoZWFydGJlYXRUaW1lb3V0O1xuICAgICAgaGVhcnRiZWF0VGltZW91dElkID0gc2V0VGltZW91dChoZWFydGJlYXRUaW1lb3V0Q2IsIGhlYXJ0YmVhdFRpbWVvdXQpO1xuICAgIH0sIGhlYXJ0YmVhdEludGVydmFsKTtcbiAgfTtcblxuICB2YXIgaGVhcnRiZWF0VGltZW91dENiID0gZnVuY3Rpb24oKSB7XG4gICAgdmFyIGdhcCA9IG5leHRIZWFydGJlYXRUaW1lb3V0IC0gRGF0ZS5ub3coKTtcbiAgICBpZihnYXAgPiBnYXBUaHJlc2hvbGQpIHtcbiAgICAgIGhlYXJ0YmVhdFRpbWVvdXRJZCA9IHNldFRpbWVvdXQoaGVhcnRiZWF0VGltZW91dENiLCBnYXApO1xuICAgIH0gZWxzZSB7XG4gICAgICBjYy5lcnJvcignc2VydmVyIGhlYXJ0YmVhdCB0aW1lb3V0Jyk7XG4gICAgICBwb21lbG8uZW1pdCgnaGVhcnRiZWF0IHRpbWVvdXQnKTtcbiAgICAgIHBvbWVsby5kaXNjb25uZWN0KCk7XG4gICAgfVxuICB9O1xuXG4gIHZhciBoYW5kc2hha2UgPSBmdW5jdGlvbihkYXRhKXtcbiAgICBkYXRhID0gSlNPTi5wYXJzZShQcm90b2NvbC5zdHJkZWNvZGUoZGF0YSkpO1xuICAgIGlmKGRhdGEuY29kZSA9PT0gUkVTX09MRF9DTElFTlQpIHtcbiAgICAgIHBvbWVsby5lbWl0KCdlcnJvcicsICdjbGllbnQgdmVyc2lvbiBub3QgZnVsbGZpbGwnKTtcbiAgICAgIHJldHVybjtcbiAgICB9XG5cbiAgICBpZihkYXRhLmNvZGUgIT09IFJFU19PSykge1xuICAgICAgcG9tZWxvLmVtaXQoJ2Vycm9yJywgJ2hhbmRzaGFrZSBmYWlsJyk7XG4gICAgICByZXR1cm47XG4gICAgfVxuXG4gICAgaGFuZHNoYWtlSW5pdChkYXRhKTtcblxuICAgIHZhciBvYmogPSBQYWNrYWdlLmVuY29kZShQYWNrYWdlLlRZUEVfSEFORFNIQUtFX0FDSyk7XG4gICAgc2VuZChvYmopO1xuICAgIGlmKGluaXRDYWxsYmFjaykge1xuICAgICAgaW5pdENhbGxiYWNrKHNvY2tldCk7XG4gICAgICBpbml0Q2FsbGJhY2sgPSBudWxsO1xuICAgIH1cbiAgfTtcblxuICB2YXIgb25EYXRhID0gZnVuY3Rpb24oZGF0YSl7XG4gICAgLy9wcm9idWZmIGRlY29kZVxuICAgIHZhciBtc2cgPSBNZXNzYWdlLmRlY29kZShkYXRhKTtcblxuICAgIGlmKG1zZy5pZCA+IDApe1xuICAgICAgbXNnLnJvdXRlID0gcm91dGVNYXBbbXNnLmlkXTtcbiAgICAgIGRlbGV0ZSByb3V0ZU1hcFttc2cuaWRdO1xuICAgICAgaWYoIW1zZy5yb3V0ZSl7XG4gICAgICAgIHJldHVybjtcbiAgICAgIH1cbiAgICB9XG5cbiAgICBtc2cuYm9keSA9IGRlQ29tcG9zZShtc2cpO1xuXG4gICAgcHJvY2Vzc01lc3NhZ2UocG9tZWxvLCBtc2cpO1xuICB9O1xuXG4gIHZhciBvbktpY2sgPSBmdW5jdGlvbihkYXRhKSB7XG4gICAgZGF0YSA9IEpTT04ucGFyc2UoUHJvdG9jb2wuc3RyZGVjb2RlKGRhdGEpKTtcbiAgICBwb21lbG8uZW1pdCgnb25LaWNrJywgZGF0YSk7XG4gIH07XG5cbiAgaGFuZGxlcnNbUGFja2FnZS5UWVBFX0hBTkRTSEFLRV0gPSBoYW5kc2hha2U7XG4gIGhhbmRsZXJzW1BhY2thZ2UuVFlQRV9IRUFSVEJFQVRdID0gaGVhcnRiZWF0O1xuICBoYW5kbGVyc1tQYWNrYWdlLlRZUEVfREFUQV0gPSBvbkRhdGE7XG4gIGhhbmRsZXJzW1BhY2thZ2UuVFlQRV9LSUNLXSA9IG9uS2ljaztcblxuICB2YXIgcHJvY2Vzc1BhY2thZ2UgPSBmdW5jdGlvbihtc2dzKSB7XG4gICAgaWYoQXJyYXkuaXNBcnJheShtc2dzKSkge1xuICAgICAgZm9yKHZhciBpPTA7IGk8bXNncy5sZW5ndGg7IGkrKykge1xuICAgICAgICB2YXIgbXNnID0gbXNnc1tpXTtcbiAgICAgICAgaGFuZGxlcnNbbXNnLnR5cGVdKG1zZy5ib2R5KTtcbiAgICAgIH1cbiAgICB9IGVsc2Uge1xuICAgICAgaGFuZGxlcnNbbXNncy50eXBlXShtc2dzLmJvZHkpO1xuICAgIH1cbiAgfTtcblxuICB2YXIgcHJvY2Vzc01lc3NhZ2UgPSBmdW5jdGlvbihwb21lbG8sIG1zZykge1xuICAgIGlmKCFtc2cuaWQpIHtcbiAgICAgIC8vIHNlcnZlciBwdXNoIG1lc3NhZ2VcbiAgICAgIHBvbWVsby5lbWl0KG1zZy5yb3V0ZSwgbXNnLmJvZHkpO1xuICAgIH1cblxuICAgIC8vaWYgaGF2ZSBhIGlkIHRoZW4gZmluZCB0aGUgY2FsbGJhY2sgZnVuY3Rpb24gd2l0aCB0aGUgcmVxdWVzdFxuICAgIHZhciBjYiA9IGNhbGxiYWNrc1ttc2cuaWRdO1xuXG4gICAgZGVsZXRlIGNhbGxiYWNrc1ttc2cuaWRdO1xuICAgIGlmKHR5cGVvZiBjYiAhPT0gJ2Z1bmN0aW9uJykge1xuICAgICAgcmV0dXJuO1xuICAgIH1cblxuICAgIGNiKG1zZy5ib2R5KTtcbiAgICByZXR1cm47XG4gIH07XG5cbiAgdmFyIHByb2Nlc3NNZXNzYWdlQmF0Y2ggPSBmdW5jdGlvbihwb21lbG8sIG1zZ3MpIHtcbiAgICBmb3IodmFyIGk9MCwgbD1tc2dzLmxlbmd0aDsgaTxsOyBpKyspIHtcbiAgICAgIHByb2Nlc3NNZXNzYWdlKHBvbWVsbywgbXNnc1tpXSk7XG4gICAgfVxuICB9O1xuXG4gIHZhciBkZUNvbXBvc2UgPSBmdW5jdGlvbihtc2cpe1xuICAgIHZhciBwcm90b3MgPSAhIXBvbWVsby5kYXRhLnByb3Rvcz9wb21lbG8uZGF0YS5wcm90b3Muc2VydmVyOnt9O1xuICAgIHZhciBhYmJycyA9IHBvbWVsby5kYXRhLmFiYnJzO1xuICAgIHZhciByb3V0ZSA9IG1zZy5yb3V0ZTtcblxuICAgIC8vRGVjb21wb3NlIHJvdXRlIGZyb20gZGljdFxuICAgIGlmKG1zZy5jb21wcmVzc1JvdXRlKSB7XG4gICAgICBpZighYWJicnNbcm91dGVdKXtcbiAgICAgICAgcmV0dXJuIHt9O1xuICAgICAgfVxuXG4gICAgICByb3V0ZSA9IG1zZy5yb3V0ZSA9IGFiYnJzW3JvdXRlXTtcbiAgICB9XG4gICAgaWYoISFwcm90b3Nbcm91dGVdKXtcbiAgICAgIHJldHVybiBwcm90b2J1Zi5kZWNvZGUocm91dGUsIG1zZy5ib2R5KTtcbiAgICB9ZWxzZXtcbiAgICAgIHJldHVybiBKU09OLnBhcnNlKFByb3RvY29sLnN0cmRlY29kZShtc2cuYm9keSkpO1xuICAgIH1cblxuICAgIHJldHVybiBtc2c7XG4gIH07XG5cbiAgdmFyIGhhbmRzaGFrZUluaXQgPSBmdW5jdGlvbihkYXRhKXtcbiAgICBpZihkYXRhLnN5cyAmJiBkYXRhLnN5cy5oZWFydGJlYXQpIHtcbiAgICAgIGhlYXJ0YmVhdEludGVydmFsID0gZGF0YS5zeXMuaGVhcnRiZWF0ICogMTAwMDsgICAvLyBoZWFydGJlYXQgaW50ZXJ2YWxcbiAgICAgIGhlYXJ0YmVhdFRpbWVvdXQgPSBoZWFydGJlYXRJbnRlcnZhbCAqIDI7ICAgICAgICAvLyBtYXggaGVhcnRiZWF0IHRpbWVvdXRcbiAgICB9IGVsc2Uge1xuICAgICAgaGVhcnRiZWF0SW50ZXJ2YWwgPSAwO1xuICAgICAgaGVhcnRiZWF0VGltZW91dCA9IDA7XG4gICAgfVxuXG4gICAgaW5pdERhdGEoZGF0YSk7XG5cbiAgICBpZih0eXBlb2YgaGFuZHNoYWtlQ2FsbGJhY2sgPT09ICdmdW5jdGlvbicpIHtcbiAgICAgIGhhbmRzaGFrZUNhbGxiYWNrKGRhdGEudXNlcik7XG4gICAgfVxuICB9O1xuXG4gIC8vSW5pdGlsaXplIGRhdGEgdXNlZCBpbiBwb21lbG8gY2xpZW50XG4gIHZhciBpbml0RGF0YSA9IGZ1bmN0aW9uKGRhdGEpe1xuICAgIGlmKCFkYXRhIHx8ICFkYXRhLnN5cykge1xuICAgICAgcmV0dXJuO1xuICAgIH1cbiAgICBwb21lbG8uZGF0YSA9IHBvbWVsby5kYXRhIHx8IHt9O1xuICAgIHZhciBkaWN0ID0gZGF0YS5zeXMuZGljdDtcbiAgICB2YXIgcHJvdG9zID0gZGF0YS5zeXMucHJvdG9zO1xuXG4gICAgLy9Jbml0IGNvbXByZXNzIGRpY3RcbiAgICBpZihkaWN0KXtcbiAgICAgIHBvbWVsby5kYXRhLmRpY3QgPSBkaWN0O1xuICAgICAgcG9tZWxvLmRhdGEuYWJicnMgPSB7fTtcblxuICAgICAgZm9yKHZhciByb3V0ZSBpbiBkaWN0KXtcbiAgICAgICAgcG9tZWxvLmRhdGEuYWJicnNbZGljdFtyb3V0ZV1dID0gcm91dGU7XG4gICAgICB9XG4gICAgfVxuXG4gICAgLy9Jbml0IHByb3RvYnVmIHByb3Rvc1xuICAgIGlmKHByb3Rvcyl7XG4gICAgICBwb21lbG8uZGF0YS5wcm90b3MgPSB7XG4gICAgICAgIHNlcnZlciA6IHByb3Rvcy5zZXJ2ZXIgfHwge30sXG4gICAgICAgIGNsaWVudCA6IHByb3Rvcy5jbGllbnQgfHwge31cbiAgICAgIH07XG4gICAgICBpZighIXByb3RvYnVmKXtcbiAgICAgICAgcHJvdG9idWYuaW5pdCh7ZW5jb2RlclByb3RvczogcHJvdG9zLmNsaWVudCwgZGVjb2RlclByb3RvczogcHJvdG9zLnNlcnZlcn0pO1xuICAgICAgfVxuICAgIH1cbiAgfTtcblxuICBtb2R1bGUuZXhwb3J0cyA9IHBvbWVsbztcbn0pKCk7XG4iLCIvKiBQcm90b2NvbEJ1ZmZlciBjbGllbnQgMC4xLjAqL1xuXG4vKipcbiAqIHBvbWVsby1wcm90b2J1ZlxuICogQGF1dGhvciA8emhhbmcwOTM1QGdtYWlsLmNvbT5cbiAqL1xuXG4vKipcbiAqIFByb3RvY29sIGJ1ZmZlciByb290XG4gKiBJbiBicm93c2VyLCBpdCB3aWxsIGJlIHdpbmRvdy5wcm90YnVmXG4gKi9cbihmdW5jdGlvbiAoZXhwb3J0cywgZ2xvYmFsKXtcbiAgdmFyIFByb3RvYnVmID0gZXhwb3J0cztcblxuICBQcm90b2J1Zi5pbml0ID0gZnVuY3Rpb24ob3B0cyl7XG4gICAgLy9PbiB0aGUgc2VydmVyc2lkZSwgdXNlIHNlcnZlclByb3RvcyB0byBlbmNvZGUgbWVzc2FnZXMgc2VuZCB0byBjbGllbnRcbiAgICBQcm90b2J1Zi5lbmNvZGVyLmluaXQob3B0cy5lbmNvZGVyUHJvdG9zKTtcblxuICAgIC8vT24gdGhlIHNlcnZlcnNpZGUsIHVzZXIgY2xpZW50UHJvdG9zIHRvIGRlY29kZSBtZXNzYWdlcyByZWNlaXZlIGZyb20gY2xpZW50c1xuICAgIFByb3RvYnVmLmRlY29kZXIuaW5pdChvcHRzLmRlY29kZXJQcm90b3MpO1xuICB9O1xuXG4gIFByb3RvYnVmLmVuY29kZSA9IGZ1bmN0aW9uKGtleSwgbXNnKXtcbiAgICByZXR1cm4gUHJvdG9idWYuZW5jb2Rlci5lbmNvZGUoa2V5LCBtc2cpO1xuICB9O1xuXG4gIFByb3RvYnVmLmRlY29kZSA9IGZ1bmN0aW9uKGtleSwgbXNnKXtcbiAgICByZXR1cm4gUHJvdG9idWYuZGVjb2Rlci5kZWNvZGUoa2V5LCBtc2cpO1xuICB9O1xuXG4gIC8vIGV4cG9ydHMgdG8gc3VwcG9ydCBmb3IgY29tcG9uZW50c1xuICBtb2R1bGUuZXhwb3J0cyA9IFByb3RvYnVmO1xuICBpZih0eXBlb2Yod2luZG93KSAhPSBcInVuZGVmaW5lZFwiKSB7XG4gICAgd2luZG93LnByb3RvYnVmID0gUHJvdG9idWY7XG4gIH1cblxufSkodHlwZW9mKHdpbmRvdykgPT0gXCJ1bmRlZmluZWRcIiA/IG1vZHVsZS5leHBvcnRzIDp7fSwgdGhpcyk7XG5cbi8qKlxuICogY29uc3RhbnRzXG4gKi9cbihmdW5jdGlvbiAoZXhwb3J0cywgZ2xvYmFsKXtcbiAgdmFyIGNvbnN0YW50cyA9IGV4cG9ydHMuY29uc3RhbnRzID0ge307XG5cbiAgY29uc3RhbnRzLlRZUEVTID0ge1xuICAgIHVJbnQzMiA6IDAsXG4gICAgc0ludDMyIDogMCxcbiAgICBpbnQzMiA6IDAsXG4gICAgZG91YmxlIDogMSxcbiAgICBzdHJpbmcgOiAyLFxuICAgIG1lc3NhZ2UgOiAyLFxuICAgIGZsb2F0IDogNVxuICB9O1xuXG59KSgndW5kZWZpbmVkJyAhPT0gdHlwZW9mIHByb3RvYnVmID8gcHJvdG9idWYgOiBtb2R1bGUuZXhwb3J0cywgdGhpcyk7XG5cbi8qKlxuICogdXRpbCBtb2R1bGVcbiAqL1xuKGZ1bmN0aW9uIChleHBvcnRzLCBnbG9iYWwpe1xuXG4gIHZhciBVdGlsID0gZXhwb3J0cy51dGlsID0ge307XG5cbiAgVXRpbC5pc1NpbXBsZVR5cGUgPSBmdW5jdGlvbih0eXBlKXtcbiAgICByZXR1cm4gKCB0eXBlID09PSAndUludDMyJyB8fFxuICAgICAgICAgICAgIHR5cGUgPT09ICdzSW50MzInIHx8XG4gICAgICAgICAgICAgdHlwZSA9PT0gJ2ludDMyJyAgfHxcbiAgICAgICAgICAgICB0eXBlID09PSAndUludDY0JyB8fFxuICAgICAgICAgICAgIHR5cGUgPT09ICdzSW50NjQnIHx8XG4gICAgICAgICAgICAgdHlwZSA9PT0gJ2Zsb2F0JyAgfHxcbiAgICAgICAgICAgICB0eXBlID09PSAnZG91YmxlJyApO1xuICB9O1xuXG59KSgndW5kZWZpbmVkJyAhPT0gdHlwZW9mIHByb3RvYnVmID8gcHJvdG9idWYgOiBtb2R1bGUuZXhwb3J0cywgdGhpcyk7XG5cbi8qKlxuICogY29kZWMgbW9kdWxlXG4gKi9cbihmdW5jdGlvbiAoZXhwb3J0cywgZ2xvYmFsKXtcblxuICB2YXIgQ29kZWMgPSBleHBvcnRzLmNvZGVjID0ge307XG5cbiAgdmFyIGJ1ZmZlciA9IG5ldyBBcnJheUJ1ZmZlcig4KTtcbiAgdmFyIGZsb2F0MzJBcnJheSA9IG5ldyBGbG9hdDMyQXJyYXkoYnVmZmVyKTtcbiAgdmFyIGZsb2F0NjRBcnJheSA9IG5ldyBGbG9hdDY0QXJyYXkoYnVmZmVyKTtcbiAgdmFyIHVJbnQ4QXJyYXkgPSBuZXcgVWludDhBcnJheShidWZmZXIpO1xuXG4gIENvZGVjLmVuY29kZVVJbnQzMiA9IGZ1bmN0aW9uKG4pe1xuICAgIHZhciBuID0gcGFyc2VJbnQobik7XG4gICAgaWYoaXNOYU4obikgfHwgbiA8IDApe1xuICAgICAgcmV0dXJuIG51bGw7XG4gICAgfVxuXG4gICAgdmFyIHJlc3VsdCA9IFtdO1xuICAgIGRve1xuICAgICAgdmFyIHRtcCA9IG4gJSAxMjg7XG4gICAgICB2YXIgbmV4dCA9IE1hdGguZmxvb3Iobi8xMjgpO1xuXG4gICAgICBpZihuZXh0ICE9PSAwKXtcbiAgICAgICAgdG1wID0gdG1wICsgMTI4O1xuICAgICAgfVxuICAgICAgcmVzdWx0LnB1c2godG1wKTtcbiAgICAgIG4gPSBuZXh0O1xuICAgIH13aGlsZShuICE9PSAwKTtcblxuICAgIHJldHVybiByZXN1bHQ7XG4gIH07XG5cbiAgQ29kZWMuZW5jb2RlU0ludDMyID0gZnVuY3Rpb24obil7XG4gICAgdmFyIG4gPSBwYXJzZUludChuKTtcbiAgICBpZihpc05hTihuKSl7XG4gICAgICByZXR1cm4gbnVsbDtcbiAgICB9XG4gICAgbiA9IG48MD8oTWF0aC5hYnMobikqMi0xKTpuKjI7XG5cbiAgICByZXR1cm4gQ29kZWMuZW5jb2RlVUludDMyKG4pO1xuICB9O1xuXG4gIENvZGVjLmRlY29kZVVJbnQzMiA9IGZ1bmN0aW9uKGJ5dGVzKXtcbiAgICB2YXIgbiA9IDA7XG5cbiAgICBmb3IodmFyIGkgPSAwOyBpIDwgYnl0ZXMubGVuZ3RoOyBpKyspe1xuICAgICAgdmFyIG0gPSBwYXJzZUludChieXRlc1tpXSk7XG4gICAgICBuID0gbiArICgobSAmIDB4N2YpICogTWF0aC5wb3coMiwoNyppKSkpO1xuICAgICAgaWYobSA8IDEyOCl7XG4gICAgICAgIHJldHVybiBuO1xuICAgICAgfVxuICAgIH1cblxuICAgIHJldHVybiBuO1xuICB9O1xuXG5cbiAgQ29kZWMuZGVjb2RlU0ludDMyID0gZnVuY3Rpb24oYnl0ZXMpe1xuICAgIHZhciBuID0gdGhpcy5kZWNvZGVVSW50MzIoYnl0ZXMpO1xuICAgIHZhciBmbGFnID0gKChuJTIpID09PSAxKT8tMToxO1xuXG4gICAgbiA9ICgobiUyICsgbikvMikqZmxhZztcblxuICAgIHJldHVybiBuO1xuICB9O1xuXG4gIENvZGVjLmVuY29kZUZsb2F0ID0gZnVuY3Rpb24oZmxvYXQpe1xuICAgIGZsb2F0MzJBcnJheVswXSA9IGZsb2F0O1xuICAgIHJldHVybiB1SW50OEFycmF5O1xuICB9O1xuXG4gIENvZGVjLmRlY29kZUZsb2F0ID0gZnVuY3Rpb24oYnl0ZXMsIG9mZnNldCl7XG4gICAgaWYoIWJ5dGVzIHx8IGJ5dGVzLmxlbmd0aCA8IChvZmZzZXQgKzQpKXtcbiAgICAgIHJldHVybiBudWxsO1xuICAgIH1cblxuICAgIGZvcih2YXIgaSA9IDA7IGkgPCA0OyBpKyspe1xuICAgICAgdUludDhBcnJheVtpXSA9IGJ5dGVzW29mZnNldCArIGldO1xuICAgIH1cblxuICAgIHJldHVybiBmbG9hdDMyQXJyYXlbMF07XG4gIH07XG5cbiAgQ29kZWMuZW5jb2RlRG91YmxlID0gZnVuY3Rpb24oZG91YmxlKXtcbiAgICBmbG9hdDY0QXJyYXlbMF0gPSBkb3VibGU7XG4gICAgcmV0dXJuIHVJbnQ4QXJyYXkuc3ViYXJyYXkoMCwgOCk7XG4gIH07XG5cbiAgQ29kZWMuZGVjb2RlRG91YmxlID0gZnVuY3Rpb24oYnl0ZXMsIG9mZnNldCl7XG4gICAgaWYoIWJ5dGVzIHx8IGJ5dGVzLmxlbmd0aCA8ICg4ICsgb2Zmc2V0KSl7XG4gICAgICByZXR1cm4gbnVsbDtcbiAgICB9XG5cbiAgICBmb3IodmFyIGkgPSAwOyBpIDwgODsgaSsrKXtcbiAgICAgIHVJbnQ4QXJyYXlbaV0gPSBieXRlc1tvZmZzZXQgKyBpXTtcbiAgICB9XG5cbiAgICByZXR1cm4gZmxvYXQ2NEFycmF5WzBdO1xuICB9O1xuXG4gIENvZGVjLmVuY29kZVN0ciA9IGZ1bmN0aW9uKGJ5dGVzLCBvZmZzZXQsIHN0cil7XG4gICAgZm9yKHZhciBpID0gMDsgaSA8IHN0ci5sZW5ndGg7IGkrKyl7XG4gICAgICB2YXIgY29kZSA9IHN0ci5jaGFyQ29kZUF0KGkpO1xuICAgICAgdmFyIGNvZGVzID0gZW5jb2RlMlVURjgoY29kZSk7XG5cbiAgICAgIGZvcih2YXIgaiA9IDA7IGogPCBjb2Rlcy5sZW5ndGg7IGorKyl7XG4gICAgICAgIGJ5dGVzW29mZnNldF0gPSBjb2Rlc1tqXTtcbiAgICAgICAgb2Zmc2V0Kys7XG4gICAgICB9XG4gICAgfVxuXG4gICAgcmV0dXJuIG9mZnNldDtcbiAgfTtcblxuICAvKipcbiAgICogRGVjb2RlIHN0cmluZyBmcm9tIHV0ZjggYnl0ZXNcbiAgICovXG4gIENvZGVjLmRlY29kZVN0ciA9IGZ1bmN0aW9uKGJ5dGVzLCBvZmZzZXQsIGxlbmd0aCl7XG4gICAgdmFyIGFycmF5ID0gW107XG4gICAgdmFyIGVuZCA9IG9mZnNldCArIGxlbmd0aDtcblxuICAgIHdoaWxlKG9mZnNldCA8IGVuZCl7XG4gICAgICB2YXIgY29kZSA9IDA7XG5cbiAgICAgIGlmKGJ5dGVzW29mZnNldF0gPCAxMjgpe1xuICAgICAgICBjb2RlID0gYnl0ZXNbb2Zmc2V0XTtcblxuICAgICAgICBvZmZzZXQgKz0gMTtcbiAgICAgIH1lbHNlIGlmKGJ5dGVzW29mZnNldF0gPCAyMjQpe1xuICAgICAgICBjb2RlID0gKChieXRlc1tvZmZzZXRdICYgMHgzZik8PDYpICsgKGJ5dGVzW29mZnNldCsxXSAmIDB4M2YpO1xuICAgICAgICBvZmZzZXQgKz0gMjtcbiAgICAgIH1lbHNle1xuICAgICAgICBjb2RlID0gKChieXRlc1tvZmZzZXRdICYgMHgwZik8PDEyKSArICgoYnl0ZXNbb2Zmc2V0KzFdICYgMHgzZik8PDYpICsgKGJ5dGVzW29mZnNldCsyXSAmIDB4M2YpO1xuICAgICAgICBvZmZzZXQgKz0gMztcbiAgICAgIH1cblxuICAgICAgYXJyYXkucHVzaChjb2RlKTtcblxuICAgIH1cblxuICAgIHZhciBzdHIgPSAnJztcbiAgICBmb3IodmFyIGkgPSAwOyBpIDwgYXJyYXkubGVuZ3RoOyl7XG4gICAgICBzdHIgKz0gU3RyaW5nLmZyb21DaGFyQ29kZS5hcHBseShudWxsLCBhcnJheS5zbGljZShpLCBpICsgMTAwMDApKTtcbiAgICAgIGkgKz0gMTAwMDA7XG4gICAgfVxuXG4gICAgcmV0dXJuIHN0cjtcbiAgfTtcblxuICAvKipcbiAgICogUmV0dXJuIHRoZSBieXRlIGxlbmd0aCBvZiB0aGUgc3RyIHVzZSB1dGY4XG4gICAqL1xuICBDb2RlYy5ieXRlTGVuZ3RoID0gZnVuY3Rpb24oc3RyKXtcbiAgICBpZih0eXBlb2Yoc3RyKSAhPT0gJ3N0cmluZycpe1xuICAgICAgcmV0dXJuIC0xO1xuICAgIH1cblxuICAgIHZhciBsZW5ndGggPSAwO1xuXG4gICAgZm9yKHZhciBpID0gMDsgaSA8IHN0ci5sZW5ndGg7IGkrKyl7XG4gICAgICB2YXIgY29kZSA9IHN0ci5jaGFyQ29kZUF0KGkpO1xuICAgICAgbGVuZ3RoICs9IGNvZGVMZW5ndGgoY29kZSk7XG4gICAgfVxuXG4gICAgcmV0dXJuIGxlbmd0aDtcbiAgfTtcblxuICAvKipcbiAgICogRW5jb2RlIGEgdW5pY29kZTE2IGNoYXIgY29kZSB0byB1dGY4IGJ5dGVzXG4gICAqL1xuICBmdW5jdGlvbiBlbmNvZGUyVVRGOChjaGFyQ29kZSl7XG4gICAgaWYoY2hhckNvZGUgPD0gMHg3Zil7XG4gICAgICByZXR1cm4gW2NoYXJDb2RlXTtcbiAgICB9ZWxzZSBpZihjaGFyQ29kZSA8PSAweDdmZil7XG4gICAgICByZXR1cm4gWzB4YzB8KGNoYXJDb2RlPj42KSwgMHg4MHwoY2hhckNvZGUgJiAweDNmKV07XG4gICAgfWVsc2V7XG4gICAgICByZXR1cm4gWzB4ZTB8KGNoYXJDb2RlPj4xMiksIDB4ODB8KChjaGFyQ29kZSAmIDB4ZmMwKT4+NiksIDB4ODB8KGNoYXJDb2RlICYgMHgzZildO1xuICAgIH1cbiAgfVxuXG4gIGZ1bmN0aW9uIGNvZGVMZW5ndGgoY29kZSl7XG4gICAgaWYoY29kZSA8PSAweDdmKXtcbiAgICAgIHJldHVybiAxO1xuICAgIH1lbHNlIGlmKGNvZGUgPD0gMHg3ZmYpe1xuICAgICAgcmV0dXJuIDI7XG4gICAgfWVsc2V7XG4gICAgICByZXR1cm4gMztcbiAgICB9XG4gIH1cbn0pKCd1bmRlZmluZWQnICE9PSB0eXBlb2YgcHJvdG9idWYgPyBwcm90b2J1ZiA6IG1vZHVsZS5leHBvcnRzLCB0aGlzKTtcblxuLyoqXG4gKiBlbmNvZGVyIG1vZHVsZVxuICovXG4oZnVuY3Rpb24gKGV4cG9ydHMsIGdsb2JhbCl7XG5cbiAgdmFyIHByb3RvYnVmID0gZXhwb3J0cztcbiAgdmFyIE1zZ0VuY29kZXIgPSBleHBvcnRzLmVuY29kZXIgPSB7fTtcblxuICB2YXIgY29kZWMgPSBwcm90b2J1Zi5jb2RlYztcbiAgdmFyIGNvbnN0YW50ID0gcHJvdG9idWYuY29uc3RhbnRzO1xuICB2YXIgdXRpbCA9IHByb3RvYnVmLnV0aWw7XG5cbiAgTXNnRW5jb2Rlci5pbml0ID0gZnVuY3Rpb24ocHJvdG9zKXtcbiAgICB0aGlzLnByb3RvcyA9IHByb3RvcyB8fCB7fTtcbiAgfTtcblxuICBNc2dFbmNvZGVyLmVuY29kZSA9IGZ1bmN0aW9uKHJvdXRlLCBtc2cpe1xuICAgIC8vR2V0IHByb3RvcyBmcm9tIHByb3RvcyBtYXAgdXNlIHRoZSByb3V0ZSBhcyBrZXlcbiAgICB2YXIgcHJvdG9zID0gdGhpcy5wcm90b3Nbcm91dGVdO1xuXG4gICAgLy9DaGVjayBtc2dcbiAgICBpZighY2hlY2tNc2cobXNnLCBwcm90b3MpKXtcbiAgICAgIHJldHVybiBudWxsO1xuICAgIH1cblxuICAgIC8vU2V0IHRoZSBsZW5ndGggb2YgdGhlIGJ1ZmZlciAyIHRpbWVzIGJpZ2dlciB0byBwcmV2ZW50IG92ZXJmbG93XG4gICAgdmFyIGxlbmd0aCA9IGNvZGVjLmJ5dGVMZW5ndGgoSlNPTi5zdHJpbmdpZnkobXNnKSk7XG5cbiAgICAvL0luaXQgYnVmZmVyIGFuZCBvZmZzZXRcbiAgICB2YXIgYnVmZmVyID0gbmV3IEFycmF5QnVmZmVyKGxlbmd0aCk7XG4gICAgdmFyIHVJbnQ4QXJyYXkgPSBuZXcgVWludDhBcnJheShidWZmZXIpO1xuICAgIHZhciBvZmZzZXQgPSAwO1xuXG4gICAgaWYoISFwcm90b3Mpe1xuICAgICAgb2Zmc2V0ID0gZW5jb2RlTXNnKHVJbnQ4QXJyYXksIG9mZnNldCwgcHJvdG9zLCBtc2cpO1xuICAgICAgaWYob2Zmc2V0ID4gMCl7XG4gICAgICAgIHJldHVybiB1SW50OEFycmF5LnN1YmFycmF5KDAsIG9mZnNldCk7XG4gICAgICB9XG4gICAgfVxuXG4gICAgcmV0dXJuIG51bGw7XG4gIH07XG5cbiAgLyoqXG4gICAqIENoZWNrIGlmIHRoZSBtc2cgZm9sbG93IHRoZSBkZWZpbmF0aW9uIGluIHRoZSBwcm90b3NcbiAgICovXG4gIGZ1bmN0aW9uIGNoZWNrTXNnKG1zZywgcHJvdG9zKXtcbiAgICBpZighcHJvdG9zKXtcbiAgICAgIHJldHVybiBmYWxzZTtcbiAgICB9XG5cbiAgICBmb3IodmFyIG5hbWUgaW4gcHJvdG9zKXtcbiAgICAgIHZhciBwcm90byA9IHByb3Rvc1tuYW1lXTtcblxuICAgICAgLy9BbGwgcmVxdWlyZWQgZWxlbWVudCBtdXN0IGV4aXN0XG4gICAgICBzd2l0Y2gocHJvdG8ub3B0aW9uKXtcbiAgICAgICAgY2FzZSAncmVxdWlyZWQnIDpcbiAgICAgICAgICBpZih0eXBlb2YobXNnW25hbWVdKSA9PT0gJ3VuZGVmaW5lZCcpe1xuICAgICAgICAgICAgcmV0dXJuIGZhbHNlO1xuICAgICAgICAgIH1cbiAgICAgICAgY2FzZSAnb3B0aW9uYWwnIDpcbiAgICAgICAgICBpZih0eXBlb2YobXNnW25hbWVdKSAhPT0gJ3VuZGVmaW5lZCcpe1xuICAgICAgICAgICAgaWYoISFwcm90b3MuX19tZXNzYWdlc1twcm90by50eXBlXSl7XG4gICAgICAgICAgICAgIGNoZWNrTXNnKG1zZ1tuYW1lXSwgcHJvdG9zLl9fbWVzc2FnZXNbcHJvdG8udHlwZV0pO1xuICAgICAgICAgICAgfVxuICAgICAgICAgIH1cbiAgICAgICAgYnJlYWs7XG4gICAgICAgIGNhc2UgJ3JlcGVhdGVkJyA6XG4gICAgICAgICAgLy9DaGVjayBuZXN0IG1lc3NhZ2UgaW4gcmVwZWF0ZWQgZWxlbWVudHNcbiAgICAgICAgICBpZighIW1zZ1tuYW1lXSAmJiAhIXByb3Rvcy5fX21lc3NhZ2VzW3Byb3RvLnR5cGVdKXtcbiAgICAgICAgICAgIGZvcih2YXIgaSA9IDA7IGkgPCBtc2dbbmFtZV0ubGVuZ3RoOyBpKyspe1xuICAgICAgICAgICAgICBpZighY2hlY2tNc2cobXNnW25hbWVdW2ldLCBwcm90b3MuX19tZXNzYWdlc1twcm90by50eXBlXSkpe1xuICAgICAgICAgICAgICAgIHJldHVybiBmYWxzZTtcbiAgICAgICAgICAgICAgfVxuICAgICAgICAgICAgfVxuICAgICAgICAgIH1cbiAgICAgICAgYnJlYWs7XG4gICAgICB9XG4gICAgfVxuXG4gICAgcmV0dXJuIHRydWU7XG4gIH1cblxuICBmdW5jdGlvbiBlbmNvZGVNc2coYnVmZmVyLCBvZmZzZXQsIHByb3RvcywgbXNnKXtcbiAgICBmb3IodmFyIG5hbWUgaW4gbXNnKXtcbiAgICAgIGlmKCEhcHJvdG9zW25hbWVdKXtcbiAgICAgICAgdmFyIHByb3RvID0gcHJvdG9zW25hbWVdO1xuXG4gICAgICAgIHN3aXRjaChwcm90by5vcHRpb24pe1xuICAgICAgICAgIGNhc2UgJ3JlcXVpcmVkJyA6XG4gICAgICAgICAgY2FzZSAnb3B0aW9uYWwnIDpcbiAgICAgICAgICAgIG9mZnNldCA9IHdyaXRlQnl0ZXMoYnVmZmVyLCBvZmZzZXQsIGVuY29kZVRhZyhwcm90by50eXBlLCBwcm90by50YWcpKTtcbiAgICAgICAgICAgIG9mZnNldCA9IGVuY29kZVByb3AobXNnW25hbWVdLCBwcm90by50eXBlLCBvZmZzZXQsIGJ1ZmZlciwgcHJvdG9zKTtcbiAgICAgICAgICBicmVhaztcbiAgICAgICAgICBjYXNlICdyZXBlYXRlZCcgOlxuICAgICAgICAgICAgaWYobXNnW25hbWVdLmxlbmd0aCA+IDApe1xuICAgICAgICAgICAgICBvZmZzZXQgPSBlbmNvZGVBcnJheShtc2dbbmFtZV0sIHByb3RvLCBvZmZzZXQsIGJ1ZmZlciwgcHJvdG9zKTtcbiAgICAgICAgICAgIH1cbiAgICAgICAgICBicmVhaztcbiAgICAgICAgfVxuICAgICAgfVxuICAgIH1cblxuICAgIHJldHVybiBvZmZzZXQ7XG4gIH1cblxuICBmdW5jdGlvbiBlbmNvZGVQcm9wKHZhbHVlLCB0eXBlLCBvZmZzZXQsIGJ1ZmZlciwgcHJvdG9zKXtcbiAgICBzd2l0Y2godHlwZSl7XG4gICAgICBjYXNlICd1SW50MzInOlxuICAgICAgICBvZmZzZXQgPSB3cml0ZUJ5dGVzKGJ1ZmZlciwgb2Zmc2V0LCBjb2RlYy5lbmNvZGVVSW50MzIodmFsdWUpKTtcbiAgICAgIGJyZWFrO1xuICAgICAgY2FzZSAnaW50MzInIDpcbiAgICAgIGNhc2UgJ3NJbnQzMic6XG4gICAgICAgIG9mZnNldCA9IHdyaXRlQnl0ZXMoYnVmZmVyLCBvZmZzZXQsIGNvZGVjLmVuY29kZVNJbnQzMih2YWx1ZSkpO1xuICAgICAgYnJlYWs7XG4gICAgICBjYXNlICdmbG9hdCc6XG4gICAgICAgIHdyaXRlQnl0ZXMoYnVmZmVyLCBvZmZzZXQsIGNvZGVjLmVuY29kZUZsb2F0KHZhbHVlKSk7XG4gICAgICAgIG9mZnNldCArPSA0O1xuICAgICAgYnJlYWs7XG4gICAgICBjYXNlICdkb3VibGUnOlxuICAgICAgICB3cml0ZUJ5dGVzKGJ1ZmZlciwgb2Zmc2V0LCBjb2RlYy5lbmNvZGVEb3VibGUodmFsdWUpKTtcbiAgICAgICAgb2Zmc2V0ICs9IDg7XG4gICAgICBicmVhaztcbiAgICAgIGNhc2UgJ3N0cmluZyc6XG4gICAgICAgIHZhciBsZW5ndGggPSBjb2RlYy5ieXRlTGVuZ3RoKHZhbHVlKTtcblxuICAgICAgICAvL0VuY29kZSBsZW5ndGhcbiAgICAgICAgb2Zmc2V0ID0gd3JpdGVCeXRlcyhidWZmZXIsIG9mZnNldCwgY29kZWMuZW5jb2RlVUludDMyKGxlbmd0aCkpO1xuICAgICAgICAvL3dyaXRlIHN0cmluZ1xuICAgICAgICBjb2RlYy5lbmNvZGVTdHIoYnVmZmVyLCBvZmZzZXQsIHZhbHVlKTtcbiAgICAgICAgb2Zmc2V0ICs9IGxlbmd0aDtcbiAgICAgIGJyZWFrO1xuICAgICAgZGVmYXVsdCA6XG4gICAgICAgIGlmKCEhcHJvdG9zLl9fbWVzc2FnZXNbdHlwZV0pe1xuICAgICAgICAgIC8vVXNlIGEgdG1wIGJ1ZmZlciB0byBidWlsZCBhbiBpbnRlcm5hbCBtc2dcbiAgICAgICAgICB2YXIgdG1wQnVmZmVyID0gbmV3IEFycmF5QnVmZmVyKGNvZGVjLmJ5dGVMZW5ndGgoSlNPTi5zdHJpbmdpZnkodmFsdWUpKSk7XG4gICAgICAgICAgdmFyIGxlbmd0aCA9IDA7XG5cbiAgICAgICAgICBsZW5ndGggPSBlbmNvZGVNc2codG1wQnVmZmVyLCBsZW5ndGgsIHByb3Rvcy5fX21lc3NhZ2VzW3R5cGVdLCB2YWx1ZSk7XG4gICAgICAgICAgLy9FbmNvZGUgbGVuZ3RoXG4gICAgICAgICAgb2Zmc2V0ID0gd3JpdGVCeXRlcyhidWZmZXIsIG9mZnNldCwgY29kZWMuZW5jb2RlVUludDMyKGxlbmd0aCkpO1xuICAgICAgICAgIC8vY29udGFjdCB0aGUgb2JqZWN0XG4gICAgICAgICAgZm9yKHZhciBpID0gMDsgaSA8IGxlbmd0aDsgaSsrKXtcbiAgICAgICAgICAgIGJ1ZmZlcltvZmZzZXRdID0gdG1wQnVmZmVyW2ldO1xuICAgICAgICAgICAgb2Zmc2V0Kys7XG4gICAgICAgICAgfVxuICAgICAgICB9XG4gICAgICBicmVhaztcbiAgICB9XG5cbiAgICByZXR1cm4gb2Zmc2V0O1xuICB9XG5cbiAgLyoqXG4gICAqIEVuY29kZSByZWFwZWF0ZWQgcHJvcGVydGllcywgc2ltcGxlIG1zZyBhbmQgb2JqZWN0IGFyZSBkZWNvZGUgZGlmZmVyZW50ZWRcbiAgICovXG4gIGZ1bmN0aW9uIGVuY29kZUFycmF5KGFycmF5LCBwcm90bywgb2Zmc2V0LCBidWZmZXIsIHByb3Rvcyl7XG4gICAgdmFyIGkgPSAwO1xuXG4gICAgaWYodXRpbC5pc1NpbXBsZVR5cGUocHJvdG8udHlwZSkpe1xuICAgICAgb2Zmc2V0ID0gd3JpdGVCeXRlcyhidWZmZXIsIG9mZnNldCwgZW5jb2RlVGFnKHByb3RvLnR5cGUsIHByb3RvLnRhZykpO1xuICAgICAgb2Zmc2V0ID0gd3JpdGVCeXRlcyhidWZmZXIsIG9mZnNldCwgY29kZWMuZW5jb2RlVUludDMyKGFycmF5Lmxlbmd0aCkpO1xuICAgICAgZm9yKGkgPSAwOyBpIDwgYXJyYXkubGVuZ3RoOyBpKyspe1xuICAgICAgICBvZmZzZXQgPSBlbmNvZGVQcm9wKGFycmF5W2ldLCBwcm90by50eXBlLCBvZmZzZXQsIGJ1ZmZlcik7XG4gICAgICB9XG4gICAgfWVsc2V7XG4gICAgICBmb3IoaSA9IDA7IGkgPCBhcnJheS5sZW5ndGg7IGkrKyl7XG4gICAgICAgIG9mZnNldCA9IHdyaXRlQnl0ZXMoYnVmZmVyLCBvZmZzZXQsIGVuY29kZVRhZyhwcm90by50eXBlLCBwcm90by50YWcpKTtcbiAgICAgICAgb2Zmc2V0ID0gZW5jb2RlUHJvcChhcnJheVtpXSwgcHJvdG8udHlwZSwgb2Zmc2V0LCBidWZmZXIsIHByb3Rvcyk7XG4gICAgICB9XG4gICAgfVxuXG4gICAgcmV0dXJuIG9mZnNldDtcbiAgfVxuXG4gIGZ1bmN0aW9uIHdyaXRlQnl0ZXMoYnVmZmVyLCBvZmZzZXQsIGJ5dGVzKXtcbiAgICBmb3IodmFyIGkgPSAwOyBpIDwgYnl0ZXMubGVuZ3RoOyBpKyssIG9mZnNldCsrKXtcbiAgICAgIGJ1ZmZlcltvZmZzZXRdID0gYnl0ZXNbaV07XG4gICAgfVxuXG4gICAgcmV0dXJuIG9mZnNldDtcbiAgfVxuXG4gIGZ1bmN0aW9uIGVuY29kZVRhZyh0eXBlLCB0YWcpe1xuICAgIHZhciB2YWx1ZSA9IGNvbnN0YW50LlRZUEVTW3R5cGVdfHwyO1xuICAgIHJldHVybiBjb2RlYy5lbmNvZGVVSW50MzIoKHRhZzw8Myl8dmFsdWUpO1xuICB9XG59KSgndW5kZWZpbmVkJyAhPT0gdHlwZW9mIHByb3RvYnVmID8gcHJvdG9idWYgOiBtb2R1bGUuZXhwb3J0cywgdGhpcyk7XG5cbi8qKlxuICogZGVjb2RlciBtb2R1bGVcbiAqL1xuKGZ1bmN0aW9uIChleHBvcnRzLCBnbG9iYWwpe1xuICB2YXIgcHJvdG9idWYgPSBleHBvcnRzO1xuICB2YXIgTXNnRGVjb2RlciA9IGV4cG9ydHMuZGVjb2RlciA9IHt9O1xuXG4gIHZhciBjb2RlYyA9IHByb3RvYnVmLmNvZGVjO1xuICB2YXIgdXRpbCA9IHByb3RvYnVmLnV0aWw7XG5cbiAgdmFyIGJ1ZmZlcjtcbiAgdmFyIG9mZnNldCA9IDA7XG5cbiAgTXNnRGVjb2Rlci5pbml0ID0gZnVuY3Rpb24ocHJvdG9zKXtcbiAgICB0aGlzLnByb3RvcyA9IHByb3RvcyB8fCB7fTtcbiAgfTtcblxuICBNc2dEZWNvZGVyLnNldFByb3RvcyA9IGZ1bmN0aW9uKHByb3Rvcyl7XG4gICAgaWYoISFwcm90b3Mpe1xuICAgICAgdGhpcy5wcm90b3MgPSBwcm90b3M7XG4gICAgfVxuICB9O1xuXG4gIE1zZ0RlY29kZXIuZGVjb2RlID0gZnVuY3Rpb24ocm91dGUsIGJ1Zil7XG4gICAgdmFyIHByb3RvcyA9IHRoaXMucHJvdG9zW3JvdXRlXTtcblxuICAgIGJ1ZmZlciA9IGJ1ZjtcbiAgICBvZmZzZXQgPSAwO1xuXG4gICAgaWYoISFwcm90b3Mpe1xuICAgICAgcmV0dXJuIGRlY29kZU1zZyh7fSwgcHJvdG9zLCBidWZmZXIubGVuZ3RoKTtcbiAgICB9XG5cbiAgICByZXR1cm4gbnVsbDtcbiAgfTtcblxuICBmdW5jdGlvbiBkZWNvZGVNc2cobXNnLCBwcm90b3MsIGxlbmd0aCl7XG4gICAgd2hpbGUob2Zmc2V0PGxlbmd0aCl7XG4gICAgICB2YXIgaGVhZCA9IGdldEhlYWQoKTtcbiAgICAgIHZhciB0eXBlID0gaGVhZC50eXBlO1xuICAgICAgdmFyIHRhZyA9IGhlYWQudGFnO1xuICAgICAgdmFyIG5hbWUgPSBwcm90b3MuX190YWdzW3RhZ107XG5cbiAgICAgIHN3aXRjaChwcm90b3NbbmFtZV0ub3B0aW9uKXtcbiAgICAgICAgY2FzZSAnb3B0aW9uYWwnIDpcbiAgICAgICAgY2FzZSAncmVxdWlyZWQnIDpcbiAgICAgICAgICBtc2dbbmFtZV0gPSBkZWNvZGVQcm9wKHByb3Rvc1tuYW1lXS50eXBlLCBwcm90b3MpO1xuICAgICAgICBicmVhaztcbiAgICAgICAgY2FzZSAncmVwZWF0ZWQnIDpcbiAgICAgICAgICBpZighbXNnW25hbWVdKXtcbiAgICAgICAgICAgIG1zZ1tuYW1lXSA9IFtdO1xuICAgICAgICAgIH1cbiAgICAgICAgICBkZWNvZGVBcnJheShtc2dbbmFtZV0sIHByb3Rvc1tuYW1lXS50eXBlLCBwcm90b3MpO1xuICAgICAgICBicmVhaztcbiAgICAgIH1cbiAgICB9XG5cbiAgICByZXR1cm4gbXNnO1xuICB9XG5cbiAgLyoqXG4gICAqIFRlc3QgaWYgdGhlIGdpdmVuIG1zZyBpcyBmaW5pc2hlZFxuICAgKi9cbiAgZnVuY3Rpb24gaXNGaW5pc2gobXNnLCBwcm90b3Mpe1xuICAgIHJldHVybiAoIXByb3Rvcy5fX3RhZ3NbcGVla0hlYWQoKS50YWddKTtcbiAgfVxuICAvKipcbiAgICogR2V0IHByb3BlcnR5IGhlYWQgZnJvbSBwcm90b2J1ZlxuICAgKi9cbiAgZnVuY3Rpb24gZ2V0SGVhZCgpe1xuICAgIHZhciB0YWcgPSBjb2RlYy5kZWNvZGVVSW50MzIoZ2V0Qnl0ZXMoKSk7XG5cbiAgICByZXR1cm4ge1xuICAgICAgdHlwZSA6IHRhZyYweDcsXG4gICAgICB0YWcgOiB0YWc+PjNcbiAgICB9O1xuICB9XG5cbiAgLyoqXG4gICAqIEdldCB0YWcgaGVhZCB3aXRob3V0IG1vdmUgdGhlIG9mZnNldFxuICAgKi9cbiAgZnVuY3Rpb24gcGVla0hlYWQoKXtcbiAgICB2YXIgdGFnID0gY29kZWMuZGVjb2RlVUludDMyKHBlZWtCeXRlcygpKTtcblxuICAgIHJldHVybiB7XG4gICAgICB0eXBlIDogdGFnJjB4NyxcbiAgICAgIHRhZyA6IHRhZz4+M1xuICAgIH07XG4gIH1cblxuICBmdW5jdGlvbiBkZWNvZGVQcm9wKHR5cGUsIHByb3Rvcyl7XG4gICAgc3dpdGNoKHR5cGUpe1xuICAgICAgY2FzZSAndUludDMyJzpcbiAgICAgICAgcmV0dXJuIGNvZGVjLmRlY29kZVVJbnQzMihnZXRCeXRlcygpKTtcbiAgICAgIGNhc2UgJ2ludDMyJyA6XG4gICAgICBjYXNlICdzSW50MzInIDpcbiAgICAgICAgcmV0dXJuIGNvZGVjLmRlY29kZVNJbnQzMihnZXRCeXRlcygpKTtcbiAgICAgIGNhc2UgJ2Zsb2F0JyA6XG4gICAgICAgIHZhciBmbG9hdCA9IGNvZGVjLmRlY29kZUZsb2F0KGJ1ZmZlciwgb2Zmc2V0KTtcbiAgICAgICAgb2Zmc2V0ICs9IDQ7XG4gICAgICAgIHJldHVybiBmbG9hdDtcbiAgICAgIGNhc2UgJ2RvdWJsZScgOlxuICAgICAgICB2YXIgZG91YmxlID0gY29kZWMuZGVjb2RlRG91YmxlKGJ1ZmZlciwgb2Zmc2V0KTtcbiAgICAgICAgb2Zmc2V0ICs9IDg7XG4gICAgICAgIHJldHVybiBkb3VibGU7XG4gICAgICBjYXNlICdzdHJpbmcnIDpcbiAgICAgICAgdmFyIGxlbmd0aCA9IGNvZGVjLmRlY29kZVVJbnQzMihnZXRCeXRlcygpKTtcblxuICAgICAgICB2YXIgc3RyID0gIGNvZGVjLmRlY29kZVN0cihidWZmZXIsIG9mZnNldCwgbGVuZ3RoKTtcbiAgICAgICAgb2Zmc2V0ICs9IGxlbmd0aDtcblxuICAgICAgICByZXR1cm4gc3RyO1xuICAgICAgZGVmYXVsdCA6XG4gICAgICAgIGlmKCEhcHJvdG9zICYmICEhcHJvdG9zLl9fbWVzc2FnZXNbdHlwZV0pe1xuICAgICAgICAgIHZhciBsZW5ndGggPSBjb2RlYy5kZWNvZGVVSW50MzIoZ2V0Qnl0ZXMoKSk7XG4gICAgICAgICAgdmFyIG1zZyA9IHt9O1xuICAgICAgICAgIGRlY29kZU1zZyhtc2csIHByb3Rvcy5fX21lc3NhZ2VzW3R5cGVdLCBvZmZzZXQrbGVuZ3RoKTtcbiAgICAgICAgICByZXR1cm4gbXNnO1xuICAgICAgICB9XG4gICAgICBicmVhaztcbiAgICB9XG4gIH1cblxuICBmdW5jdGlvbiBkZWNvZGVBcnJheShhcnJheSwgdHlwZSwgcHJvdG9zKXtcbiAgICBpZih1dGlsLmlzU2ltcGxlVHlwZSh0eXBlKSl7XG4gICAgICB2YXIgbGVuZ3RoID0gY29kZWMuZGVjb2RlVUludDMyKGdldEJ5dGVzKCkpO1xuXG4gICAgICBmb3IodmFyIGkgPSAwOyBpIDwgbGVuZ3RoOyBpKyspe1xuICAgICAgICBhcnJheS5wdXNoKGRlY29kZVByb3AodHlwZSkpO1xuICAgICAgfVxuICAgIH1lbHNle1xuICAgICAgYXJyYXkucHVzaChkZWNvZGVQcm9wKHR5cGUsIHByb3RvcykpO1xuICAgIH1cbiAgfVxuXG4gIGZ1bmN0aW9uIGdldEJ5dGVzKGZsYWcpe1xuICAgIHZhciBieXRlcyA9IFtdO1xuICAgIHZhciBwb3MgPSBvZmZzZXQ7XG4gICAgZmxhZyA9IGZsYWcgfHwgZmFsc2U7XG5cbiAgICB2YXIgYjtcblxuICAgIGRve1xuICAgICAgYiA9IGJ1ZmZlcltwb3NdO1xuICAgICAgYnl0ZXMucHVzaChiKTtcbiAgICAgIHBvcysrO1xuICAgIH13aGlsZShiID49IDEyOCk7XG5cbiAgICBpZighZmxhZyl7XG4gICAgICBvZmZzZXQgPSBwb3M7XG4gICAgfVxuICAgIHJldHVybiBieXRlcztcbiAgfVxuXG4gIGZ1bmN0aW9uIHBlZWtCeXRlcygpe1xuICAgIHJldHVybiBnZXRCeXRlcyh0cnVlKTtcbiAgfVxuXG59KSgndW5kZWZpbmVkJyAhPT0gdHlwZW9mIHByb3RvYnVmID8gcHJvdG9idWYgOiBtb2R1bGUuZXhwb3J0cywgdGhpcyk7XG5cbiIsIihmdW5jdGlvbiAoZXhwb3J0cywgQnl0ZUFycmF5LCBnbG9iYWwpIHtcbiAgdmFyIFByb3RvY29sID0gZXhwb3J0cztcblxuICB2YXIgUEtHX0hFQURfQllURVMgPSA0O1xuICB2YXIgTVNHX0ZMQUdfQllURVMgPSAxO1xuICB2YXIgTVNHX1JPVVRFX0NPREVfQllURVMgPSAyO1xuICB2YXIgTVNHX0lEX01BWF9CWVRFUyA9IDU7XG4gIHZhciBNU0dfUk9VVEVfTEVOX0JZVEVTID0gMTtcblxuICB2YXIgTVNHX1JPVVRFX0NPREVfTUFYID0gMHhmZmZmO1xuXG4gIHZhciBNU0dfQ09NUFJFU1NfUk9VVEVfTUFTSyA9IDB4MTtcbiAgdmFyIE1TR19UWVBFX01BU0sgPSAweDc7XG5cbiAgdmFyIFBhY2thZ2UgPSBQcm90b2NvbC5QYWNrYWdlID0ge307XG4gIHZhciBNZXNzYWdlID0gUHJvdG9jb2wuTWVzc2FnZSA9IHt9O1xuXG4gIFBhY2thZ2UuVFlQRV9IQU5EU0hBS0UgPSAxO1xuICBQYWNrYWdlLlRZUEVfSEFORFNIQUtFX0FDSyA9IDI7XG4gIFBhY2thZ2UuVFlQRV9IRUFSVEJFQVQgPSAzO1xuICBQYWNrYWdlLlRZUEVfREFUQSA9IDQ7XG4gIFBhY2thZ2UuVFlQRV9LSUNLID0gNTtcblxuICBNZXNzYWdlLlRZUEVfUkVRVUVTVCA9IDA7XG4gIE1lc3NhZ2UuVFlQRV9OT1RJRlkgPSAxO1xuICBNZXNzYWdlLlRZUEVfUkVTUE9OU0UgPSAyO1xuICBNZXNzYWdlLlRZUEVfUFVTSCA9IDM7XG5cbiAgLyoqXG4gICAqIHBvbWVsZSBjbGllbnQgZW5jb2RlXG4gICAqIGlkIG1lc3NhZ2UgaWQ7XG4gICAqIHJvdXRlIG1lc3NhZ2Ugcm91dGVcbiAgICogbXNnIG1lc3NhZ2UgYm9keVxuICAgKiBzb2NrZXRpbyBjdXJyZW50IHN1cHBvcnQgc3RyaW5nXG4gICAqL1xuICBQcm90b2NvbC5zdHJlbmNvZGUgPSBmdW5jdGlvbihzdHIpIHtcbiAgICB2YXIgYnl0ZUFycmF5ID0gbmV3IEJ5dGVBcnJheShzdHIubGVuZ3RoICogMyk7XG4gICAgdmFyIG9mZnNldCA9IDA7XG4gICAgZm9yKHZhciBpID0gMDsgaSA8IHN0ci5sZW5ndGg7IGkrKyl7XG4gICAgICB2YXIgY2hhckNvZGUgPSBzdHIuY2hhckNvZGVBdChpKTtcbiAgICAgIHZhciBjb2RlcyA9IG51bGw7XG4gICAgICBpZihjaGFyQ29kZSA8PSAweDdmKXtcbiAgICAgICAgY29kZXMgPSBbY2hhckNvZGVdO1xuICAgICAgfWVsc2UgaWYoY2hhckNvZGUgPD0gMHg3ZmYpe1xuICAgICAgICBjb2RlcyA9IFsweGMwfChjaGFyQ29kZT4+NiksIDB4ODB8KGNoYXJDb2RlICYgMHgzZildO1xuICAgICAgfWVsc2V7XG4gICAgICAgIGNvZGVzID0gWzB4ZTB8KGNoYXJDb2RlPj4xMiksIDB4ODB8KChjaGFyQ29kZSAmIDB4ZmMwKT4+NiksIDB4ODB8KGNoYXJDb2RlICYgMHgzZildO1xuICAgICAgfVxuICAgICAgZm9yKHZhciBqID0gMDsgaiA8IGNvZGVzLmxlbmd0aDsgaisrKXtcbiAgICAgICAgYnl0ZUFycmF5W29mZnNldF0gPSBjb2Rlc1tqXTtcbiAgICAgICAgKytvZmZzZXQ7XG4gICAgICB9XG4gICAgfVxuICAgIHZhciBfYnVmZmVyID0gbmV3IEJ5dGVBcnJheShvZmZzZXQpO1xuICAgIGNvcHlBcnJheShfYnVmZmVyLCAwLCBieXRlQXJyYXksIDAsIG9mZnNldCk7XG4gICAgcmV0dXJuIF9idWZmZXI7XG4gIH07XG5cbiAgLyoqXG4gICAqIGNsaWVudCBkZWNvZGVcbiAgICogbXNnIFN0cmluZyBkYXRhXG4gICAqIHJldHVybiBNZXNzYWdlIE9iamVjdFxuICAgKi9cbiAgUHJvdG9jb2wuc3RyZGVjb2RlID0gZnVuY3Rpb24oYnVmZmVyKSB7XG4gICAgdmFyIGJ5dGVzID0gbmV3IEJ5dGVBcnJheShidWZmZXIpO1xuICAgIHZhciBhcnJheSA9IFtdO1xuICAgIHZhciBvZmZzZXQgPSAwO1xuICAgIHZhciBjaGFyQ29kZSA9IDA7XG4gICAgdmFyIGVuZCA9IGJ5dGVzLmxlbmd0aDtcbiAgICB3aGlsZShvZmZzZXQgPCBlbmQpe1xuICAgICAgaWYoYnl0ZXNbb2Zmc2V0XSA8IDEyOCl7XG4gICAgICAgIGNoYXJDb2RlID0gYnl0ZXNbb2Zmc2V0XTtcbiAgICAgICAgb2Zmc2V0ICs9IDE7XG4gICAgICB9ZWxzZSBpZihieXRlc1tvZmZzZXRdIDwgMjI0KXtcbiAgICAgICAgY2hhckNvZGUgPSAoKGJ5dGVzW29mZnNldF0gJiAweDNmKTw8NikgKyAoYnl0ZXNbb2Zmc2V0KzFdICYgMHgzZik7XG4gICAgICAgIG9mZnNldCArPSAyO1xuICAgICAgfWVsc2V7XG4gICAgICAgIGNoYXJDb2RlID0gKChieXRlc1tvZmZzZXRdICYgMHgwZik8PDEyKSArICgoYnl0ZXNbb2Zmc2V0KzFdICYgMHgzZik8PDYpICsgKGJ5dGVzW29mZnNldCsyXSAmIDB4M2YpO1xuICAgICAgICBvZmZzZXQgKz0gMztcbiAgICAgIH1cbiAgICAgIGFycmF5LnB1c2goY2hhckNvZGUpO1xuICAgIH1cbiAgICByZXR1cm4gU3RyaW5nLmZyb21DaGFyQ29kZS5hcHBseShudWxsLCBhcnJheSk7XG4gIH07XG5cbiAgLyoqXG4gICAqIFBhY2thZ2UgcHJvdG9jb2wgZW5jb2RlLlxuICAgKlxuICAgKiBQb21lbG8gcGFja2FnZSBmb3JtYXQ6XG4gICAqICstLS0tLS0rLS0tLS0tLS0tLS0tLSstLS0tLS0tLS0tLS0tLS0tLS0rXG4gICAqIHwgdHlwZSB8IGJvZHkgbGVuZ3RoIHwgICAgICAgYm9keSAgICAgICB8XG4gICAqICstLS0tLS0rLS0tLS0tLS0tLS0tLSstLS0tLS0tLS0tLS0tLS0tLS0rXG4gICAqXG4gICAqIEhlYWQ6IDRieXRlc1xuICAgKiAgIDA6IHBhY2thZ2UgdHlwZSxcbiAgICogICAgICAxIC0gaGFuZHNoYWtlLFxuICAgKiAgICAgIDIgLSBoYW5kc2hha2UgYWNrLFxuICAgKiAgICAgIDMgLSBoZWFydGJlYXQsXG4gICAqICAgICAgNCAtIGRhdGFcbiAgICogICAgICA1IC0ga2lja1xuICAgKiAgIDEgLSAzOiBiaWctZW5kaWFuIGJvZHkgbGVuZ3RoXG4gICAqIEJvZHk6IGJvZHkgbGVuZ3RoIGJ5dGVzXG4gICAqXG4gICAqIEBwYXJhbSAge051bWJlcn0gICAgdHlwZSAgIHBhY2thZ2UgdHlwZVxuICAgKiBAcGFyYW0gIHtCeXRlQXJyYXl9IGJvZHkgICBib2R5IGNvbnRlbnQgaW4gYnl0ZXNcbiAgICogQHJldHVybiB7Qnl0ZUFycmF5fSAgICAgICAgbmV3IGJ5dGUgYXJyYXkgdGhhdCBjb250YWlucyBlbmNvZGUgcmVzdWx0XG4gICAqL1xuICBQYWNrYWdlLmVuY29kZSA9IGZ1bmN0aW9uKHR5cGUsIGJvZHkpe1xuICAgIHZhciBsZW5ndGggPSBib2R5ID8gYm9keS5sZW5ndGggOiAwO1xuICAgIHZhciBidWZmZXIgPSBuZXcgQnl0ZUFycmF5KFBLR19IRUFEX0JZVEVTICsgbGVuZ3RoKTtcbiAgICB2YXIgaW5kZXggPSAwO1xuICAgIGJ1ZmZlcltpbmRleCsrXSA9IHR5cGUgJiAweGZmO1xuICAgIGJ1ZmZlcltpbmRleCsrXSA9IChsZW5ndGggPj4gMTYpICYgMHhmZjtcbiAgICBidWZmZXJbaW5kZXgrK10gPSAobGVuZ3RoID4+IDgpICYgMHhmZjtcbiAgICBidWZmZXJbaW5kZXgrK10gPSBsZW5ndGggJiAweGZmO1xuICAgIGlmKGJvZHkpIHtcbiAgICAgIGNvcHlBcnJheShidWZmZXIsIGluZGV4LCBib2R5LCAwLCBsZW5ndGgpO1xuICAgIH1cbiAgICByZXR1cm4gYnVmZmVyO1xuICB9O1xuXG4gIC8qKlxuICAgKiBQYWNrYWdlIHByb3RvY29sIGRlY29kZS5cbiAgICogU2VlIGVuY29kZSBmb3IgcGFja2FnZSBmb3JtYXQuXG4gICAqXG4gICAqIEBwYXJhbSAge0J5dGVBcnJheX0gYnVmZmVyIGJ5dGUgYXJyYXkgY29udGFpbmluZyBwYWNrYWdlIGNvbnRlbnRcbiAgICogQHJldHVybiB7T2JqZWN0fSAgICAgICAgICAge3R5cGU6IHBhY2thZ2UgdHlwZSwgYnVmZmVyOiBib2R5IGJ5dGUgYXJyYXl9XG4gICAqL1xuICBQYWNrYWdlLmRlY29kZSA9IGZ1bmN0aW9uKGJ1ZmZlcil7XG4gICAgdmFyIG9mZnNldCA9IDA7XG4gICAgdmFyIGJ5dGVzID0gbmV3IEJ5dGVBcnJheShidWZmZXIpO1xuICAgIHZhciBsZW5ndGggPSAwO1xuICAgIHZhciBycyA9IFtdO1xuICAgIHdoaWxlKG9mZnNldCA8IGJ5dGVzLmxlbmd0aCkge1xuICAgICAgdmFyIHR5cGUgPSBieXRlc1tvZmZzZXQrK107XG4gICAgICBsZW5ndGggPSAoKGJ5dGVzW29mZnNldCsrXSkgPDwgMTYgfCAoYnl0ZXNbb2Zmc2V0KytdKSA8PCA4IHwgYnl0ZXNbb2Zmc2V0KytdKSA+Pj4gMDtcbiAgICAgIHZhciBib2R5ID0gbGVuZ3RoID8gbmV3IEJ5dGVBcnJheShsZW5ndGgpIDogbnVsbDtcbiAgICAgIGNvcHlBcnJheShib2R5LCAwLCBieXRlcywgb2Zmc2V0LCBsZW5ndGgpO1xuICAgICAgb2Zmc2V0ICs9IGxlbmd0aDtcbiAgICAgIHJzLnB1c2goeyd0eXBlJzogdHlwZSwgJ2JvZHknOiBib2R5fSk7XG4gICAgfVxuICAgIHJldHVybiBycy5sZW5ndGggPT09IDEgPyByc1swXTogcnM7XG4gIH07XG5cbiAgLyoqXG4gICAqIE1lc3NhZ2UgcHJvdG9jb2wgZW5jb2RlLlxuICAgKlxuICAgKiBAcGFyYW0gIHtOdW1iZXJ9IGlkICAgICAgICAgICAgbWVzc2FnZSBpZFxuICAgKiBAcGFyYW0gIHtOdW1iZXJ9IHR5cGUgICAgICAgICAgbWVzc2FnZSB0eXBlXG4gICAqIEBwYXJhbSAge051bWJlcn0gY29tcHJlc3NSb3V0ZSB3aGV0aGVyIGNvbXByZXNzIHJvdXRlXG4gICAqIEBwYXJhbSAge051bWJlcnxTdHJpbmd9IHJvdXRlICByb3V0ZSBjb2RlIG9yIHJvdXRlIHN0cmluZ1xuICAgKiBAcGFyYW0gIHtCdWZmZXJ9IG1zZyAgICAgICAgICAgbWVzc2FnZSBib2R5IGJ5dGVzXG4gICAqIEByZXR1cm4ge0J1ZmZlcn0gICAgICAgICAgICAgICBlbmNvZGUgcmVzdWx0XG4gICAqL1xuICBNZXNzYWdlLmVuY29kZSA9IGZ1bmN0aW9uKGlkLCB0eXBlLCBjb21wcmVzc1JvdXRlLCByb3V0ZSwgbXNnKXtcbiAgICAvLyBjYWN1bGF0ZSBtZXNzYWdlIG1heCBsZW5ndGhcbiAgICB2YXIgaWRCeXRlcyA9IG1zZ0hhc0lkKHR5cGUpID8gY2FjdWxhdGVNc2dJZEJ5dGVzKGlkKSA6IDA7XG4gICAgdmFyIG1zZ0xlbiA9IE1TR19GTEFHX0JZVEVTICsgaWRCeXRlcztcblxuICAgIGlmKG1zZ0hhc1JvdXRlKHR5cGUpKSB7XG4gICAgICBpZihjb21wcmVzc1JvdXRlKSB7XG4gICAgICAgIGlmKHR5cGVvZiByb3V0ZSAhPT0gJ251bWJlcicpe1xuICAgICAgICAgIHRocm93IG5ldyBFcnJvcignZXJyb3IgZmxhZyBmb3IgbnVtYmVyIHJvdXRlIScpO1xuICAgICAgICB9XG4gICAgICAgIG1zZ0xlbiArPSBNU0dfUk9VVEVfQ09ERV9CWVRFUztcbiAgICAgIH0gZWxzZSB7XG4gICAgICAgIG1zZ0xlbiArPSBNU0dfUk9VVEVfTEVOX0JZVEVTO1xuICAgICAgICBpZihyb3V0ZSkge1xuICAgICAgICAgIHJvdXRlID0gUHJvdG9jb2wuc3RyZW5jb2RlKHJvdXRlKTtcbiAgICAgICAgICBpZihyb3V0ZS5sZW5ndGg+MjU1KSB7XG4gICAgICAgICAgICB0aHJvdyBuZXcgRXJyb3IoJ3JvdXRlIG1heGxlbmd0aCBpcyBvdmVyZmxvdycpO1xuICAgICAgICAgIH1cbiAgICAgICAgICBtc2dMZW4gKz0gcm91dGUubGVuZ3RoO1xuICAgICAgICB9XG4gICAgICB9XG4gICAgfVxuXG4gICAgaWYobXNnKSB7XG4gICAgICBtc2dMZW4gKz0gbXNnLmxlbmd0aDtcbiAgICB9XG5cbiAgICB2YXIgYnVmZmVyID0gbmV3IEJ5dGVBcnJheShtc2dMZW4pO1xuICAgIHZhciBvZmZzZXQgPSAwO1xuXG4gICAgLy8gYWRkIGZsYWdcbiAgICBvZmZzZXQgPSBlbmNvZGVNc2dGbGFnKHR5cGUsIGNvbXByZXNzUm91dGUsIGJ1ZmZlciwgb2Zmc2V0KTtcblxuICAgIC8vIGFkZCBtZXNzYWdlIGlkXG4gICAgaWYobXNnSGFzSWQodHlwZSkpIHtcbiAgICAgIG9mZnNldCA9IGVuY29kZU1zZ0lkKGlkLCBidWZmZXIsIG9mZnNldCk7XG4gICAgfVxuXG4gICAgLy8gYWRkIHJvdXRlXG4gICAgaWYobXNnSGFzUm91dGUodHlwZSkpIHtcbiAgICAgIG9mZnNldCA9IGVuY29kZU1zZ1JvdXRlKGNvbXByZXNzUm91dGUsIHJvdXRlLCBidWZmZXIsIG9mZnNldCk7XG4gICAgfVxuXG4gICAgLy8gYWRkIGJvZHlcbiAgICBpZihtc2cpIHtcbiAgICAgIG9mZnNldCA9IGVuY29kZU1zZ0JvZHkobXNnLCBidWZmZXIsIG9mZnNldCk7XG4gICAgfVxuXG4gICAgcmV0dXJuIGJ1ZmZlcjtcbiAgfTtcblxuICAvKipcbiAgICogTWVzc2FnZSBwcm90b2NvbCBkZWNvZGUuXG4gICAqXG4gICAqIEBwYXJhbSAge0J1ZmZlcnxVaW50OEFycmF5fSBidWZmZXIgbWVzc2FnZSBieXRlc1xuICAgKiBAcmV0dXJuIHtPYmplY3R9ICAgICAgICAgICAgbWVzc2FnZSBvYmplY3RcbiAgICovXG4gIE1lc3NhZ2UuZGVjb2RlID0gZnVuY3Rpb24oYnVmZmVyKSB7XG4gICAgdmFyIGJ5dGVzID0gIG5ldyBCeXRlQXJyYXkoYnVmZmVyKTtcbiAgICB2YXIgYnl0ZXNMZW4gPSBieXRlcy5sZW5ndGggfHwgYnl0ZXMuYnl0ZUxlbmd0aDtcbiAgICB2YXIgb2Zmc2V0ID0gMDtcbiAgICB2YXIgaWQgPSAwO1xuICAgIHZhciByb3V0ZSA9IG51bGw7XG5cbiAgICAvLyBwYXJzZSBmbGFnXG4gICAgdmFyIGZsYWcgPSBieXRlc1tvZmZzZXQrK107XG4gICAgdmFyIGNvbXByZXNzUm91dGUgPSBmbGFnICYgTVNHX0NPTVBSRVNTX1JPVVRFX01BU0s7XG4gICAgdmFyIHR5cGUgPSAoZmxhZyA+PiAxKSAmIE1TR19UWVBFX01BU0s7XG5cbiAgICAvLyBwYXJzZSBpZFxuICAgIGlmKG1zZ0hhc0lkKHR5cGUpKSB7XG4gICAgICB2YXIgbSA9IHBhcnNlSW50KGJ5dGVzW29mZnNldF0pO1xuICAgICAgdmFyIGkgPSAwO1xuICAgICAgZG97XG4gICAgICAgIHZhciBtID0gcGFyc2VJbnQoYnl0ZXNbb2Zmc2V0XSk7XG4gICAgICAgIGlkID0gaWQgKyAoKG0gJiAweDdmKSAqIE1hdGgucG93KDIsKDcqaSkpKTtcbiAgICAgICAgb2Zmc2V0Kys7XG4gICAgICAgIGkrKztcbiAgICAgIH13aGlsZShtID49IDEyOCk7XG4gICAgfVxuXG4gICAgLy8gcGFyc2Ugcm91dGVcbiAgICBpZihtc2dIYXNSb3V0ZSh0eXBlKSkge1xuICAgICAgaWYoY29tcHJlc3NSb3V0ZSkge1xuICAgICAgICByb3V0ZSA9IChieXRlc1tvZmZzZXQrK10pIDw8IDggfCBieXRlc1tvZmZzZXQrK107XG4gICAgICB9IGVsc2Uge1xuICAgICAgICB2YXIgcm91dGVMZW4gPSBieXRlc1tvZmZzZXQrK107XG4gICAgICAgIGlmKHJvdXRlTGVuKSB7XG4gICAgICAgICAgcm91dGUgPSBuZXcgQnl0ZUFycmF5KHJvdXRlTGVuKTtcbiAgICAgICAgICBjb3B5QXJyYXkocm91dGUsIDAsIGJ5dGVzLCBvZmZzZXQsIHJvdXRlTGVuKTtcbiAgICAgICAgICByb3V0ZSA9IFByb3RvY29sLnN0cmRlY29kZShyb3V0ZSk7XG4gICAgICAgIH0gZWxzZSB7XG4gICAgICAgICAgcm91dGUgPSAnJztcbiAgICAgICAgfVxuICAgICAgICBvZmZzZXQgKz0gcm91dGVMZW47XG4gICAgICB9XG4gICAgfVxuXG4gICAgLy8gcGFyc2UgYm9keVxuICAgIHZhciBib2R5TGVuID0gYnl0ZXNMZW4gLSBvZmZzZXQ7XG4gICAgdmFyIGJvZHkgPSBuZXcgQnl0ZUFycmF5KGJvZHlMZW4pO1xuXG4gICAgY29weUFycmF5KGJvZHksIDAsIGJ5dGVzLCBvZmZzZXQsIGJvZHlMZW4pO1xuXG4gICAgcmV0dXJuIHsnaWQnOiBpZCwgJ3R5cGUnOiB0eXBlLCAnY29tcHJlc3NSb3V0ZSc6IGNvbXByZXNzUm91dGUsXG4gICAgICAgICAgICAncm91dGUnOiByb3V0ZSwgJ2JvZHknOiBib2R5fTtcbiAgfTtcblxuICB2YXIgY29weUFycmF5ID0gZnVuY3Rpb24oZGVzdCwgZG9mZnNldCwgc3JjLCBzb2Zmc2V0LCBsZW5ndGgpIHtcbiAgICBpZignZnVuY3Rpb24nID09PSB0eXBlb2Ygc3JjLmNvcHkpIHtcbiAgICAgIC8vIEJ1ZmZlclxuICAgICAgc3JjLmNvcHkoZGVzdCwgZG9mZnNldCwgc29mZnNldCwgc29mZnNldCArIGxlbmd0aCk7XG4gICAgfSBlbHNlIHtcbiAgICAgIC8vIFVpbnQ4QXJyYXlcbiAgICAgIGZvcih2YXIgaW5kZXg9MDsgaW5kZXg8bGVuZ3RoOyBpbmRleCsrKXtcbiAgICAgICAgZGVzdFtkb2Zmc2V0KytdID0gc3JjW3NvZmZzZXQrK107XG4gICAgICB9XG4gICAgfVxuICB9O1xuXG4gIHZhciBtc2dIYXNJZCA9IGZ1bmN0aW9uKHR5cGUpIHtcbiAgICByZXR1cm4gdHlwZSA9PT0gTWVzc2FnZS5UWVBFX1JFUVVFU1QgfHwgdHlwZSA9PT0gTWVzc2FnZS5UWVBFX1JFU1BPTlNFO1xuICB9O1xuXG4gIHZhciBtc2dIYXNSb3V0ZSA9IGZ1bmN0aW9uKHR5cGUpIHtcbiAgICByZXR1cm4gdHlwZSA9PT0gTWVzc2FnZS5UWVBFX1JFUVVFU1QgfHwgdHlwZSA9PT0gTWVzc2FnZS5UWVBFX05PVElGWSB8fFxuICAgICAgICAgICB0eXBlID09PSBNZXNzYWdlLlRZUEVfUFVTSDtcbiAgfTtcblxuICB2YXIgY2FjdWxhdGVNc2dJZEJ5dGVzID0gZnVuY3Rpb24oaWQpIHtcbiAgICB2YXIgbGVuID0gMDtcbiAgICBkbyB7XG4gICAgICBsZW4gKz0gMTtcbiAgICAgIGlkID4+PSA3O1xuICAgIH0gd2hpbGUoaWQgPiAwKTtcbiAgICByZXR1cm4gbGVuO1xuICB9O1xuXG4gIHZhciBlbmNvZGVNc2dGbGFnID0gZnVuY3Rpb24odHlwZSwgY29tcHJlc3NSb3V0ZSwgYnVmZmVyLCBvZmZzZXQpIHtcbiAgICBpZih0eXBlICE9PSBNZXNzYWdlLlRZUEVfUkVRVUVTVCAmJiB0eXBlICE9PSBNZXNzYWdlLlRZUEVfTk9USUZZICYmXG4gICAgICAgdHlwZSAhPT0gTWVzc2FnZS5UWVBFX1JFU1BPTlNFICYmIHR5cGUgIT09IE1lc3NhZ2UuVFlQRV9QVVNIKSB7XG4gICAgICB0aHJvdyBuZXcgRXJyb3IoJ3Vua29udyBtZXNzYWdlIHR5cGU6ICcgKyB0eXBlKTtcbiAgICB9XG5cbiAgICBidWZmZXJbb2Zmc2V0XSA9ICh0eXBlIDw8IDEpIHwgKGNvbXByZXNzUm91dGUgPyAxIDogMCk7XG5cbiAgICByZXR1cm4gb2Zmc2V0ICsgTVNHX0ZMQUdfQllURVM7XG4gIH07XG5cbiAgdmFyIGVuY29kZU1zZ0lkID0gZnVuY3Rpb24oaWQsIGJ1ZmZlciwgb2Zmc2V0KSB7XG4gICAgZG97XG4gICAgICB2YXIgdG1wID0gaWQgJSAxMjg7XG4gICAgICB2YXIgbmV4dCA9IE1hdGguZmxvb3IoaWQvMTI4KTtcblxuICAgICAgaWYobmV4dCAhPT0gMCl7XG4gICAgICAgIHRtcCA9IHRtcCArIDEyODtcbiAgICAgIH1cbiAgICAgIGJ1ZmZlcltvZmZzZXQrK10gPSB0bXA7XG5cbiAgICAgIGlkID0gbmV4dDtcbiAgICB9IHdoaWxlKGlkICE9PSAwKTtcblxuICAgIHJldHVybiBvZmZzZXQ7XG4gIH07XG5cbiAgdmFyIGVuY29kZU1zZ1JvdXRlID0gZnVuY3Rpb24oY29tcHJlc3NSb3V0ZSwgcm91dGUsIGJ1ZmZlciwgb2Zmc2V0KSB7XG4gICAgaWYgKGNvbXByZXNzUm91dGUpIHtcbiAgICAgIGlmKHJvdXRlID4gTVNHX1JPVVRFX0NPREVfTUFYKXtcbiAgICAgICAgdGhyb3cgbmV3IEVycm9yKCdyb3V0ZSBudW1iZXIgaXMgb3ZlcmZsb3cnKTtcbiAgICAgIH1cblxuICAgICAgYnVmZmVyW29mZnNldCsrXSA9IChyb3V0ZSA+PiA4KSAmIDB4ZmY7XG4gICAgICBidWZmZXJbb2Zmc2V0KytdID0gcm91dGUgJiAweGZmO1xuICAgIH0gZWxzZSB7XG4gICAgICBpZihyb3V0ZSkge1xuICAgICAgICBidWZmZXJbb2Zmc2V0KytdID0gcm91dGUubGVuZ3RoICYgMHhmZjtcbiAgICAgICAgY29weUFycmF5KGJ1ZmZlciwgb2Zmc2V0LCByb3V0ZSwgMCwgcm91dGUubGVuZ3RoKTtcbiAgICAgICAgb2Zmc2V0ICs9IHJvdXRlLmxlbmd0aDtcbiAgICAgIH0gZWxzZSB7XG4gICAgICAgIGJ1ZmZlcltvZmZzZXQrK10gPSAwO1xuICAgICAgfVxuICAgIH1cblxuICAgIHJldHVybiBvZmZzZXQ7XG4gIH07XG5cbiAgdmFyIGVuY29kZU1zZ0JvZHkgPSBmdW5jdGlvbihtc2csIGJ1ZmZlciwgb2Zmc2V0KSB7XG4gICAgY29weUFycmF5KGJ1ZmZlciwgb2Zmc2V0LCBtc2csIDAsIG1zZy5sZW5ndGgpO1xuICAgIHJldHVybiBvZmZzZXQgKyBtc2cubGVuZ3RoO1xuICB9O1xuXG4gIG1vZHVsZS5leHBvcnRzID0gUHJvdG9jb2w7XG4gIGlmKHR5cGVvZih3aW5kb3cpICE9IFwidW5kZWZpbmVkXCIpIHtcbiAgICB3aW5kb3cuUHJvdG9jb2wgPSBQcm90b2NvbDtcbiAgfVxufSkodHlwZW9mKHdpbmRvdyk9PVwidW5kZWZpbmVkXCIgPyBtb2R1bGUuZXhwb3J0cyA6IHt9LCB0eXBlb2Yod2luZG93KT09XCJ1bmRlZmluZWRcIiA/IEJ1ZmZlciA6IFVpbnQ4QXJyYXksIHRoaXMpO1xuIl0sInNvdXJjZVJvb3QiOiIifQ==

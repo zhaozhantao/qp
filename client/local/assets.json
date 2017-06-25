@@ -1,28 +1,3 @@
 {
-  "item-states": [
-    {
-      "folded": false,
-      "id": "mount-assets"
-    },
-    {
-      "folded": false,
-      "id": "86b04f26-e3db-40a3-8ecf-6f160d314fe5"
-    },
-    {
-      "folded": false,
-      "id": "dfad0c2f-e1cc-4479-b875-f6705f07cb90"
-    },
-    {
-      "folded": false,
-      "id": "9367fe22-df2f-4aff-9f8d-178710d388dc"
-    },
-    {
-      "folded": false,
-      "id": "5256a1ae-30aa-4c27-a468-36dfa36b2736"
-    },
-    {
-      "folded": true,
-      "id": "caf9b8a1-7509-4d1e-9b38-545f9884496b"
-    }
-  ]
+  "item-states": []
 }

@@ -4,13 +4,12 @@
     "unknown"
   ],
   "names": [
-    "require",
     "module",
     "exports"
   ],
-  "mappings": ";;AAAAA,QAAQ,mBAAR;AACAC,OAAOC,OAAP,GAAe,EAAf",
+  "mappings": ";;AAAA;AACAA,OAAOC,OAAP,GAAe,EAAf",
   "file": "unknown",
   "sourcesContent": [
-    "require('pomelo-cocos2d-js');\nmodule.exports={};"
+    "// require('pomelo-cocos2d-js');\nmodule.exports={};"
   ]
 }
