@@ -1,0 +1,22 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "online_players",
+    "texture": "e0ecdd70-fbcf-43e5-81fb-634d8825f44d",
+    "atlas": "",
+    "rect": [
+      0,
+      0,
+      254,
+      44
+    ],
+    "offset": [
+      0,
+      0
+    ],
+    "originalSize": [
+      254,
+      44
+    ]
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "game_lightning2",
+    "texture": "b9f25fa0-ba67-47c6-9a39-2863befd86e7",
+    "atlas": "",
+    "rect": [
+      5,
+      13,
+      191,
+      43
+    ],
+    "offset": [
+      0.5,
+      0.5
+    ],
+    "originalSize": [
+      200,
+      70
+    ]
+  }
+}

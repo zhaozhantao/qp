@@ -1,0 +1,22 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "support_sms",
+    "texture": "e1f83b2d-d370-4045-96df-ae2ccfd7fef1",
+    "atlas": "",
+    "rect": [
+      0,
+      0,
+      34,
+      30
+    ],
+    "offset": [
+      0,
+      0
+    ],
+    "originalSize": [
+      34,
+      30
+    ]
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "bg_broadcast",
+    "texture": "d75aebe6-8e3a-40f9-8ae1-7e85c7b12126",
+    "atlas": "",
+    "rect": [
+      0,
+      0,
+      525,
+      32
+    ],
+    "offset": [
+      0,
+      0
+    ],
+    "originalSize": [
+      525,
+      32
+    ]
+  }
+}

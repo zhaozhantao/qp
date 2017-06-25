@@ -1,0 +1,22 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "game_fire07",
+    "texture": "647eeeb9-232b-4037-a4bb-f6027150ca95",
+    "atlas": "",
+    "rect": [
+      1,
+      2,
+      190,
+      190
+    ],
+    "offset": [
+      -0.5,
+      -0.5
+    ],
+    "originalSize": [
+      193,
+      193
+    ]
+  }
+}

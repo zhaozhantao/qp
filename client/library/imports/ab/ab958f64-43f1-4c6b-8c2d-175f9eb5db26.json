@@ -1,0 +1,22 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "chat_show_bg",
+    "texture": "aff7c355-28df-4183-861f-0fe62ae23354",
+    "atlas": "",
+    "rect": [
+      0,
+      0,
+      163,
+      125
+    ],
+    "offset": [
+      0,
+      0
+    ],
+    "originalSize": [
+      163,
+      125
+    ]
+  }
+}

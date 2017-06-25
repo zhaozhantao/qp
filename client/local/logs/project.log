@@ -1,55 +1,811 @@
-2017-06-24T07:04:26.843Z - normal: Load ~/.CocosCreator/settings.json
-2017-06-24T07:04:26.847Z - normal: checking language setting...
-2017-06-24T07:04:26.848Z - normal: Language: zh
-2017-06-24T07:04:27.230Z - success: protocol editor-framework registered
-2017-06-24T07:04:27.230Z - success: protocol app registered
-2017-06-24T07:04:27.231Z - success: protocol theme registered
-2017-06-24T07:04:27.231Z - success: protocol profile registered
-2017-06-24T07:04:27.231Z - success: protocol packages registered
-2017-06-24T07:04:27.234Z - success: protocol unpack registerred
-2017-06-24T07:04:27.234Z - success: protocol disable-commonjs registerred
-2017-06-24T07:04:27.341Z - normal: connected!
-2017-06-24T07:04:27.345Z - normal: Check project /Users/zhaozhantao/qp/client
-2017-06-24T07:04:27.347Z - normal: Initializing Cocos2d
-2017-06-24T07:04:27.514Z - normal: Initializing Asset Database
-2017-06-24T07:04:27.545Z - success: protocol uuid registerred
-2017-06-24T07:04:27.545Z - success: protocol db registerred
-2017-06-24T07:04:27.545Z - success: protocol thumbnail registerred
-2017-06-24T07:04:27.545Z - normal: Loading editor/builtin packages
-2017-06-24T07:04:27.564Z - success: anysdk loaded
-2017-06-24T07:04:27.691Z - success: assets loaded
-2017-06-24T07:04:27.695Z - success: builder loaded
-2017-06-24T07:04:27.699Z - success: hierarchy loaded
-2017-06-24T07:04:27.704Z - success: inspector loaded
-2017-06-24T07:04:27.705Z - success: keystore loaded
-2017-06-24T07:04:27.710Z - success: node-library loaded
-2017-06-24T07:04:27.712Z - success: package-asset loaded
-2017-06-24T07:04:27.713Z - success: preferences loaded
-2017-06-24T07:04:27.726Z - success: project-importer loaded
-2017-06-24T07:04:27.729Z - success: project-settings loaded
-2017-06-24T07:04:27.734Z - success: ui-kit loaded
-2017-06-24T07:04:27.739Z - success: ui-grid loaded
-2017-06-24T07:04:27.742Z - success: scene loaded
-2017-06-24T07:04:27.744Z - success: sprite-editor loaded
-2017-06-24T07:04:27.748Z - success: store loaded
-2017-06-24T07:04:27.752Z - success: timeline loaded
-2017-06-24T07:04:27.753Z - normal: Loading builtin packages
-2017-06-24T07:04:27.757Z - success: asset-db-debugger loaded
-2017-06-24T07:04:27.759Z - success: code-editor loaded
-2017-06-24T07:04:27.760Z - success: color-picker loaded
-2017-06-24T07:04:27.765Z - success: console loaded
-2017-06-24T07:04:27.768Z - success: package-manager loaded
-2017-06-24T07:04:27.777Z - success: sdkbox loaded
-2017-06-24T07:04:27.781Z - success: tester loaded
-2017-06-24T07:04:27.787Z - success: ui-kit-preview-extra loaded
-2017-06-24T07:04:27.792Z - success: ui-kit-preview loaded
-2017-06-24T07:04:27.795Z - success: ui-tree loaded
-2017-06-24T07:04:27.842Z - normal: Initializing project /Users/zhaozhantao/qp/client
-2017-06-24T07:04:27.843Z - warn: Profile profile://local/local.json warning: reset profile field: last-edit
-2017-06-24T07:04:27.846Z - normal: Loading packages
-2017-06-24T07:04:27.856Z - success: packages loaded
-2017-06-24T07:04:27.856Z - normal: Watching packages
-2017-06-24T07:04:27.876Z - normal: Run Application
-2017-06-24T07:04:28.157Z - success: preview server running at http://localhost:7456
-2017-06-24T07:04:32.146Z - normal: 1.5.0
-2017-06-24T07:05:53.179Z - info: shutdown preview server
+2017-06-25T01:53:23.967Z - normal: Load ~/.CocosCreator/settings.json
+2017-06-25T01:53:23.971Z - normal: checking language setting...
+2017-06-25T01:53:23.971Z - normal: Language: zh
+2017-06-25T01:53:24.315Z - success: protocol editor-framework registered
+2017-06-25T01:53:24.315Z - success: protocol app registered
+2017-06-25T01:53:24.315Z - success: protocol theme registered
+2017-06-25T01:53:24.316Z - success: protocol profile registered
+2017-06-25T01:53:24.316Z - success: protocol packages registered
+2017-06-25T01:53:24.318Z - success: protocol unpack registerred
+2017-06-25T01:53:24.319Z - success: protocol disable-commonjs registerred
+2017-06-25T01:53:24.543Z - normal: connected!
+2017-06-25T01:53:24.546Z - normal: Check project /Users/zhaozhantao/qp/client
+2017-06-25T01:53:24.549Z - normal: Initializing Cocos2d
+2017-06-25T01:53:24.736Z - normal: Initializing Asset Database
+2017-06-25T01:53:24.766Z - success: protocol uuid registerred
+2017-06-25T01:53:24.766Z - success: protocol db registerred
+2017-06-25T01:53:24.767Z - success: protocol thumbnail registerred
+2017-06-25T01:53:24.767Z - normal: Loading editor/builtin packages
+2017-06-25T01:53:24.789Z - success: anysdk loaded
+2017-06-25T01:53:24.920Z - success: assets loaded
+2017-06-25T01:53:24.923Z - success: builder loaded
+2017-06-25T01:53:24.928Z - success: hierarchy loaded
+2017-06-25T01:53:24.933Z - success: inspector loaded
+2017-06-25T01:53:24.935Z - success: keystore loaded
+2017-06-25T01:53:24.939Z - success: node-library loaded
+2017-06-25T01:53:24.941Z - success: package-asset loaded
+2017-06-25T01:53:24.943Z - success: preferences loaded
+2017-06-25T01:53:24.958Z - success: project-importer loaded
+2017-06-25T01:53:24.961Z - success: project-settings loaded
+2017-06-25T01:53:24.964Z - success: ui-kit loaded
+2017-06-25T01:53:24.969Z - success: ui-grid loaded
+2017-06-25T01:53:24.974Z - success: scene loaded
+2017-06-25T01:53:24.975Z - success: sprite-editor loaded
+2017-06-25T01:53:24.979Z - success: store loaded
+2017-06-25T01:53:24.985Z - success: timeline loaded
+2017-06-25T01:53:24.985Z - normal: Loading builtin packages
+2017-06-25T01:53:24.990Z - success: asset-db-debugger loaded
+2017-06-25T01:53:24.992Z - success: code-editor loaded
+2017-06-25T01:53:24.993Z - success: color-picker loaded
+2017-06-25T01:53:24.998Z - success: console loaded
+2017-06-25T01:53:25.002Z - success: package-manager loaded
+2017-06-25T01:53:25.011Z - success: sdkbox loaded
+2017-06-25T01:53:25.015Z - success: tester loaded
+2017-06-25T01:53:25.019Z - success: ui-kit-preview-extra loaded
+2017-06-25T01:53:25.024Z - success: ui-kit-preview loaded
+2017-06-25T01:53:25.027Z - success: ui-tree loaded
+2017-06-25T01:53:25.072Z - normal: Initializing project /Users/zhaozhantao/qp/client
+2017-06-25T01:53:25.074Z - normal: Loading packages
+2017-06-25T01:53:25.078Z - normal: Watching packages
+2017-06-25T01:53:25.090Z - normal: Run Application
+2017-06-25T01:53:25.417Z - success: preview server running at http://localhost:7456
+2017-06-25T01:53:29.215Z - normal: 1.5.0
+2017-06-25T01:56:02.579Z - normal: Simulator: WORKAREA WIDTH 1204.00, HEIGHT 755.00
+2017-06-25T01:56:02.582Z - normal: Simulator: FRAME SCALE = 1.00
+2017-06-25T01:56:02.584Z - normal: Simulator: GLFWError #65544 Happen, Cocoa: Failed to retrieve display name
+2017-06-25T01:56:02.665Z - normal: Simulator: 
+2017-06-25T01:56:02.666Z - normal: Simulator: {
+2017-06-25T01:56:02.666Z - normal: Simulator: 	gl.supports_OES_map_buffer: false
+2017-06-25T01:56:02.667Z - normal: Simulator: 	gl.supports_vertex_array_object: true
+2017-06-25T01:56:02.667Z - normal: Simulator: 	cocos2d.x.version: 1.5.0
+2017-06-25T01:56:02.667Z - normal: Simulator: 	gl.vendor: Intel Inc.
+2017-06-25T01:56:02.766Z - normal: Simulator: 	gl.supports_PVRTC: false
+2017-06-25T01:56:02.767Z - normal: Simulator: 	gl.renderer: Intel(R) Iris(TM) Graphics 6100
+2017-06-25T01:56:02.767Z - normal: Simulator: 	cocos2d.x.compiled_with_profiler: false
+2017-06-25T01:56:02.767Z - normal: Simulator: 	gl.max_texture_size: 16384
+2017-06-25T01:56:02.768Z - normal: Simulator: 	gl.supports_ETC1: false
+2017-06-25T01:56:02.768Z - normal: Simulator: 	gl.supports_BGRA8888: false
+2017-06-25T01:56:02.768Z - normal: Simulator: 	cocos2d.x.build_type: DEBUG
+2017-06-25T01:56:02.769Z - normal: Simulator: 	gl.max_texture_units: 16
+2017-06-25T01:56:02.769Z - normal: Simulator: 	gl.supports_OES_packed_depth_stencil: false
+2017-06-25T01:56:02.769Z - normal: Simulator: 	gl.supports_discard_framebuffer: false
+2017-06-25T01:56:02.769Z - normal: Simulator: 	gl.supports_NPOT: true
+2017-06-25T01:56:02.770Z - normal: Simulator: 	gl.version: 2.1 INTEL-10.25.13
+2017-06-25T01:56:02.770Z - normal: Simulator: 	cocos2d.x.compiled_with_gl_state_cache: true
+2017-06-25T01:56:02.770Z - normal: Simulator: 	gl.supports_OES_depth24: false
+2017-06-25T01:56:02.771Z - normal: Simulator: }
+2017-06-25T01:56:02.771Z - normal: Simulator: 
+2017-06-25T01:56:02.771Z - normal: Simulator: 
+2017-06-25T01:56:02.771Z - normal: Simulator: cocos2d: warning, Director::setProjection() failed because size is 0
+2017-06-25T01:56:02.772Z - normal: Simulator: Project Config:
+2017-06-25T01:56:02.772Z - normal: Simulator:     project dir: /Applications/CocosCreator.app/Contents/Resources/cocos2d-x/simulator/mac/Simulator.app/Contents/Resources/
+2017-06-25T01:56:02.772Z - normal: Simulator:     writable path: $(PROJDIR)/
+2017-06-25T01:56:02.772Z - normal: Simulator:     script file: $(PROJDIR)/main.js
+2017-06-25T01:56:02.773Z - normal: Simulator:     frame size: 800 x 480
+2017-06-25T01:56:02.773Z - normal: Simulator:     frame scale: 1.00
+2017-06-25T01:56:02.773Z - normal: Simulator:     show console: NO
+2017-06-25T01:56:02.774Z - normal: Simulator:     write debug log: NO ()
+2017-06-25T01:56:02.774Z - normal: Simulator:     listen: 
+2017-06-25T01:56:02.774Z - normal: Simulator:     debugger: none
+2017-06-25T01:56:02.774Z - normal: Simulator:     add searching path:
+2017-06-25T01:56:02.774Z - normal: Simulator: ------------------------------------------------
+2017-06-25T01:56:02.775Z - normal: Simulator: LOAD Js FILE: main.js
+2017-06-25T01:56:02.775Z - normal: Simulator: ------------------------------------------------
+2017-06-25T01:56:02.884Z - normal: Simulator: Cocos2d-JS v3.14
+2017-06-25T01:56:03.086Z - error: Simulator: mutating the [[Prototype]] of an object will cause your code to run very slowly; instead create the object with the correct initial [[Prototype]] value using Object.create
+    at a (/Users/zhaozhantao/qp/client/library/bundle.project.js?009:173:0)
+2017-06-25T01:56:03.102Z - normal: Simulator: iShow!
+2017-06-25T01:56:10.273Z - normal: Simulator: login
+2017-06-25T01:56:12.571Z - normal: Simulator: basic_object_finalize 0xb942af0 ...
+2017-06-25T01:56:12.571Z - normal: Simulator: jsbindings: finalizing JS object 0xb942b20 (WebSocket)
+2017-06-25T01:56:12.572Z - normal: Simulator: jsbindings: finalizing JS object 0xb942b50 (SocketIO)
+2017-06-25T01:56:12.572Z - normal: Simulator: basic_object_finalize 0xb942be0 ...
+2017-06-25T01:56:12.573Z - normal: Simulator: basic_object_finalize 0xb942e80 ...
+2017-06-25T02:04:52.695Z - normal: Simulator: WORKAREA WIDTH 1204.00, HEIGHT 755.00
+2017-06-25T02:04:52.697Z - normal: Simulator: FRAME SCALE = 1.00
+2017-06-25T02:04:52.699Z - normal: Simulator: GLFWError #65544 Happen, Cocoa: Failed to retrieve display name
+2017-06-25T02:04:52.788Z - normal: Simulator: 
+2017-06-25T02:04:52.788Z - normal: Simulator: {
+2017-06-25T02:04:52.788Z - normal: Simulator: 	gl.supports_OES_map_buffer: false
+2017-06-25T02:04:52.789Z - normal: Simulator: 	gl.supports_vertex_array_object: true
+2017-06-25T02:04:52.789Z - normal: Simulator: 	cocos2d.x.version: 1.5.0
+2017-06-25T02:04:52.790Z - normal: Simulator: 	gl.vendor: Intel Inc.
+2017-06-25T02:04:52.790Z - normal: Simulator: 	gl.supports_PVRTC: false
+2017-06-25T02:04:52.790Z - normal: Simulator: 	gl.renderer: Intel(R) Iris(TM) Graphics 6100
+2017-06-25T02:04:52.790Z - normal: Simulator: 	cocos2d.x.compiled_with_profiler: false
+2017-06-25T02:04:52.791Z - normal: Simulator: 	gl.max_texture_size: 16384
+2017-06-25T02:04:52.791Z - normal: Simulator: 	gl.supports_ETC1: false
+2017-06-25T02:04:52.791Z - normal: Simulator: 	gl.supports_BGRA8888: false
+2017-06-25T02:04:52.791Z - normal: Simulator: 	cocos2d.x.build_type: DEBUG
+2017-06-25T02:04:52.911Z - normal: Simulator: 	gl.max_texture_units: 16
+2017-06-25T02:04:52.912Z - normal: Simulator: 	gl.supports_OES_packed_depth_stencil: false
+2017-06-25T02:04:52.912Z - normal: Simulator: 	gl.supports_discard_framebuffer: false
+2017-06-25T02:04:52.913Z - normal: Simulator: 	gl.supports_NPOT: true
+2017-06-25T02:04:52.913Z - normal: Simulator: 	gl.version: 2.1 INTEL-10.25.13
+2017-06-25T02:04:52.914Z - normal: Simulator: 	cocos2d.x.compiled_with_gl_state_cache: true
+2017-06-25T02:04:52.914Z - normal: Simulator: 	gl.supports_OES_depth24: false
+2017-06-25T02:04:52.914Z - normal: Simulator: }
+2017-06-25T02:04:52.915Z - normal: Simulator: 
+2017-06-25T02:04:52.915Z - normal: Simulator: 
+2017-06-25T02:04:52.916Z - normal: Simulator: cocos2d: warning, Director::setProjection() failed because size is 0
+2017-06-25T02:04:52.916Z - normal: Simulator: Project Config:
+2017-06-25T02:04:52.916Z - normal: Simulator:     project dir: /Applications/CocosCreator.app/Contents/Resources/cocos2d-x/simulator/mac/Simulator.app/Contents/Resources/
+2017-06-25T02:04:52.917Z - normal: Simulator:     writable path: $(PROJDIR)/
+2017-06-25T02:04:52.918Z - normal: Simulator:     script file: $(PROJDIR)/main.js
+2017-06-25T02:04:52.918Z - normal: Simulator:     frame size: 800 x 480
+2017-06-25T02:04:52.919Z - normal: Simulator:     frame scale: 1.00
+2017-06-25T02:04:52.919Z - normal: Simulator:     show console: NO
+2017-06-25T02:04:52.920Z - normal: Simulator:     write debug log: NO ()
+2017-06-25T02:04:52.921Z - normal: Simulator:     listen: 
+2017-06-25T02:04:52.921Z - normal: Simulator:     debugger: none
+2017-06-25T02:04:52.921Z - normal: Simulator:     add searching path:
+2017-06-25T02:04:52.921Z - normal: Simulator: 
+2017-06-25T02:04:52.922Z - normal: Simulator: 
+2017-06-25T02:04:52.922Z - normal: Simulator: 
+2017-06-25T02:04:52.922Z - normal: Simulator: ------------------------------------------------
+2017-06-25T02:04:52.922Z - normal: Simulator: LOAD Js FILE: main.js
+2017-06-25T02:04:52.923Z - normal: Simulator: ------------------------------------------------
+2017-06-25T02:04:52.954Z - normal: Simulator: Cocos2d-JS v3.14
+2017-06-25T02:04:53.153Z - error: Simulator: mutating the [[Prototype]] of an object will cause your code to run very slowly; instead create the object with the correct initial [[Prototype]] value using Object.create
+    at a (/Users/zhaozhantao/qp/client/library/bundle.project.js?009:173:0)
+2017-06-25T02:04:53.155Z - normal: Simulator: iShow!
+2017-06-25T02:04:57.668Z - normal: Simulator: WORKAREA WIDTH 1204.00, HEIGHT 755.00
+2017-06-25T02:04:57.669Z - normal: Simulator: FRAME SCALE = 1.00
+2017-06-25T02:04:57.685Z - normal: Simulator: GLFWError #65544 Happen, Cocoa: Failed to retrieve display name
+2017-06-25T02:04:57.849Z - normal: Simulator: 
+2017-06-25T02:04:57.850Z - normal: Simulator: {
+2017-06-25T02:04:57.850Z - normal: Simulator: 	gl.supports_OES_map_buffer: false
+2017-06-25T02:04:57.851Z - normal: Simulator: 	gl.supports_vertex_array_object: true
+2017-06-25T02:04:57.851Z - normal: Simulator: 	cocos2d.x.version: 1.5.0
+2017-06-25T02:04:57.851Z - normal: Simulator: 	gl.vendor: Intel Inc.
+2017-06-25T02:04:57.852Z - normal: Simulator: 	gl.supports_PVRTC: false
+2017-06-25T02:04:57.852Z - normal: Simulator: 	gl.renderer: Intel(R) Iris(TM) Graphics 6100
+2017-06-25T02:04:57.853Z - normal: Simulator: 	cocos2d.x.compiled_with_profiler: false
+2017-06-25T02:04:57.853Z - normal: Simulator: 	gl.max_texture_size: 16384
+2017-06-25T02:04:57.853Z - normal: Simulator: 	gl.supports_ETC1: false
+2017-06-25T02:04:57.854Z - normal: Simulator: 	gl.supports_BGRA8888: false
+2017-06-25T02:04:57.854Z - normal: Simulator: 	cocos2d.x.build_type: DEBUG
+2017-06-25T02:04:57.854Z - normal: Simulator: 	gl.max_texture_units: 16
+2017-06-25T02:04:57.855Z - normal: Simulator: 	gl.supports_OES_packed_depth_stencil: false
+2017-06-25T02:04:57.856Z - normal: Simulator: 	gl.supports_discard_framebuffer: false
+2017-06-25T02:04:57.857Z - normal: Simulator: 	gl.supports_NPOT: true
+2017-06-25T02:04:57.857Z - normal: Simulator: 	gl.version: 2.1 INTEL-10.25.13
+2017-06-25T02:04:57.858Z - normal: Simulator: 	cocos2d.x.compiled_with_gl_state_cache: true
+2017-06-25T02:04:57.858Z - normal: Simulator: 	gl.supports_OES_depth24: false
+2017-06-25T02:04:57.859Z - normal: Simulator: }
+2017-06-25T02:04:57.859Z - normal: Simulator: 
+2017-06-25T02:04:57.859Z - normal: Simulator: 
+2017-06-25T02:04:57.860Z - normal: Simulator: cocos2d: warning, Director::setProjection() failed because size is 0
+2017-06-25T02:04:57.860Z - normal: Simulator: Project Config:
+2017-06-25T02:04:57.861Z - normal: Simulator:     project dir: /Applications/CocosCreator.app/Contents/Resources/cocos2d-x/simulator/mac/Simulator.app/Contents/Resources/
+2017-06-25T02:04:57.861Z - normal: Simulator:     writable path: $(PROJDIR)/
+2017-06-25T02:04:57.861Z - normal: Simulator:     script file: $(PROJDIR)/main.js
+2017-06-25T02:04:57.862Z - normal: Simulator:     frame size: 800 x 480
+2017-06-25T02:04:57.862Z - normal: Simulator:     frame scale: 1.00
+2017-06-25T02:04:57.862Z - normal: Simulator:     show console: NO
+2017-06-25T02:04:57.863Z - normal: Simulator:     write debug log: NO ()
+2017-06-25T02:04:57.863Z - normal: Simulator:     listen: 
+2017-06-25T02:04:57.863Z - normal: Simulator:     debugger: none
+2017-06-25T02:04:57.864Z - normal: Simulator:     add searching path:
+2017-06-25T02:04:57.864Z - normal: Simulator: 
+2017-06-25T02:04:57.864Z - normal: Simulator: 
+2017-06-25T02:04:57.864Z - normal: Simulator: 
+2017-06-25T02:04:57.865Z - normal: Simulator: ------------------------------------------------
+2017-06-25T02:04:57.865Z - normal: Simulator: LOAD Js FILE: main.js
+2017-06-25T02:04:57.865Z - normal: Simulator: ------------------------------------------------
+2017-06-25T02:04:57.873Z - normal: Simulator: Cocos2d-JS v3.14
+2017-06-25T02:04:58.091Z - error: Simulator: mutating the [[Prototype]] of an object will cause your code to run very slowly; instead create the object with the correct initial [[Prototype]] value using Object.create
+    at a (/Users/zhaozhantao/qp/client/library/bundle.project.js?009:173:0)
+2017-06-25T02:04:58.094Z - normal: Simulator: iShow!
+2017-06-25T02:05:41.218Z - normal: Simulator: WORKAREA WIDTH 1204.00, HEIGHT 755.00
+2017-06-25T02:05:41.219Z - normal: Simulator: FRAME SCALE = 1.00
+2017-06-25T02:05:41.226Z - normal: Simulator: GLFWError #65544 Happen, Cocoa: Failed to retrieve display name
+2017-06-25T02:05:41.425Z - normal: Simulator: 
+2017-06-25T02:05:41.427Z - normal: Simulator: {
+2017-06-25T02:05:41.428Z - normal: Simulator: 	gl.supports_OES_map_buffer: false
+2017-06-25T02:05:41.428Z - normal: Simulator: 	gl.supports_vertex_array_object: true
+2017-06-25T02:05:41.428Z - normal: Simulator: 	cocos2d.x.version: 1.5.0
+2017-06-25T02:05:41.429Z - normal: Simulator: 	gl.vendor: Intel Inc.
+2017-06-25T02:05:41.430Z - normal: Simulator: 	gl.supports_PVRTC: false
+2017-06-25T02:05:41.430Z - normal: Simulator: 	gl.renderer: Intel(R) Iris(TM) Graphics 6100
+2017-06-25T02:05:41.430Z - normal: Simulator: 	cocos2d.x.compiled_with_profiler: false
+2017-06-25T02:05:41.431Z - normal: Simulator: 	gl.max_texture_size: 16384
+2017-06-25T02:05:41.431Z - normal: Simulator: 	gl.supports_ETC1: false
+2017-06-25T02:05:41.431Z - normal: Simulator: 	gl.supports_BGRA8888: false
+2017-06-25T02:05:41.431Z - normal: Simulator: 	cocos2d.x.build_type: DEBUG
+2017-06-25T02:05:41.432Z - normal: Simulator: 	gl.max_texture_units: 16
+2017-06-25T02:05:41.432Z - normal: Simulator: 	gl.supports_OES_packed_depth_stencil: false
+2017-06-25T02:05:41.432Z - normal: Simulator: 	gl.supports_discard_framebuffer: false
+2017-06-25T02:05:41.432Z - normal: Simulator: 	gl.supports_NPOT: true
+2017-06-25T02:05:41.432Z - normal: Simulator: 	gl.version: 2.1 INTEL-10.25.13
+2017-06-25T02:05:41.433Z - normal: Simulator: 	cocos2d.x.compiled_with_gl_state_cache: true
+2017-06-25T02:05:41.433Z - normal: Simulator: 	gl.supports_OES_depth24: false
+2017-06-25T02:05:41.433Z - normal: Simulator: }
+2017-06-25T02:05:41.434Z - normal: Simulator: 
+2017-06-25T02:05:41.434Z - normal: Simulator: 
+2017-06-25T02:05:41.434Z - normal: Simulator: cocos2d: warning, Director::setProjection() failed because size is 0
+2017-06-25T02:05:41.435Z - normal: Simulator: Project Config:
+2017-06-25T02:05:41.435Z - normal: Simulator:     project dir: /Applications/CocosCreator.app/Contents/Resources/cocos2d-x/simulator/mac/Simulator.app/Contents/Resources/
+2017-06-25T02:05:41.436Z - normal: Simulator:     writable path: $(PROJDIR)/
+2017-06-25T02:05:41.437Z - normal: Simulator:     script file: $(PROJDIR)/main.js
+2017-06-25T02:05:41.437Z - normal: Simulator:     frame size: 800 x 480
+2017-06-25T02:05:41.438Z - normal: Simulator:     frame scale: 1.00
+2017-06-25T02:05:41.439Z - normal: Simulator:     show console: NO
+2017-06-25T02:05:41.441Z - normal: Simulator:     write debug log: NO ()
+2017-06-25T02:05:41.442Z - normal: Simulator:     listen: 
+2017-06-25T02:05:41.442Z - normal: Simulator:     debugger: none
+2017-06-25T02:05:41.443Z - normal: Simulator:     add searching path:
+2017-06-25T02:05:41.445Z - normal: Simulator: 
+2017-06-25T02:05:41.446Z - normal: Simulator: 
+2017-06-25T02:05:41.446Z - normal: Simulator: 
+2017-06-25T02:05:41.447Z - normal: Simulator: ------------------------------------------------
+2017-06-25T02:05:41.447Z - normal: Simulator: LOAD Js FILE: main.js
+2017-06-25T02:05:41.447Z - normal: Simulator: ------------------------------------------------
+2017-06-25T02:05:41.455Z - normal: Simulator: Cocos2d-JS v3.14
+2017-06-25T02:05:41.653Z - error: Simulator: mutating the [[Prototype]] of an object will cause your code to run very slowly; instead create the object with the correct initial [[Prototype]] value using Object.create
+    at a (/Users/zhaozhantao/qp/client/library/bundle.project.js?009:173:0)
+2017-06-25T02:05:41.655Z - normal: Simulator: iShow!
+2017-06-25T02:07:07.703Z - normal: Simulator: WORKAREA WIDTH 1204.00, HEIGHT 755.00
+2017-06-25T02:07:07.704Z - normal: Simulator: FRAME SCALE = 1.00
+2017-06-25T02:07:07.708Z - normal: Simulator: GLFWError #65544 Happen, Cocoa: Failed to retrieve display name
+2017-06-25T02:07:07.880Z - normal: Simulator: 
+2017-06-25T02:07:07.881Z - normal: Simulator: {
+2017-06-25T02:07:07.881Z - normal: Simulator: 	gl.supports_OES_map_buffer: false
+2017-06-25T02:07:07.881Z - normal: Simulator: 	gl.supports_vertex_array_object: true
+2017-06-25T02:07:07.882Z - normal: Simulator: 	cocos2d.x.version: 1.5.0
+2017-06-25T02:07:07.882Z - normal: Simulator: 	gl.vendor: Intel Inc.
+2017-06-25T02:07:07.883Z - normal: Simulator: 	gl.supports_PVRTC: false
+2017-06-25T02:07:07.883Z - normal: Simulator: 	gl.renderer: Intel(R) Iris(TM) Graphics 6100
+2017-06-25T02:07:07.883Z - normal: Simulator: 	cocos2d.x.compiled_with_profiler: false
+2017-06-25T02:07:07.884Z - normal: Simulator: 	gl.max_texture_size: 16384
+2017-06-25T02:07:07.884Z - normal: Simulator: 	gl.supports_ETC1: false
+2017-06-25T02:07:07.884Z - normal: Simulator: 	gl.supports_BGRA8888: false
+2017-06-25T02:07:07.885Z - normal: Simulator: 	cocos2d.x.build_type: DEBUG
+2017-06-25T02:07:07.885Z - normal: Simulator: 	gl.max_texture_units: 16
+2017-06-25T02:07:07.885Z - normal: Simulator: 	gl.supports_OES_packed_depth_stencil: false
+2017-06-25T02:07:07.886Z - normal: Simulator: 	gl.supports_discard_framebuffer: false
+2017-06-25T02:07:07.886Z - normal: Simulator: 	gl.supports_NPOT: true
+2017-06-25T02:07:07.888Z - normal: Simulator: 	gl.version: 2.1 INTEL-10.25.13
+2017-06-25T02:07:07.888Z - normal: Simulator: 	cocos2d.x.compiled_with_gl_state_cache: true
+2017-06-25T02:07:07.888Z - normal: Simulator: 	gl.supports_OES_depth24: false
+2017-06-25T02:07:07.889Z - normal: Simulator: }
+2017-06-25T02:07:07.889Z - normal: Simulator: 
+2017-06-25T02:07:07.889Z - normal: Simulator: 
+2017-06-25T02:07:07.894Z - normal: Simulator: cocos2d: warning, Director::setProjection() failed because size is 0
+2017-06-25T02:07:07.894Z - normal: Simulator: Project Config:
+2017-06-25T02:07:07.894Z - normal: Simulator:     project dir: /Applications/CocosCreator.app/Contents/Resources/cocos2d-x/simulator/mac/Simulator.app/Contents/Resources/
+2017-06-25T02:07:07.895Z - normal: Simulator:     writable path: $(PROJDIR)/
+2017-06-25T02:07:07.895Z - normal: Simulator:     script file: $(PROJDIR)/main.js
+2017-06-25T02:07:07.896Z - normal: Simulator:     frame size: 800 x 480
+2017-06-25T02:07:07.896Z - normal: Simulator:     frame scale: 1.00
+2017-06-25T02:07:07.897Z - normal: Simulator:     show console: NO
+2017-06-25T02:07:07.897Z - normal: Simulator:     write debug log: NO ()
+2017-06-25T02:07:07.897Z - normal: Simulator:     listen: 
+2017-06-25T02:07:07.898Z - normal: Simulator:     debugger: none
+2017-06-25T02:07:07.899Z - normal: Simulator:     add searching path:
+2017-06-25T02:07:07.899Z - normal: Simulator: 
+2017-06-25T02:07:07.899Z - normal: Simulator: 
+2017-06-25T02:07:07.901Z - normal: Simulator: 
+2017-06-25T02:07:07.901Z - normal: Simulator: ------------------------------------------------
+2017-06-25T02:07:07.901Z - normal: Simulator: LOAD Js FILE: main.js
+2017-06-25T02:07:07.902Z - normal: Simulator: ------------------------------------------------
+2017-06-25T02:07:07.918Z - normal: Simulator: Cocos2d-JS v3.14
+2017-06-25T02:07:08.161Z - error: Simulator: mutating the [[Prototype]] of an object will cause your code to run very slowly; instead create the object with the correct initial [[Prototype]] value using Object.create
+    at a (/Users/zhaozhantao/qp/client/library/bundle.project.js?009:173:0)
+2017-06-25T02:07:08.176Z - normal: Simulator: iShow!
+2017-06-25T02:07:32.286Z - normal: Simulator: WORKAREA WIDTH 1204.00, HEIGHT 755.00
+2017-06-25T02:07:32.287Z - normal: Simulator: FRAME SCALE = 1.00
+2017-06-25T02:07:32.294Z - normal: Simulator: GLFWError #65544 Happen, Cocoa: Failed to retrieve display name
+2017-06-25T02:07:32.483Z - normal: Simulator: 
+2017-06-25T02:07:32.484Z - normal: Simulator: {
+2017-06-25T02:07:32.484Z - normal: Simulator: 	gl.supports_OES_map_buffer: false
+2017-06-25T02:07:32.485Z - normal: Simulator: 	gl.supports_vertex_array_object: true
+2017-06-25T02:07:32.485Z - normal: Simulator: 	cocos2d.x.version: 1.5.0
+2017-06-25T02:07:32.486Z - normal: Simulator: 	gl.vendor: Intel Inc.
+2017-06-25T02:07:32.489Z - normal: Simulator: 	gl.supports_PVRTC: false
+2017-06-25T02:07:32.489Z - normal: Simulator: 	gl.renderer: Intel(R) Iris(TM) Graphics 6100
+2017-06-25T02:07:32.490Z - normal: Simulator: 	cocos2d.x.compiled_with_profiler: false
+2017-06-25T02:07:32.490Z - normal: Simulator: 	gl.max_texture_size: 16384
+2017-06-25T02:07:32.490Z - normal: Simulator: 	gl.supports_ETC1: false
+2017-06-25T02:07:32.491Z - normal: Simulator: 	gl.supports_BGRA8888: false
+2017-06-25T02:07:32.491Z - normal: Simulator: 	cocos2d.x.build_type: DEBUG
+2017-06-25T02:07:32.491Z - normal: Simulator: 	gl.max_texture_units: 16
+2017-06-25T02:07:32.492Z - normal: Simulator: 	gl.supports_OES_packed_depth_stencil: false
+2017-06-25T02:07:32.493Z - normal: Simulator: 	gl.supports_discard_framebuffer: false
+2017-06-25T02:07:32.493Z - normal: Simulator: 	gl.supports_NPOT: true
+2017-06-25T02:07:32.494Z - normal: Simulator: 	gl.version: 2.1 INTEL-10.25.13
+2017-06-25T02:07:32.494Z - normal: Simulator: 	cocos2d.x.compiled_with_gl_state_cache: true
+2017-06-25T02:07:32.494Z - normal: Simulator: 	gl.supports_OES_depth24: false
+2017-06-25T02:07:32.495Z - normal: Simulator: }
+2017-06-25T02:07:32.495Z - normal: Simulator: 
+2017-06-25T02:07:32.495Z - normal: Simulator: 
+2017-06-25T02:07:32.495Z - normal: Simulator: cocos2d: warning, Director::setProjection() failed because size is 0
+2017-06-25T02:07:32.496Z - normal: Simulator: Project Config:
+2017-06-25T02:07:32.496Z - normal: Simulator:     project dir: /Applications/CocosCreator.app/Contents/Resources/cocos2d-x/simulator/mac/Simulator.app/Contents/Resources/
+2017-06-25T02:07:32.496Z - normal: Simulator:     writable path: $(PROJDIR)/
+2017-06-25T02:07:32.497Z - normal: Simulator:     script file: $(PROJDIR)/main.js
+2017-06-25T02:07:32.497Z - normal: Simulator:     frame size: 800 x 480
+2017-06-25T02:07:32.497Z - normal: Simulator:     frame scale: 1.00
+2017-06-25T02:07:32.498Z - normal: Simulator:     show console: NO
+2017-06-25T02:07:32.498Z - normal: Simulator:     write debug log: NO ()
+2017-06-25T02:07:32.498Z - normal: Simulator:     listen: 
+2017-06-25T02:07:32.499Z - normal: Simulator:     debugger: none
+2017-06-25T02:07:32.499Z - normal: Simulator:     add searching path:
+2017-06-25T02:07:32.500Z - normal: Simulator: 
+2017-06-25T02:07:32.500Z - normal: Simulator: 
+2017-06-25T02:07:32.500Z - normal: Simulator: 
+2017-06-25T02:07:32.500Z - normal: Simulator: ------------------------------------------------
+2017-06-25T02:07:32.501Z - normal: Simulator: LOAD Js FILE: main.js
+2017-06-25T02:07:32.501Z - normal: Simulator: ------------------------------------------------
+2017-06-25T02:07:32.505Z - normal: Simulator: Cocos2d-JS v3.14
+2017-06-25T02:07:32.733Z - error: Simulator: mutating the [[Prototype]] of an object will cause your code to run very slowly; instead create the object with the correct initial [[Prototype]] value using Object.create
+    at a (/Users/zhaozhantao/qp/client/library/bundle.project.js?009:173:0)
+2017-06-25T02:07:32.737Z - normal: Simulator: iShow!
+2017-06-25T02:08:07.091Z - normal: Simulator: WORKAREA WIDTH 1204.00, HEIGHT 755.00
+2017-06-25T02:08:07.092Z - normal: Simulator: FRAME SCALE = 1.00
+2017-06-25T02:08:07.096Z - normal: Simulator: GLFWError #65544 Happen, Cocoa: Failed to retrieve display name
+2017-06-25T02:08:07.274Z - normal: Simulator: 
+2017-06-25T02:08:07.275Z - normal: Simulator: {
+2017-06-25T02:08:07.275Z - normal: Simulator: 	gl.supports_OES_map_buffer: false
+2017-06-25T02:08:07.275Z - normal: Simulator: 	gl.supports_vertex_array_object: true
+2017-06-25T02:08:07.276Z - normal: Simulator: 	cocos2d.x.version: 1.5.0
+2017-06-25T02:08:07.276Z - normal: Simulator: 	gl.vendor: Intel Inc.
+2017-06-25T02:08:07.276Z - normal: Simulator: 	gl.supports_PVRTC: false
+2017-06-25T02:08:07.276Z - normal: Simulator: 	gl.renderer: Intel(R) Iris(TM) Graphics 6100
+2017-06-25T02:08:07.277Z - normal: Simulator: 	cocos2d.x.compiled_with_profiler: false
+2017-06-25T02:08:07.277Z - normal: Simulator: 	gl.max_texture_size: 16384
+2017-06-25T02:08:07.277Z - normal: Simulator: 	gl.supports_ETC1: false
+2017-06-25T02:08:07.278Z - normal: Simulator: 	gl.supports_BGRA8888: false
+2017-06-25T02:08:07.278Z - normal: Simulator: 	cocos2d.x.build_type: DEBUG
+2017-06-25T02:08:07.278Z - normal: Simulator: 	gl.max_texture_units: 16
+2017-06-25T02:08:07.279Z - normal: Simulator: 	gl.supports_OES_packed_depth_stencil: false
+2017-06-25T02:08:07.279Z - normal: Simulator: 	gl.supports_discard_framebuffer: false
+2017-06-25T02:08:07.279Z - normal: Simulator: 	gl.supports_NPOT: true
+2017-06-25T02:08:07.279Z - normal: Simulator: 	gl.version: 2.1 INTEL-10.25.13
+2017-06-25T02:08:07.280Z - normal: Simulator: 	cocos2d.x.compiled_with_gl_state_cache: true
+2017-06-25T02:08:07.280Z - normal: Simulator: 	gl.supports_OES_depth24: false
+2017-06-25T02:08:07.281Z - normal: Simulator: }
+2017-06-25T02:08:07.281Z - normal: Simulator: 
+2017-06-25T02:08:07.281Z - normal: Simulator: 
+2017-06-25T02:08:07.282Z - normal: Simulator: cocos2d: warning, Director::setProjection() failed because size is 0
+2017-06-25T02:08:07.282Z - normal: Simulator: Project Config:
+2017-06-25T02:08:07.282Z - normal: Simulator:     project dir: /Applications/CocosCreator.app/Contents/Resources/cocos2d-x/simulator/mac/Simulator.app/Contents/Resources/
+2017-06-25T02:08:07.283Z - normal: Simulator:     writable path: $(PROJDIR)/
+2017-06-25T02:08:07.283Z - normal: Simulator:     script file: $(PROJDIR)/main.js
+2017-06-25T02:08:07.283Z - normal: Simulator:     frame size: 800 x 480
+2017-06-25T02:08:07.284Z - normal: Simulator:     frame scale: 1.00
+2017-06-25T02:08:07.284Z - normal: Simulator:     show console: NO
+2017-06-25T02:08:07.284Z - normal: Simulator:     write debug log: NO ()
+2017-06-25T02:08:07.284Z - normal: Simulator:     listen: 
+2017-06-25T02:08:07.285Z - normal: Simulator:     debugger: none
+2017-06-25T02:08:07.286Z - normal: Simulator:     add searching path:
+2017-06-25T02:08:07.286Z - normal: Simulator: 
+2017-06-25T02:08:07.286Z - normal: Simulator: 
+2017-06-25T02:08:07.287Z - normal: Simulator: 
+2017-06-25T02:08:07.287Z - normal: Simulator: ------------------------------------------------
+2017-06-25T02:08:07.287Z - normal: Simulator: LOAD Js FILE: main.js
+2017-06-25T02:08:07.288Z - normal: Simulator: ------------------------------------------------
+2017-06-25T02:08:07.316Z - normal: Simulator: Cocos2d-JS v3.14
+2017-06-25T02:08:07.535Z - error: Simulator: mutating the [[Prototype]] of an object will cause your code to run very slowly; instead create the object with the correct initial [[Prototype]] value using Object.create
+    at a (/Users/zhaozhantao/qp/client/library/bundle.project.js?009:173:0)
+2017-06-25T02:08:07.539Z - normal: Simulator: iShow!
+2017-06-25T02:08:08.492Z - normal: Simulator: login
+2017-06-25T02:10:33.750Z - normal: Simulator: WORKAREA WIDTH 1204.00, HEIGHT 755.00
+2017-06-25T02:10:33.752Z - normal: Simulator: FRAME SCALE = 1.00
+2017-06-25T02:10:33.754Z - normal: Simulator: GLFWError #65544 Happen, Cocoa: Failed to retrieve display name
+2017-06-25T02:10:33.834Z - normal: Simulator: 
+2017-06-25T02:10:33.941Z - normal: Simulator: {
+2017-06-25T02:10:33.941Z - normal: Simulator: 	gl.supports_OES_map_buffer: false
+2017-06-25T02:10:33.942Z - normal: Simulator: 	gl.supports_vertex_array_object: true
+2017-06-25T02:10:33.942Z - normal: Simulator: 	cocos2d.x.version: 1.5.0
+2017-06-25T02:10:33.942Z - normal: Simulator: 	gl.vendor: Intel Inc.
+2017-06-25T02:10:33.943Z - normal: Simulator: 	gl.supports_PVRTC: false
+2017-06-25T02:10:33.943Z - normal: Simulator: 	gl.renderer: Intel(R) Iris(TM) Graphics 6100
+2017-06-25T02:10:33.943Z - normal: Simulator: 	cocos2d.x.compiled_with_profiler: false
+2017-06-25T02:10:33.944Z - normal: Simulator: 	gl.max_texture_size: 16384
+2017-06-25T02:10:33.944Z - normal: Simulator: 	gl.supports_ETC1: false
+2017-06-25T02:10:33.944Z - normal: Simulator: 	gl.supports_BGRA8888: false
+2017-06-25T02:10:33.944Z - normal: Simulator: 	cocos2d.x.build_type: DEBUG
+2017-06-25T02:10:33.945Z - normal: Simulator: 	gl.max_texture_units: 16
+2017-06-25T02:10:33.945Z - normal: Simulator: 	gl.supports_OES_packed_depth_stencil: false
+2017-06-25T02:10:33.945Z - normal: Simulator: 	gl.supports_discard_framebuffer: false
+2017-06-25T02:10:33.946Z - normal: Simulator: 	gl.supports_NPOT: true
+2017-06-25T02:10:33.946Z - normal: Simulator: 	gl.version: 2.1 INTEL-10.25.13
+2017-06-25T02:10:33.947Z - normal: Simulator: 	cocos2d.x.compiled_with_gl_state_cache: true
+2017-06-25T02:10:33.947Z - normal: Simulator: 	gl.supports_OES_depth24: false
+2017-06-25T02:10:33.947Z - normal: Simulator: }
+2017-06-25T02:10:33.948Z - normal: Simulator: 
+2017-06-25T02:10:33.948Z - normal: Simulator: 
+2017-06-25T02:10:33.948Z - normal: Simulator: cocos2d: warning, Director::setProjection() failed because size is 0
+2017-06-25T02:10:33.948Z - normal: Simulator: Project Config:
+2017-06-25T02:10:33.949Z - normal: Simulator:     project dir: /Applications/CocosCreator.app/Contents/Resources/cocos2d-x/simulator/mac/Simulator.app/Contents/Resources/
+2017-06-25T02:10:33.949Z - normal: Simulator:     writable path: $(PROJDIR)/
+2017-06-25T02:10:33.949Z - normal: Simulator:     script file: $(PROJDIR)/main.js
+2017-06-25T02:10:33.950Z - normal: Simulator:     frame size: 800 x 480
+2017-06-25T02:10:33.950Z - normal: Simulator:     frame scale: 1.00
+2017-06-25T02:10:33.950Z - normal: Simulator:     show console: NO
+2017-06-25T02:10:33.951Z - normal: Simulator:     write debug log: NO ()
+2017-06-25T02:10:33.951Z - normal: Simulator:     listen: 
+2017-06-25T02:10:33.951Z - normal: Simulator:     debugger: none
+2017-06-25T02:10:33.951Z - normal: Simulator:     add searching path:
+2017-06-25T02:10:33.952Z - normal: Simulator: 
+2017-06-25T02:10:33.952Z - normal: Simulator: 
+2017-06-25T02:10:33.952Z - normal: Simulator: 
+2017-06-25T02:10:33.953Z - normal: Simulator: ------------------------------------------------
+2017-06-25T02:10:33.954Z - normal: Simulator: LOAD Js FILE: main.js
+2017-06-25T02:10:33.954Z - normal: Simulator: ------------------------------------------------
+2017-06-25T02:10:33.958Z - normal: Simulator: Cocos2d-JS v3.14
+2017-06-25T02:10:34.192Z - error: Simulator: mutating the [[Prototype]] of an object will cause your code to run very slowly; instead create the object with the correct initial [[Prototype]] value using Object.create
+    at a (/Users/zhaozhantao/qp/client/library/bundle.project.js?009:173:0)
+2017-06-25T02:10:34.212Z - normal: Simulator: iShow!
+2017-06-25T02:14:09.790Z - normal: Simulator: WORKAREA WIDTH 1204.00, HEIGHT 755.00
+2017-06-25T02:14:09.792Z - normal: Simulator: FRAME SCALE = 1.00
+2017-06-25T02:14:09.804Z - normal: Simulator: GLFWError #65544 Happen, Cocoa: Failed to retrieve display name
+2017-06-25T02:14:09.879Z - normal: Simulator: 
+2017-06-25T02:14:09.881Z - normal: Simulator: {
+2017-06-25T02:14:09.882Z - normal: Simulator: 	gl.supports_OES_map_buffer: false
+2017-06-25T02:14:09.883Z - normal: Simulator: 	gl.supports_vertex_array_object: true
+2017-06-25T02:14:09.883Z - normal: Simulator: 	cocos2d.x.version: 1.5.0
+2017-06-25T02:14:09.884Z - normal: Simulator: 	gl.vendor: Intel Inc.
+2017-06-25T02:14:09.974Z - normal: Simulator: 	gl.supports_PVRTC: false
+2017-06-25T02:14:09.974Z - normal: Simulator: 	gl.renderer: Intel(R) Iris(TM) Graphics 6100
+2017-06-25T02:14:09.974Z - normal: Simulator: 	cocos2d.x.compiled_with_profiler: false
+2017-06-25T02:14:09.975Z - normal: Simulator: 	gl.max_texture_size: 16384
+2017-06-25T02:14:09.975Z - normal: Simulator: 	gl.supports_ETC1: false
+2017-06-25T02:14:09.975Z - normal: Simulator: 	gl.supports_BGRA8888: false
+2017-06-25T02:14:09.976Z - normal: Simulator: 	cocos2d.x.build_type: DEBUG
+2017-06-25T02:14:09.976Z - normal: Simulator: 	gl.max_texture_units: 16
+2017-06-25T02:14:09.976Z - normal: Simulator: 	gl.supports_OES_packed_depth_stencil: false
+2017-06-25T02:14:09.977Z - normal: Simulator: 	gl.supports_discard_framebuffer: false
+2017-06-25T02:14:09.977Z - normal: Simulator: 	gl.supports_NPOT: true
+2017-06-25T02:14:09.977Z - normal: Simulator: 	gl.version: 2.1 INTEL-10.25.13
+2017-06-25T02:14:09.978Z - normal: Simulator: 	cocos2d.x.compiled_with_gl_state_cache: true
+2017-06-25T02:14:09.978Z - normal: Simulator: 	gl.supports_OES_depth24: false
+2017-06-25T02:14:09.978Z - normal: Simulator: }
+2017-06-25T02:14:09.979Z - normal: Simulator: 
+2017-06-25T02:14:09.979Z - normal: Simulator: 
+2017-06-25T02:14:09.979Z - normal: Simulator: cocos2d: warning, Director::setProjection() failed because size is 0
+2017-06-25T02:14:09.982Z - normal: Simulator: Project Config:
+2017-06-25T02:14:09.982Z - normal: Simulator:     project dir: /Applications/CocosCreator.app/Contents/Resources/cocos2d-x/simulator/mac/Simulator.app/Contents/Resources/
+2017-06-25T02:14:09.982Z - normal: Simulator:     writable path: $(PROJDIR)/
+2017-06-25T02:14:09.983Z - normal: Simulator:     script file: $(PROJDIR)/main.js
+2017-06-25T02:14:09.983Z - normal: Simulator:     frame size: 800 x 480
+2017-06-25T02:14:09.984Z - normal: Simulator:     frame scale: 1.00
+2017-06-25T02:14:09.984Z - normal: Simulator:     show console: NO
+2017-06-25T02:14:09.984Z - normal: Simulator:     write debug log: NO ()
+2017-06-25T02:14:09.985Z - normal: Simulator:     listen: 
+2017-06-25T02:14:09.985Z - normal: Simulator:     debugger: none
+2017-06-25T02:14:09.985Z - normal: Simulator:     add searching path:
+2017-06-25T02:14:09.986Z - normal: Simulator: 
+2017-06-25T02:14:09.986Z - normal: Simulator: 
+2017-06-25T02:14:09.987Z - normal: Simulator: 
+2017-06-25T02:14:09.987Z - normal: Simulator: ------------------------------------------------
+2017-06-25T02:14:09.987Z - normal: Simulator: LOAD Js FILE: main.js
+2017-06-25T02:14:09.988Z - normal: Simulator: ------------------------------------------------
+2017-06-25T02:14:09.989Z - normal: Simulator: Cocos2d-JS v3.14
+2017-06-25T02:14:10.241Z - error: Simulator: mutating the [[Prototype]] of an object will cause your code to run very slowly; instead create the object with the correct initial [[Prototype]] value using Object.create
+    at a (/Users/zhaozhantao/qp/client/library/bundle.project.js?009:173:0)
+2017-06-25T02:14:10.262Z - normal: Simulator: iShow!
+2017-06-25T02:14:13.571Z - normal: Simulator: login
+2017-06-25T02:18:17.653Z - normal: Simulator: WORKAREA WIDTH 1204.00, HEIGHT 755.00
+2017-06-25T02:18:17.655Z - normal: Simulator: FRAME SCALE = 1.00
+2017-06-25T02:18:17.657Z - normal: Simulator: GLFWError #65544 Happen, Cocoa: Failed to retrieve display name
+2017-06-25T02:18:17.827Z - normal: Simulator: 
+2017-06-25T02:18:17.827Z - normal: Simulator: {
+2017-06-25T02:18:17.828Z - normal: Simulator: 	gl.supports_OES_map_buffer: false
+2017-06-25T02:18:17.828Z - normal: Simulator: 	gl.supports_vertex_array_object: true
+2017-06-25T02:18:17.828Z - normal: Simulator: 	cocos2d.x.version: 1.5.0
+2017-06-25T02:18:17.829Z - normal: Simulator: 	gl.vendor: Intel Inc.
+2017-06-25T02:18:17.829Z - normal: Simulator: 	gl.supports_PVRTC: false
+2017-06-25T02:18:17.829Z - normal: Simulator: 	gl.renderer: Intel(R) Iris(TM) Graphics 6100
+2017-06-25T02:18:17.830Z - normal: Simulator: 	cocos2d.x.compiled_with_profiler: false
+2017-06-25T02:18:17.830Z - normal: Simulator: 	gl.max_texture_size: 16384
+2017-06-25T02:18:17.830Z - normal: Simulator: 	gl.supports_ETC1: false
+2017-06-25T02:18:17.831Z - normal: Simulator: 	gl.supports_BGRA8888: false
+2017-06-25T02:18:17.831Z - normal: Simulator: 	cocos2d.x.build_type: DEBUG
+2017-06-25T02:18:17.832Z - normal: Simulator: 	gl.max_texture_units: 16
+2017-06-25T02:18:17.832Z - normal: Simulator: 	gl.supports_OES_packed_depth_stencil: false
+2017-06-25T02:18:17.832Z - normal: Simulator: 	gl.supports_discard_framebuffer: false
+2017-06-25T02:18:17.833Z - normal: Simulator: 	gl.supports_NPOT: true
+2017-06-25T02:18:17.834Z - normal: Simulator: 	gl.version: 2.1 INTEL-10.25.13
+2017-06-25T02:18:17.835Z - normal: Simulator: 	cocos2d.x.compiled_with_gl_state_cache: true
+2017-06-25T02:18:17.835Z - normal: Simulator: 	gl.supports_OES_depth24: false
+2017-06-25T02:18:17.835Z - normal: Simulator: }
+2017-06-25T02:18:17.836Z - normal: Simulator: 
+2017-06-25T02:18:17.836Z - normal: Simulator: 
+2017-06-25T02:18:17.836Z - normal: Simulator: cocos2d: warning, Director::setProjection() failed because size is 0
+2017-06-25T02:18:17.837Z - normal: Simulator: Project Config:
+2017-06-25T02:18:17.837Z - normal: Simulator:     project dir: /Applications/CocosCreator.app/Contents/Resources/cocos2d-x/simulator/mac/Simulator.app/Contents/Resources/
+2017-06-25T02:18:17.837Z - normal: Simulator:     writable path: $(PROJDIR)/
+2017-06-25T02:18:17.837Z - normal: Simulator:     script file: $(PROJDIR)/main.js
+2017-06-25T02:18:17.838Z - normal: Simulator:     frame size: 800 x 480
+2017-06-25T02:18:17.838Z - normal: Simulator:     frame scale: 1.00
+2017-06-25T02:18:17.838Z - normal: Simulator:     show console: NO
+2017-06-25T02:18:17.839Z - normal: Simulator:     write debug log: NO ()
+2017-06-25T02:18:17.839Z - normal: Simulator:     listen: 
+2017-06-25T02:18:17.839Z - normal: Simulator:     debugger: none
+2017-06-25T02:18:17.840Z - normal: Simulator:     add searching path:
+2017-06-25T02:18:17.840Z - normal: Simulator: 
+2017-06-25T02:18:17.840Z - normal: Simulator: 
+2017-06-25T02:18:17.841Z - normal: Simulator: 
+2017-06-25T02:18:17.841Z - normal: Simulator: ------------------------------------------------
+2017-06-25T02:18:17.841Z - normal: Simulator: LOAD Js FILE: main.js
+2017-06-25T02:18:17.842Z - normal: Simulator: ------------------------------------------------
+2017-06-25T02:18:17.845Z - normal: Simulator: Cocos2d-JS v3.14
+2017-06-25T02:18:18.080Z - error: Simulator: mutating the [[Prototype]] of an object will cause your code to run very slowly; instead create the object with the correct initial [[Prototype]] value using Object.create
+    at a (/Users/zhaozhantao/qp/client/library/bundle.project.js?009:173:0)
+2017-06-25T02:18:18.084Z - normal: Simulator: iShow!
+2017-06-25T02:18:19.076Z - normal: Simulator: login
+2017-06-25T02:21:39.177Z - normal: Simulator: WORKAREA WIDTH 1204.00, HEIGHT 755.00
+2017-06-25T02:21:39.179Z - normal: Simulator: FRAME SCALE = 1.00
+2017-06-25T02:21:39.182Z - normal: Simulator: GLFWError #65544 Happen, Cocoa: Failed to retrieve display name
+2017-06-25T02:21:39.253Z - normal: Simulator: 
+2017-06-25T02:21:39.253Z - normal: Simulator: {
+2017-06-25T02:21:39.344Z - normal: Simulator: 	gl.supports_OES_map_buffer: false
+2017-06-25T02:21:39.344Z - normal: Simulator: 	gl.supports_vertex_array_object: true
+2017-06-25T02:21:39.345Z - normal: Simulator: 	cocos2d.x.version: 1.5.0
+2017-06-25T02:21:39.345Z - normal: Simulator: 	gl.vendor: Intel Inc.
+2017-06-25T02:21:39.346Z - normal: Simulator: 	gl.supports_PVRTC: false
+2017-06-25T02:21:39.346Z - normal: Simulator: 	gl.renderer: Intel(R) Iris(TM) Graphics 6100
+2017-06-25T02:21:39.346Z - normal: Simulator: 	cocos2d.x.compiled_with_profiler: false
+2017-06-25T02:21:39.346Z - normal: Simulator: 	gl.max_texture_size: 16384
+2017-06-25T02:21:39.347Z - normal: Simulator: 	gl.supports_ETC1: false
+2017-06-25T02:21:39.347Z - normal: Simulator: 	gl.supports_BGRA8888: false
+2017-06-25T02:21:39.348Z - normal: Simulator: 	cocos2d.x.build_type: DEBUG
+2017-06-25T02:21:39.349Z - normal: Simulator: 	gl.max_texture_units: 16
+2017-06-25T02:21:39.349Z - normal: Simulator: 	gl.supports_OES_packed_depth_stencil: false
+2017-06-25T02:21:39.350Z - normal: Simulator: 	gl.supports_discard_framebuffer: false
+2017-06-25T02:21:39.350Z - normal: Simulator: 	gl.supports_NPOT: true
+2017-06-25T02:21:39.351Z - normal: Simulator: 	gl.version: 2.1 INTEL-10.25.13
+2017-06-25T02:21:39.352Z - normal: Simulator: 	cocos2d.x.compiled_with_gl_state_cache: true
+2017-06-25T02:21:39.352Z - normal: Simulator: 	gl.supports_OES_depth24: false
+2017-06-25T02:21:39.352Z - normal: Simulator: }
+2017-06-25T02:21:39.352Z - normal: Simulator: 
+2017-06-25T02:21:39.353Z - normal: Simulator: 
+2017-06-25T02:21:39.353Z - normal: Simulator: cocos2d: warning, Director::setProjection() failed because size is 0
+2017-06-25T02:21:39.353Z - normal: Simulator: Project Config:
+2017-06-25T02:21:39.354Z - normal: Simulator:     project dir: /Applications/CocosCreator.app/Contents/Resources/cocos2d-x/simulator/mac/Simulator.app/Contents/Resources/
+2017-06-25T02:21:39.354Z - normal: Simulator:     writable path: $(PROJDIR)/
+2017-06-25T02:21:39.354Z - normal: Simulator:     script file: $(PROJDIR)/main.js
+2017-06-25T02:21:39.355Z - normal: Simulator:     frame size: 800 x 480
+2017-06-25T02:21:39.355Z - normal: Simulator:     frame scale: 1.00
+2017-06-25T02:21:39.355Z - normal: Simulator:     show console: NO
+2017-06-25T02:21:39.355Z - normal: Simulator:     write debug log: NO ()
+2017-06-25T02:21:39.355Z - normal: Simulator:     listen: 
+2017-06-25T02:21:39.356Z - normal: Simulator:     debugger: none
+2017-06-25T02:21:39.356Z - normal: Simulator:     add searching path:
+2017-06-25T02:21:39.356Z - normal: Simulator: 
+2017-06-25T02:21:39.357Z - normal: Simulator: 
+2017-06-25T02:21:39.357Z - normal: Simulator: 
+2017-06-25T02:21:39.357Z - normal: Simulator: ------------------------------------------------
+2017-06-25T02:21:39.357Z - normal: Simulator: LOAD Js FILE: main.js
+2017-06-25T02:21:39.358Z - normal: Simulator: ------------------------------------------------
+2017-06-25T02:21:39.370Z - normal: Simulator: Cocos2d-JS v3.14
+2017-06-25T02:21:39.678Z - error: Simulator: mutating the [[Prototype]] of an object will cause your code to run very slowly; instead create the object with the correct initial [[Prototype]] value using Object.create
+    at a (/Users/zhaozhantao/qp/client/library/bundle.project.js?009:173:0)
+2017-06-25T02:21:39.680Z - normal: Simulator: iShow!
+2017-06-25T02:21:40.751Z - normal: Simulator: login
+2017-06-25T02:23:43.699Z - normal: Simulator: WORKAREA WIDTH 1204.00, HEIGHT 755.00
+2017-06-25T02:23:43.701Z - normal: Simulator: FRAME SCALE = 1.00
+2017-06-25T02:23:43.718Z - normal: Simulator: GLFWError #65544 Happen, Cocoa: Failed to retrieve display name
+2017-06-25T02:23:43.794Z - normal: Simulator: 
+2017-06-25T02:23:43.794Z - normal: Simulator: {
+2017-06-25T02:23:43.880Z - normal: Simulator: 	gl.supports_OES_map_buffer: false
+2017-06-25T02:23:43.880Z - normal: Simulator: 	gl.supports_vertex_array_object: true
+2017-06-25T02:23:43.881Z - normal: Simulator: 	cocos2d.x.version: 1.5.0
+2017-06-25T02:23:43.881Z - normal: Simulator: 	gl.vendor: Intel Inc.
+2017-06-25T02:23:43.881Z - normal: Simulator: 	gl.supports_PVRTC: false
+2017-06-25T02:23:43.882Z - normal: Simulator: 	gl.renderer: Intel(R) Iris(TM) Graphics 6100
+2017-06-25T02:23:43.882Z - normal: Simulator: 	cocos2d.x.compiled_with_profiler: false
+2017-06-25T02:23:43.882Z - normal: Simulator: 	gl.max_texture_size: 16384
+2017-06-25T02:23:43.883Z - normal: Simulator: 	gl.supports_ETC1: false
+2017-06-25T02:23:43.883Z - normal: Simulator: 	gl.supports_BGRA8888: false
+2017-06-25T02:23:43.884Z - normal: Simulator: 	cocos2d.x.build_type: DEBUG
+2017-06-25T02:23:43.885Z - normal: Simulator: 	gl.max_texture_units: 16
+2017-06-25T02:23:43.886Z - normal: Simulator: 	gl.supports_OES_packed_depth_stencil: false
+2017-06-25T02:23:43.886Z - normal: Simulator: 	gl.supports_discard_framebuffer: false
+2017-06-25T02:23:43.886Z - normal: Simulator: 	gl.supports_NPOT: true
+2017-06-25T02:23:43.887Z - normal: Simulator: 	gl.version: 2.1 INTEL-10.25.13
+2017-06-25T02:23:43.887Z - normal: Simulator: 	cocos2d.x.compiled_with_gl_state_cache: true
+2017-06-25T02:23:43.887Z - normal: Simulator: 	gl.supports_OES_depth24: false
+2017-06-25T02:23:43.888Z - normal: Simulator: }
+2017-06-25T02:23:43.888Z - normal: Simulator: 
+2017-06-25T02:23:43.890Z - normal: Simulator: 
+2017-06-25T02:23:43.891Z - normal: Simulator: cocos2d: warning, Director::setProjection() failed because size is 0
+2017-06-25T02:23:43.892Z - normal: Simulator: Project Config:
+2017-06-25T02:23:43.892Z - normal: Simulator:     project dir: /Applications/CocosCreator.app/Contents/Resources/cocos2d-x/simulator/mac/Simulator.app/Contents/Resources/
+2017-06-25T02:23:43.892Z - normal: Simulator:     writable path: $(PROJDIR)/
+2017-06-25T02:23:43.893Z - normal: Simulator:     script file: $(PROJDIR)/main.js
+2017-06-25T02:23:43.893Z - normal: Simulator:     frame size: 800 x 480
+2017-06-25T02:23:43.893Z - normal: Simulator:     frame scale: 1.00
+2017-06-25T02:23:43.894Z - normal: Simulator:     show console: NO
+2017-06-25T02:23:43.894Z - normal: Simulator:     write debug log: NO ()
+2017-06-25T02:23:43.894Z - normal: Simulator:     listen: 
+2017-06-25T02:23:43.895Z - normal: Simulator:     debugger: none
+2017-06-25T02:23:43.895Z - normal: Simulator:     add searching path:
+2017-06-25T02:23:43.895Z - normal: Simulator: 
+2017-06-25T02:23:43.896Z - normal: Simulator: 
+2017-06-25T02:23:43.896Z - normal: Simulator: 
+2017-06-25T02:23:43.896Z - normal: Simulator: ------------------------------------------------
+2017-06-25T02:23:43.896Z - normal: Simulator: LOAD Js FILE: main.js
+2017-06-25T02:23:43.897Z - normal: Simulator: ------------------------------------------------
+2017-06-25T02:23:43.900Z - normal: Simulator: Cocos2d-JS v3.14
+2017-06-25T02:23:44.108Z - error: Simulator: mutating the [[Prototype]] of an object will cause your code to run very slowly; instead create the object with the correct initial [[Prototype]] value using Object.create
+    at a (/Users/zhaozhantao/qp/client/library/bundle.project.js?009:173:0)
+2017-06-25T02:23:44.112Z - normal: Simulator: iShow!
+2017-06-25T02:23:45.511Z - normal: Simulator: login
+2017-06-25T02:30:39.980Z - failed: [db-task][sync-changes] Failed to import asset /Users/zhaozhantao/qp/client/assets/scene/Scene.js, message: Compile error: SyntaxError: unknown: Unexpected token, expected , (29:4)
+  27 |         this.mainUi.parent = this.node;
+  28 |     }
+> 29 |     enterRoom:function() {
+     |     ^
+  30 |         console.log("enterRoom");
+  31 |         this.mainUi.destroy();
+  32 |         this.mainUi = null;
+    at Parser.pp$5.raise (/Applications/CocosCreator.app/Contents/Resources/app.asar/node_modules/babylon/lib/index.js:4443:13)
+    at Parser.pp.unexpected (/Applications/CocosCreator.app/Contents/Resources/app.asar/node_modules/babylon/lib/index.js:1755:8)
+    at Parser.pp.expect (/Applications/CocosCreator.app/Contents/Resources/app.asar/node_modules/babylon/lib/index.js:1743:33)
+    at Parser.pp$3.parseObj (/Applications/CocosCreator.app/Contents/Resources/app.asar/node_modules/babylon/lib/index.js:3968:12)
+    at Parser.pp$3.parseExprAtom (/Applications/CocosCreator.app/Contents/Resources/app.asar/node_modules/babylon/lib/index.js:3709:19)
+    at Parser.pp$3.parseExprSubscripts (/Applications/CocosCreator.app/Contents/Resources/app.asar/node_modules/babylon/lib/index.js:3484:19)
+    at Parser.pp$3.parseMaybeUnary (/Applications/CocosCreator.app/Contents/Resources/app.asar/node_modules/babylon/lib/index.js:3464:19)
+    at Parser.pp$3.parseExprOps (/Applications/CocosCreator.app/Contents/Resources/app.asar/node_modules/babylon/lib/index.js:3394:19)
+    at Parser.pp$3.parseMaybeConditional (/Applications/CocosCreator.app/Contents/Resources/app.asar/node_modules/babylon/lib/index.js:3371:19)
+    at Parser.pp$3.parseMaybeAssign (/Applications/CocosCreator.app/Contents/Resources/app.asar/node_modules/babylon/lib/index.js:3334:19)
+2017-06-25T02:32:10.550Z - normal: Compiled project javascript file successfully
+2017-06-25T02:32:19.980Z - normal: Simulator: WORKAREA WIDTH 1204.00, HEIGHT 755.00
+2017-06-25T02:32:19.981Z - normal: Simulator: FRAME SCALE = 1.00
+2017-06-25T02:32:19.984Z - normal: Simulator: GLFWError #65544 Happen, Cocoa: Failed to retrieve display name
+2017-06-25T02:32:20.072Z - normal: Simulator: 
+2017-06-25T02:32:20.073Z - normal: Simulator: {
+2017-06-25T02:32:20.074Z - normal: Simulator: 	gl.supports_OES_map_buffer: false
+2017-06-25T02:32:20.075Z - normal: Simulator: 	gl.supports_vertex_array_object: true
+2017-06-25T02:32:20.077Z - normal: Simulator: 	cocos2d.x.version: 1.5.0
+2017-06-25T02:32:20.158Z - normal: Simulator: 	gl.vendor: Intel Inc.
+2017-06-25T02:32:20.159Z - normal: Simulator: 	gl.supports_PVRTC: false
+2017-06-25T02:32:20.159Z - normal: Simulator: 	gl.renderer: Intel(R) Iris(TM) Graphics 6100
+2017-06-25T02:32:20.160Z - normal: Simulator: 	cocos2d.x.compiled_with_profiler: false
+2017-06-25T02:32:20.160Z - normal: Simulator: 	gl.max_texture_size: 16384
+2017-06-25T02:32:20.160Z - normal: Simulator: 	gl.supports_ETC1: false
+2017-06-25T02:32:20.161Z - normal: Simulator: 	gl.supports_BGRA8888: false
+2017-06-25T02:32:20.161Z - normal: Simulator: 	cocos2d.x.build_type: DEBUG
+2017-06-25T02:32:20.161Z - normal: Simulator: 	gl.max_texture_units: 16
+2017-06-25T02:32:20.162Z - normal: Simulator: 	gl.supports_OES_packed_depth_stencil: false
+2017-06-25T02:32:20.162Z - normal: Simulator: 	gl.supports_discard_framebuffer: false
+2017-06-25T02:32:20.162Z - normal: Simulator: 	gl.supports_NPOT: true
+2017-06-25T02:32:20.165Z - normal: Simulator: 	gl.version: 2.1 INTEL-10.25.13
+2017-06-25T02:32:20.166Z - normal: Simulator: 	cocos2d.x.compiled_with_gl_state_cache: true
+2017-06-25T02:32:20.166Z - normal: Simulator: 	gl.supports_OES_depth24: false
+2017-06-25T02:32:20.167Z - normal: Simulator: }
+2017-06-25T02:32:20.167Z - normal: Simulator: 
+2017-06-25T02:32:20.168Z - normal: Simulator: 
+2017-06-25T02:32:20.168Z - normal: Simulator: cocos2d: warning, Director::setProjection() failed because size is 0
+2017-06-25T02:32:20.169Z - normal: Simulator: Project Config:
+2017-06-25T02:32:20.169Z - normal: Simulator:     project dir: /Applications/CocosCreator.app/Contents/Resources/cocos2d-x/simulator/mac/Simulator.app/Contents/Resources/
+2017-06-25T02:32:20.169Z - normal: Simulator:     writable path: $(PROJDIR)/
+2017-06-25T02:32:20.169Z - normal: Simulator:     script file: $(PROJDIR)/main.js
+2017-06-25T02:32:20.170Z - normal: Simulator:     frame size: 800 x 480
+2017-06-25T02:32:20.170Z - normal: Simulator:     frame scale: 1.00
+2017-06-25T02:32:20.170Z - normal: Simulator:     show console: NO
+2017-06-25T02:32:20.171Z - normal: Simulator:     write debug log: NO ()
+2017-06-25T02:32:20.171Z - normal: Simulator:     listen: 
+2017-06-25T02:32:20.171Z - normal: Simulator:     debugger: none
+2017-06-25T02:32:20.172Z - normal: Simulator:     add searching path:
+2017-06-25T02:32:20.172Z - normal: Simulator: 
+2017-06-25T02:32:20.172Z - normal: Simulator: 
+2017-06-25T02:32:20.173Z - normal: Simulator: 
+2017-06-25T02:32:20.173Z - normal: Simulator: ------------------------------------------------
+2017-06-25T02:32:20.173Z - normal: Simulator: LOAD Js FILE: main.js
+2017-06-25T02:32:20.175Z - normal: Simulator: ------------------------------------------------
+2017-06-25T02:32:20.177Z - normal: Simulator: Cocos2d-JS v3.14
+2017-06-25T02:32:20.438Z - error: Simulator: mutating the [[Prototype]] of an object will cause your code to run very slowly; instead create the object with the correct initial [[Prototype]] value using Object.create
+    at a (/Users/zhaozhantao/qp/client/library/bundle.project.js?009:173:0)
+2017-06-25T02:32:20.439Z - normal: Simulator: iShow!
+2017-06-25T02:32:21.761Z - normal: Simulator: login
+2017-06-25T02:32:22.725Z - normal: Simulator: enterRoom
+2017-06-25T02:32:22.727Z - error: Simulator: TypeError: this.gameUi is null
+    at a: "this.gameUi.parent = this.node" (assets/scene/Scene.js:34:8)
+2017-06-25T02:33:01.045Z - normal: Simulator: WORKAREA WIDTH 1204.00, HEIGHT 755.00
+2017-06-25T02:33:01.046Z - normal: Simulator: FRAME SCALE = 1.00
+2017-06-25T02:33:01.050Z - normal: Simulator: GLFWError #65544 Happen, Cocoa: Failed to retrieve display name
+2017-06-25T02:33:01.152Z - normal: Simulator: 
+2017-06-25T02:33:01.156Z - normal: Simulator: {
+2017-06-25T02:33:01.157Z - normal: Simulator: 	gl.supports_OES_map_buffer: false
+2017-06-25T02:33:01.244Z - normal: Simulator: 	gl.supports_vertex_array_object: true
+2017-06-25T02:33:01.246Z - normal: Simulator: 	cocos2d.x.version: 1.5.0
+2017-06-25T02:33:01.247Z - normal: Simulator: 	gl.vendor: Intel Inc.
+2017-06-25T02:33:01.247Z - normal: Simulator: 	gl.supports_PVRTC: false
+2017-06-25T02:33:01.247Z - normal: Simulator: 	gl.renderer: Intel(R) Iris(TM) Graphics 6100
+2017-06-25T02:33:01.248Z - normal: Simulator: 	cocos2d.x.compiled_with_profiler: false
+2017-06-25T02:33:01.248Z - normal: Simulator: 	gl.max_texture_size: 16384
+2017-06-25T02:33:01.249Z - normal: Simulator: 	gl.supports_ETC1: false
+2017-06-25T02:33:01.250Z - normal: Simulator: 	gl.supports_BGRA8888: false
+2017-06-25T02:33:01.251Z - normal: Simulator: 	cocos2d.x.build_type: DEBUG
+2017-06-25T02:33:01.251Z - normal: Simulator: 	gl.max_texture_units: 16
+2017-06-25T02:33:01.251Z - normal: Simulator: 	gl.supports_OES_packed_depth_stencil: false
+2017-06-25T02:33:01.252Z - normal: Simulator: 	gl.supports_discard_framebuffer: false
+2017-06-25T02:33:01.252Z - normal: Simulator: 	gl.supports_NPOT: true
+2017-06-25T02:33:01.252Z - normal: Simulator: 	gl.version: 2.1 INTEL-10.25.13
+2017-06-25T02:33:01.253Z - normal: Simulator: 	cocos2d.x.compiled_with_gl_state_cache: true
+2017-06-25T02:33:01.253Z - normal: Simulator: 	gl.supports_OES_depth24: false
+2017-06-25T02:33:01.253Z - normal: Simulator: }
+2017-06-25T02:33:01.254Z - normal: Simulator: 
+2017-06-25T02:33:01.254Z - normal: Simulator: 
+2017-06-25T02:33:01.254Z - normal: Simulator: cocos2d: warning, Director::setProjection() failed because size is 0
+2017-06-25T02:33:01.255Z - normal: Simulator: Project Config:
+2017-06-25T02:33:01.255Z - normal: Simulator:     project dir: /Applications/CocosCreator.app/Contents/Resources/cocos2d-x/simulator/mac/Simulator.app/Contents/Resources/
+2017-06-25T02:33:01.256Z - normal: Simulator:     writable path: $(PROJDIR)/
+2017-06-25T02:33:01.256Z - normal: Simulator:     script file: $(PROJDIR)/main.js
+2017-06-25T02:33:01.257Z - normal: Simulator:     frame size: 800 x 480
+2017-06-25T02:33:01.258Z - normal: Simulator:     frame scale: 1.00
+2017-06-25T02:33:01.258Z - normal: Simulator:     show console: NO
+2017-06-25T02:33:01.259Z - normal: Simulator:     write debug log: NO ()
+2017-06-25T02:33:01.259Z - normal: Simulator:     listen: 
+2017-06-25T02:33:01.259Z - normal: Simulator:     debugger: none
+2017-06-25T02:33:01.260Z - normal: Simulator:     add searching path:
+2017-06-25T02:33:01.260Z - normal: Simulator: 
+2017-06-25T02:33:01.261Z - normal: Simulator: 
+2017-06-25T02:33:01.261Z - normal: Simulator: 
+2017-06-25T02:33:01.262Z - normal: Simulator: ------------------------------------------------
+2017-06-25T02:33:01.262Z - normal: Simulator: LOAD Js FILE: main.js
+2017-06-25T02:33:01.263Z - normal: Simulator: ------------------------------------------------
+2017-06-25T02:33:01.272Z - normal: Simulator: Cocos2d-JS v3.14
+2017-06-25T02:33:01.542Z - error: Simulator: mutating the [[Prototype]] of an object will cause your code to run very slowly; instead create the object with the correct initial [[Prototype]] value using Object.create
+    at a (/Users/zhaozhantao/qp/client/library/bundle.project.js?009:173:0)
+2017-06-25T02:33:01.545Z - normal: Simulator: iShow!
+2017-06-25T02:33:02.542Z - normal: Simulator: login
+2017-06-25T02:37:56.339Z - normal: Simulator: WORKAREA WIDTH 1204.00, HEIGHT 755.00
+2017-06-25T02:37:56.342Z - normal: Simulator: FRAME SCALE = 1.00
+2017-06-25T02:37:56.344Z - normal: Simulator: GLFWError #65544 Happen, Cocoa: Failed to retrieve display name
+2017-06-25T02:37:56.453Z - normal: Simulator: 
+2017-06-25T02:37:56.523Z - normal: Simulator: {
+2017-06-25T02:37:56.524Z - normal: Simulator: 	gl.supports_OES_map_buffer: false
+2017-06-25T02:37:56.524Z - normal: Simulator: 	gl.supports_vertex_array_object: true
+2017-06-25T02:37:56.524Z - normal: Simulator: 	cocos2d.x.version: 1.5.0
+2017-06-25T02:37:56.526Z - normal: Simulator: 	gl.vendor: Intel Inc.
+2017-06-25T02:37:56.526Z - normal: Simulator: 	gl.supports_PVRTC: false
+2017-06-25T02:37:56.527Z - normal: Simulator: 	gl.renderer: Intel(R) Iris(TM) Graphics 6100
+2017-06-25T02:37:56.527Z - normal: Simulator: 	cocos2d.x.compiled_with_profiler: false
+2017-06-25T02:37:56.528Z - normal: Simulator: 	gl.max_texture_size: 16384
+2017-06-25T02:37:56.529Z - normal: Simulator: 	gl.supports_ETC1: false
+2017-06-25T02:37:56.529Z - normal: Simulator: 	gl.supports_BGRA8888: false
+2017-06-25T02:37:56.530Z - normal: Simulator: 	cocos2d.x.build_type: DEBUG
+2017-06-25T02:37:56.530Z - normal: Simulator: 	gl.max_texture_units: 16
+2017-06-25T02:37:56.530Z - normal: Simulator: 	gl.supports_OES_packed_depth_stencil: false
+2017-06-25T02:37:56.530Z - normal: Simulator: 	gl.supports_discard_framebuffer: false
+2017-06-25T02:37:56.530Z - normal: Simulator: 	gl.supports_NPOT: true
+2017-06-25T02:37:56.531Z - normal: Simulator: 	gl.version: 2.1 INTEL-10.25.13
+2017-06-25T02:37:56.531Z - normal: Simulator: 	cocos2d.x.compiled_with_gl_state_cache: true
+2017-06-25T02:37:56.531Z - normal: Simulator: 	gl.supports_OES_depth24: false
+2017-06-25T02:37:56.531Z - normal: Simulator: }
+2017-06-25T02:37:56.532Z - normal: Simulator: 
+2017-06-25T02:37:56.532Z - normal: Simulator: 
+2017-06-25T02:37:56.532Z - normal: Simulator: cocos2d: warning, Director::setProjection() failed because size is 0
+2017-06-25T02:37:56.532Z - normal: Simulator: Project Config:
+2017-06-25T02:37:56.532Z - normal: Simulator:     project dir: /Applications/CocosCreator.app/Contents/Resources/cocos2d-x/simulator/mac/Simulator.app/Contents/Resources/
+2017-06-25T02:37:56.533Z - normal: Simulator:     writable path: $(PROJDIR)/
+2017-06-25T02:37:56.533Z - normal: Simulator:     script file: $(PROJDIR)/main.js
+2017-06-25T02:37:56.533Z - normal: Simulator:     frame size: 800 x 480
+2017-06-25T02:37:56.533Z - normal: Simulator:     frame scale: 1.00
+2017-06-25T02:37:56.534Z - normal: Simulator:     show console: NO
+2017-06-25T02:37:56.534Z - normal: Simulator:     write debug log: NO ()
+2017-06-25T02:37:56.534Z - normal: Simulator:     listen: 
+2017-06-25T02:37:56.534Z - normal: Simulator:     debugger: none
+2017-06-25T02:37:56.535Z - normal: Simulator:     add searching path:
+2017-06-25T02:37:56.535Z - normal: Simulator: 
+2017-06-25T02:37:56.535Z - normal: Simulator: 
+2017-06-25T02:37:56.535Z - normal: Simulator: 
+2017-06-25T02:37:56.536Z - normal: Simulator: ------------------------------------------------
+2017-06-25T02:37:56.536Z - normal: Simulator: LOAD Js FILE: main.js
+2017-06-25T02:37:56.537Z - normal: Simulator: ------------------------------------------------
+2017-06-25T02:37:56.554Z - normal: Simulator: Cocos2d-JS v3.14
+2017-06-25T02:37:56.847Z - error: Simulator: mutating the [[Prototype]] of an object will cause your code to run very slowly; instead create the object with the correct initial [[Prototype]] value using Object.create
+    at a (/Users/zhaozhantao/qp/client/library/bundle.project.js?009:173:0)
+2017-06-25T02:37:56.848Z - normal: Simulator: iShow!
+2017-06-25T02:37:57.708Z - normal: Simulator: login
+2017-06-25T02:37:58.389Z - normal: Simulator: enterRoom
+2017-06-25T02:40:21.089Z - normal: Simulator: basic_object_finalize 0xc342af0 ...
+2017-06-25T02:40:21.092Z - normal: Simulator: jsbindings: finalizing JS object 0xc342b20 (WebSocket)
+2017-06-25T02:40:21.092Z - normal: Simulator: jsbindings: finalizing JS object 0xc342b50 (SocketIO)
+2017-06-25T02:40:21.093Z - normal: Simulator: basic_object_finalize 0xc342be0 ...
+2017-06-25T02:40:21.093Z - normal: Simulator: basic_object_finalize 0xc342e80 ...

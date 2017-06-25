@@ -1,0 +1,22 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "login_rapid_start_n",
+    "texture": "3f23117f-730b-45dd-a865-845e32b6ff75",
+    "atlas": "",
+    "rect": [
+      0,
+      0,
+      237,
+      236
+    ],
+    "offset": [
+      0,
+      0
+    ],
+    "originalSize": [
+      237,
+      236
+    ]
+  }
+}

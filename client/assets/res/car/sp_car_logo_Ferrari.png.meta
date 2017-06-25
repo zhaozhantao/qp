@@ -1,0 +1,30 @@
+{
+  "ver": "1.0.0",
+  "uuid": "db3545aa-f85b-4739-9881-641190796df5",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "subMetas": {
+    "sp_car_logo_Ferrari": {
+      "ver": "1.0.3",
+      "uuid": "6dd981b2-367e-4fcd-9c7f-5e53b1b56c50",
+      "rawTextureUuid": "db3545aa-f85b-4739-9881-641190796df5",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0.5,
+      "offsetY": 0,
+      "trimX": 5,
+      "trimY": 0,
+      "width": 79,
+      "height": 97,
+      "rawWidth": 88,
+      "rawHeight": 97,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

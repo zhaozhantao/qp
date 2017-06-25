@@ -1,0 +1,22 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "game_clearlose",
+    "texture": "7ec362da-29d2-46c0-8a0a-a69f2243d904",
+    "atlas": "",
+    "rect": [
+      0,
+      0,
+      165,
+      42
+    ],
+    "offset": [
+      0,
+      0
+    ],
+    "originalSize": [
+      165,
+      42
+    ]
+  }
+}

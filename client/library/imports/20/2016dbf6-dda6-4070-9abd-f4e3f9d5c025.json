@@ -1,0 +1,22 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "btn_to_other_table_n",
+    "texture": "7133fe78-e52c-4f39-af23-d1c6491cd2e2",
+    "atlas": "",
+    "rect": [
+      0,
+      0,
+      41,
+      42
+    ],
+    "offset": [
+      0,
+      0
+    ],
+    "originalSize": [
+      41,
+      42
+    ]
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "ver": "1.0.0",
+  "uuid": "443b78a1-031e-41b3-8854-cd997f34561f",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "subMetas": {
+    "joy_moneytree_n": {
+      "ver": "1.0.3",
+      "uuid": "6d0544e2-ce62-4f41-9069-a571e962d384",
+      "rawTextureUuid": "443b78a1-031e-41b3-8854-cd997f34561f",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 0,
+      "trimY": 0,
+      "width": 180,
+      "height": 180,
+      "rawWidth": 180,
+      "rawHeight": 180,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

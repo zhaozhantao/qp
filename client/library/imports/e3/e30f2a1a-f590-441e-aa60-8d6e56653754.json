@@ -1,0 +1,22 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "joy_car_title",
+    "texture": "52ca966b-258e-49ae-80ed-3c4084288add",
+    "atlas": "",
+    "rect": [
+      0,
+      0,
+      283,
+      69
+    ],
+    "offset": [
+      0,
+      0
+    ],
+    "originalSize": [
+      283,
+      69
+    ]
+  }
+}

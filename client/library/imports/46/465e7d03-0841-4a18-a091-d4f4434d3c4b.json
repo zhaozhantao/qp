@@ -1,0 +1,22 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "game_clearwin",
+    "texture": "38fba7cd-c275-4b3e-ad4c-1a4884b8b1a6",
+    "atlas": "",
+    "rect": [
+      0,
+      0,
+      165,
+      42
+    ],
+    "offset": [
+      0,
+      0
+    ],
+    "originalSize": [
+      165,
+      42
+    ]
+  }
+}

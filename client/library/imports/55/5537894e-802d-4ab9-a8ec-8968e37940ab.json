@@ -1,0 +1,22 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "moneytree_ready_bg",
+    "texture": "f648bc88-b0a7-438e-b746-40558aa82345",
+    "atlas": "",
+    "rect": [
+      0,
+      0,
+      251,
+      99
+    ],
+    "offset": [
+      0,
+      0
+    ],
+    "originalSize": [
+      251,
+      99
+    ]
+  }
+}

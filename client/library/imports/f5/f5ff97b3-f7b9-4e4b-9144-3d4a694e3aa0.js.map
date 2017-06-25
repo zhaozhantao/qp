@@ -1,0 +1,37 @@
+{
+  "version": 3,
+  "sources": [
+    "unknown"
+  ],
+  "names": [
+    "Comm",
+    "require",
+    "cc",
+    "Class",
+    "extends",
+    "Component",
+    "properties",
+    "loginUiPrefab",
+    "Prefab",
+    "mainUiPrefab",
+    "gameUiPrefab",
+    "onLoad",
+    "scene",
+    "loginUi",
+    "instantiate",
+    "parent",
+    "node",
+    "login",
+    "console",
+    "log",
+    "destroy",
+    "mainUi",
+    "enterRoom",
+    "gameUi"
+  ],
+  "mappings": ";;AAAA,IAAIA,OAAOC,QAAQ,iBAAR,CAAX;AACAC,GAAGC,KAAH,CAAS;AACLC,aAASF,GAAGG,SADP;;AAGLC,gBAAY;AACRC,uBAAcL,GAAGM,MADT;AAERC,sBAAaP,GAAGM,MAFR;AAGRE,sBAAaR,GAAGM;AAHR,KAHP;;AASL;AACAG,YAAQ,kBAAY;AAChBX,aAAKY,KAAL,GAAa,IAAb;AACA,aAAKC,OAAL,GAAeX,GAAGY,WAAH,CAAe,KAAKP,aAApB,CAAf;AACA,aAAKM,OAAL,CAAaE,MAAb,GAAsB,KAAKC,IAA3B;AACH,KAdI;;AAgBL;AACA;;AAEA;AACAC,WAAM,iBAAW;AACbC,gBAAQC,GAAR,CAAY,OAAZ;AACA,aAAKN,OAAL,CAAaO,OAAb;AACA,aAAKP,OAAL,GAAe,IAAf;AACA,aAAKQ,MAAL,GAAcnB,GAAGY,WAAH,CAAe,KAAKL,YAApB,CAAd;AACA,aAAKY,MAAL,CAAYN,MAAZ,GAAqB,KAAKC,IAA1B;AACH,KA1BI;AA2BLM,eAAU,qBAAW;AACjBJ,gBAAQC,GAAR,CAAY,WAAZ;AACA,aAAKE,MAAL,CAAYD,OAAZ;AACA,aAAKC,MAAL,GAAc,IAAd;AACA,aAAKE,MAAL,GAAcrB,GAAGY,WAAH,CAAe,KAAKJ,YAApB,CAAd;AACA,aAAKa,MAAL,CAAYR,MAAZ,GAAqB,KAAKC,IAA1B;AACH;AAjCI,CAAT",
+  "file": "unknown",
+  "sourcesContent": [
+    "var Comm = require(\"../commSrc/Comm\");\ncc.Class({\n    extends: cc.Component,\n\n    properties: {\n        loginUiPrefab:cc.Prefab,\n        mainUiPrefab:cc.Prefab,\n        gameUiPrefab:cc.Prefab,\n    },\n\n    // use this for initialization\n    onLoad: function () {\n        Comm.scene = this;\n        this.loginUi = cc.instantiate(this.loginUiPrefab);\n        this.loginUi.parent = this.node;\n    },\n\n    // called every frame, uncomment this function to activate update callback\n    // update: function (dt) {\n\n    // },\n    login:function() {\n        console.log(\"login\");\n        this.loginUi.destroy();\n        this.loginUi = null;\n        this.mainUi = cc.instantiate(this.mainUiPrefab);\n        this.mainUi.parent = this.node;\n    },\n    enterRoom:function() {\n        console.log(\"enterRoom\");\n        this.mainUi.destroy();\n        this.mainUi = null;\n        this.gameUi = cc.instantiate(this.gameUiPrefab);\n        this.gameUi.parent = this.node;\n    },\n});\n"
+  ]
+}

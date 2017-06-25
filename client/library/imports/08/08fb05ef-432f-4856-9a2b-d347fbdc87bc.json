@@ -1,0 +1,22 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "menu_gamemode_middle_s",
+    "texture": "007e0f10-55e2-4620-b9bf-f0f5593d9d23",
+    "atlas": "",
+    "rect": [
+      0,
+      0,
+      218,
+      228
+    ],
+    "offset": [
+      -3,
+      0.5
+    ],
+    "originalSize": [
+      224,
+      229
+    ]
+  }
+}

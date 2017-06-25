@@ -1,0 +1,22 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "jeton4000",
+    "texture": "f6a1a3e1-55bc-4cd2-a8cc-0c712632370d",
+    "atlas": "",
+    "rect": [
+      2,
+      3,
+      50,
+      50
+    ],
+    "offset": [
+      0.5,
+      -1.5
+    ],
+    "originalSize": [
+      53,
+      53
+    ]
+  }
+}

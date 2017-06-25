@@ -1,0 +1,30 @@
+{
+  "ver": "1.0.0",
+  "uuid": "4a1d956b-0270-4750-91f2-44e9af86b12e",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "subMetas": {
+    "sp_car_logo_Benz": {
+      "ver": "1.0.3",
+      "uuid": "929329fa-7e2b-4ce7-b5f8-76acd5cf1d36",
+      "rawTextureUuid": "4a1d956b-0270-4750-91f2-44e9af86b12e",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 0,
+      "trimY": 3,
+      "width": 88,
+      "height": 91,
+      "rawWidth": 88,
+      "rawHeight": 97,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

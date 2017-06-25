@@ -1,0 +1,22 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "game_clear_lose_action",
+    "texture": "fedd0a84-15e5-44e9-9bd0-d59ff4c0caa2",
+    "atlas": "",
+    "rect": [
+      0,
+      0,
+      302,
+      133
+    ],
+    "offset": [
+      0,
+      0
+    ],
+    "originalSize": [
+      302,
+      133
+    ]
+  }
+}

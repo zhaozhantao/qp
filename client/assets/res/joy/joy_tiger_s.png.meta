@@ -1,0 +1,30 @@
+{
+  "ver": "1.0.0",
+  "uuid": "c40f38af-f544-450b-9aad-dab5b8c19624",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "subMetas": {
+    "joy_tiger_s": {
+      "ver": "1.0.3",
+      "uuid": "af9d8752-01a3-4633-a987-0d602c0ebb63",
+      "rawTextureUuid": "c40f38af-f544-450b-9aad-dab5b8c19624",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 0,
+      "trimY": 0,
+      "width": 180,
+      "height": 180,
+      "rawWidth": 180,
+      "rawHeight": 180,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

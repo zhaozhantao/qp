@@ -1,0 +1,30 @@
+{
+  "ver": "1.0.0",
+  "uuid": "888dc4d3-2566-4d85-b505-d29c609e944f",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "subMetas": {
+    "game_tx_coin7": {
+      "ver": "1.0.3",
+      "uuid": "9e20cb87-0b83-4e56-b237-c20027130bdb",
+      "rawTextureUuid": "888dc4d3-2566-4d85-b505-d29c609e944f",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 0,
+      "trimY": 3,
+      "width": 38,
+      "height": 27,
+      "rawWidth": 38,
+      "rawHeight": 33,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

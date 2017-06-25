@@ -1,0 +1,30 @@
+{
+  "ver": "1.0.0",
+  "uuid": "d5dbd625-bcec-4c65-a230-3c6a2bd55428",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "subMetas": {
+    "joy_car_toast_bg": {
+      "ver": "1.0.3",
+      "uuid": "7d9fa419-6c0b-422b-b056-de154637afd2",
+      "rawTextureUuid": "d5dbd625-bcec-4c65-a230-3c6a2bd55428",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 0,
+      "trimY": 0,
+      "width": 761,
+      "height": 143,
+      "rawWidth": 761,
+      "rawHeight": 143,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

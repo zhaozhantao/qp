@@ -1,0 +1,22 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "increace_bet_bg",
+    "texture": "86953b82-8497-4e35-8f17-b9ee57c1ee85",
+    "atlas": "",
+    "rect": [
+      0,
+      0,
+      343,
+      84
+    ],
+    "offset": [
+      0,
+      0
+    ],
+    "originalSize": [
+      343,
+      84
+    ]
+  }
+}

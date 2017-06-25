@@ -1,0 +1,22 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "header_total_bet_bg",
+    "texture": "e9369d7a-1b30-4ada-8fad-793bb982d6c8",
+    "atlas": "",
+    "rect": [
+      0,
+      0,
+      214,
+      40
+    ],
+    "offset": [
+      0,
+      0
+    ],
+    "originalSize": [
+      214,
+      40
+    ]
+  }
+}

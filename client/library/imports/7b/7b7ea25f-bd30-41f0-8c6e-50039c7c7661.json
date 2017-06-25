@@ -1,0 +1,22 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "menu_gamemode_junior_s",
+    "texture": "1520cfc1-de57-4f7e-b64e-9b0890398971",
+    "atlas": "",
+    "rect": [
+      0,
+      1,
+      219,
+      228
+    ],
+    "offset": [
+      -2.5,
+      -0.5
+    ],
+    "originalSize": [
+      224,
+      229
+    ]
+  }
+}

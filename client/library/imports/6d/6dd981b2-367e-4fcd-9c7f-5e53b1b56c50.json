@@ -1,0 +1,22 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "sp_car_logo_Ferrari",
+    "texture": "db3545aa-f85b-4739-9881-641190796df5",
+    "atlas": "",
+    "rect": [
+      5,
+      0,
+      79,
+      97
+    ],
+    "offset": [
+      0.5,
+      0
+    ],
+    "originalSize": [
+      88,
+      97
+    ]
+  }
+}

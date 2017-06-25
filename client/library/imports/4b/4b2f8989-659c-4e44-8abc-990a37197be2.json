@@ -1,0 +1,22 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "btn_icon_increace",
+    "texture": "cd35cb3f-8a1b-4204-bdb7-61d6fa2a3af0",
+    "atlas": "",
+    "rect": [
+      10,
+      8,
+      29,
+      36
+    ],
+    "offset": [
+      -0.5,
+      -1
+    ],
+    "originalSize": [
+      50,
+      50
+    ]
+  }
+}

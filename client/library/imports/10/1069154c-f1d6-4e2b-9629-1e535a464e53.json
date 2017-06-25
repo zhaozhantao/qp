@@ -1,0 +1,22 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "moneytree",
+    "texture": "4a8fcb6b-3885-41df-9c0b-d3c6262c341b",
+    "atlas": "",
+    "rect": [
+      0,
+      0,
+      151,
+      147
+    ],
+    "offset": [
+      0,
+      0
+    ],
+    "originalSize": [
+      151,
+      147
+    ]
+  }
+}

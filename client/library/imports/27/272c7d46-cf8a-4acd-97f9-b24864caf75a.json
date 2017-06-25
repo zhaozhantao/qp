@@ -1,0 +1,22 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "icon_msg_readed",
+    "texture": "cf4747c1-b6e5-41e7-a6cb-ce6fefb440ca",
+    "atlas": "",
+    "rect": [
+      0,
+      0,
+      55,
+      76
+    ],
+    "offset": [
+      0,
+      0
+    ],
+    "originalSize": [
+      55,
+      76
+    ]
+  }
+}

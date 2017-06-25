@@ -1,0 +1,22 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "btn_back_joy_n",
+    "texture": "312c992e-7c38-4bd7-b1a8-a60ba6b2e3ca",
+    "atlas": "",
+    "rect": [
+      0,
+      0,
+      163,
+      82
+    ],
+    "offset": [
+      0,
+      0
+    ],
+    "originalSize": [
+      163,
+      82
+    ]
+  }
+}

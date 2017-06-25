@@ -1,0 +1,22 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "joy_moneytree_s",
+    "texture": "56b5df50-829e-4359-b222-3252b5f36e9e",
+    "atlas": "",
+    "rect": [
+      0,
+      2,
+      180,
+      178
+    ],
+    "offset": [
+      0,
+      -1
+    ],
+    "originalSize": [
+      180,
+      180
+    ]
+  }
+}

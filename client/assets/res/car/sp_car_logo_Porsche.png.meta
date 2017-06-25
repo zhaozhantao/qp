@@ -1,0 +1,30 @@
+{
+  "ver": "1.0.0",
+  "uuid": "43a3db86-963e-44df-85a5-3f2519d2fa11",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "subMetas": {
+    "sp_car_logo_Porsche": {
+      "ver": "1.0.3",
+      "uuid": "09dd933c-bd69-4ec0-aeea-45abb68f1572",
+      "rawTextureUuid": "43a3db86-963e-44df-85a5-3f2519d2fa11",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0.5,
+      "offsetY": -0.5,
+      "trimX": 7,
+      "trimY": 3,
+      "width": 75,
+      "height": 92,
+      "rawWidth": 88,
+      "rawHeight": 97,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

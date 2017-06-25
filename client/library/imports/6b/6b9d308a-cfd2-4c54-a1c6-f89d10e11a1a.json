@@ -1,0 +1,22 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "joy_rotate_title",
+    "texture": "777e045f-f0fa-413b-b524-f3661cbd69f1",
+    "atlas": "",
+    "rect": [
+      0,
+      0,
+      256,
+      64
+    ],
+    "offset": [
+      0,
+      0
+    ],
+    "originalSize": [
+      256,
+      64
+    ]
+  }
+}

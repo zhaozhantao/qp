@@ -1,0 +1,22 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "sp_car_logo_Lamborghini",
+    "texture": "9a2d607d-ec34-4125-b696-ec5249eefa07",
+    "atlas": "",
+    "rect": [
+      0,
+      0,
+      88,
+      97
+    ],
+    "offset": [
+      0,
+      0
+    ],
+    "originalSize": [
+      88,
+      97
+    ]
+  }
+}

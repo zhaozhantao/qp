@@ -1,0 +1,22 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "login_lobby_s",
+    "texture": "be8b1030-bf5e-4590-bbfc-152a4a66754f",
+    "atlas": "",
+    "rect": [
+      0,
+      0,
+      236,
+      236
+    ],
+    "offset": [
+      0,
+      0
+    ],
+    "originalSize": [
+      236,
+      236
+    ]
+  }
+}

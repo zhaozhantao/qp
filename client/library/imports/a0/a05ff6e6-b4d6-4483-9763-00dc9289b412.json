@@ -1,0 +1,22 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "icon_task",
+    "texture": "7f201c02-fa4a-4a04-b147-1e36a0e10ef6",
+    "atlas": "",
+    "rect": [
+      0,
+      0,
+      74,
+      75
+    ],
+    "offset": [
+      0,
+      0
+    ],
+    "originalSize": [
+      74,
+      75
+    ]
+  }
+}

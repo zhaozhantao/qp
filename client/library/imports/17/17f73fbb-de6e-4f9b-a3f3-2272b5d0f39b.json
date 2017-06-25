@@ -1,0 +1,22 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "Ladder",
+    "texture": "9b8ee767-d77e-484d-a268-b883c9d5caad",
+    "atlas": "",
+    "rect": [
+      0,
+      0,
+      796,
+      172
+    ],
+    "offset": [
+      0,
+      0
+    ],
+    "originalSize": [
+      796,
+      172
+    ]
+  }
+}

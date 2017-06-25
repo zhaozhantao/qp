@@ -1,0 +1,22 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "sp_car_logo_Audi",
+    "texture": "1f4f787b-ba19-4604-9661-e4381616c550",
+    "atlas": "",
+    "rect": [
+      4,
+      33,
+      83,
+      34
+    ],
+    "offset": [
+      1.5,
+      -1.5
+    ],
+    "originalSize": [
+      88,
+      97
+    ]
+  }
+}

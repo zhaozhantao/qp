@@ -1,0 +1,22 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "sp_car_logo_Porsche",
+    "texture": "43a3db86-963e-44df-85a5-3f2519d2fa11",
+    "atlas": "",
+    "rect": [
+      7,
+      3,
+      75,
+      92
+    ],
+    "offset": [
+      0.5,
+      -0.5
+    ],
+    "originalSize": [
+      88,
+      97
+    ]
+  }
+}

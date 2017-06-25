@@ -1,0 +1,30 @@
+{
+  "ver": "1.0.0",
+  "uuid": "f648bc88-b0a7-438e-b746-40558aa82345",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "subMetas": {
+    "moneytree_ready_bg": {
+      "ver": "1.0.3",
+      "uuid": "5537894e-802d-4ab9-a8ec-8968e37940ab",
+      "rawTextureUuid": "f648bc88-b0a7-438e-b746-40558aa82345",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 0,
+      "trimY": 0,
+      "width": 251,
+      "height": 99,
+      "rawWidth": 251,
+      "rawHeight": 99,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

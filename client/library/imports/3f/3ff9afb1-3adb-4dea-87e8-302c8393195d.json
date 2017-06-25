@@ -1,0 +1,22 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "moneytree_count_bg",
+    "texture": "ec0b95c8-82cc-4dc9-8dba-5f521435a02a",
+    "atlas": "",
+    "rect": [
+      0,
+      0,
+      120,
+      119
+    ],
+    "offset": [
+      0,
+      0
+    ],
+    "originalSize": [
+      120,
+      119
+    ]
+  }
+}

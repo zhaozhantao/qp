@@ -1,0 +1,22 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "tel_input_bg",
+    "texture": "5596f2c2-5224-4aea-9e80-4850876c7807",
+    "atlas": "",
+    "rect": [
+      0,
+      0,
+      266,
+      63
+    ],
+    "offset": [
+      0,
+      0
+    ],
+    "originalSize": [
+      266,
+      63
+    ]
+  }
+}

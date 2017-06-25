@@ -1,0 +1,22 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "btn_icon_shopcar",
+    "texture": "cbb70e6b-b6da-4f24-8ddb-c1f8613ad7b8",
+    "atlas": "",
+    "rect": [
+      0,
+      9,
+      45,
+      38
+    ],
+    "offset": [
+      -2.5,
+      -3
+    ],
+    "originalSize": [
+      50,
+      50
+    ]
+  }
+}

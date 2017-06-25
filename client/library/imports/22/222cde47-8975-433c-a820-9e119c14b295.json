@@ -1,0 +1,22 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "game_tx_coin5",
+    "texture": "c3a8c384-f296-4997-807f-910609d6dee8",
+    "atlas": "",
+    "rect": [
+      0,
+      6,
+      38,
+      22
+    ],
+    "offset": [
+      0,
+      -0.5
+    ],
+    "originalSize": [
+      38,
+      33
+    ]
+  }
+}

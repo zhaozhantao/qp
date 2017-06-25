@@ -1,0 +1,22 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "scroll_nav_point",
+    "texture": "42df3bb9-1e01-4653-bc0e-e992b9afb3ca",
+    "atlas": "",
+    "rect": [
+      0,
+      0,
+      30,
+      31
+    ],
+    "offset": [
+      0,
+      0
+    ],
+    "originalSize": [
+      30,
+      31
+    ]
+  }
+}

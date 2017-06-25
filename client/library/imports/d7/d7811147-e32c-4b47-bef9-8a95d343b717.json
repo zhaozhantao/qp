@@ -1,0 +1,22 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "charge",
+    "texture": "44f036a8-825a-4b5d-9e1c-01f0f31f42e2",
+    "atlas": "",
+    "rect": [
+      0,
+      0,
+      151,
+      147
+    ],
+    "offset": [
+      0,
+      0
+    ],
+    "originalSize": [
+      151,
+      147
+    ]
+  }
+}

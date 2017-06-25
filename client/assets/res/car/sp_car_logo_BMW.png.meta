@@ -1,0 +1,30 @@
+{
+  "ver": "1.0.0",
+  "uuid": "2dd29451-4f41-442f-a8ed-e4b43b55ca68",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "subMetas": {
+    "sp_car_logo_BMW": {
+      "ver": "1.0.3",
+      "uuid": "bfd014a4-50a8-452d-a6ff-fca20fc4a5c9",
+      "rawTextureUuid": "2dd29451-4f41-442f-a8ed-e4b43b55ca68",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": -0.5,
+      "trimX": 0,
+      "trimY": 2,
+      "width": 88,
+      "height": 94,
+      "rawWidth": 88,
+      "rawHeight": 97,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

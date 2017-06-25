@@ -1,0 +1,22 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "game_clear_win_action",
+    "texture": "a17b83f9-34d4-4e1e-8691-1c9c52652cc4",
+    "atlas": "",
+    "rect": [
+      0,
+      0,
+      344,
+      266
+    ],
+    "offset": [
+      0,
+      0
+    ],
+    "originalSize": [
+      344,
+      266
+    ]
+  }
+}

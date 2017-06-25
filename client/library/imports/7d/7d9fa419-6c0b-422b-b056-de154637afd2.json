@@ -1,0 +1,22 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "joy_car_toast_bg",
+    "texture": "d5dbd625-bcec-4c65-a230-3c6a2bd55428",
+    "atlas": "",
+    "rect": [
+      0,
+      0,
+      761,
+      143
+    ],
+    "offset": [
+      0,
+      0
+    ],
+    "originalSize": [
+      761,
+      143
+    ]
+  }
+}

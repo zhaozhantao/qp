@@ -1,0 +1,22 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "btn_icon_compare",
+    "texture": "a79bb605-5d3c-439a-877d-d8bde1a0ed21",
+    "atlas": "",
+    "rect": [
+      7,
+      3,
+      37,
+      45
+    ],
+    "offset": [
+      0.5,
+      -0.5
+    ],
+    "originalSize": [
+      50,
+      50
+    ]
+  }
+}

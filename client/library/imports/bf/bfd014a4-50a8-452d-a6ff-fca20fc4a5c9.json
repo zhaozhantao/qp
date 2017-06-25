@@ -1,0 +1,22 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "sp_car_logo_BMW",
+    "texture": "2dd29451-4f41-442f-a8ed-e4b43b55ca68",
+    "atlas": "",
+    "rect": [
+      0,
+      2,
+      88,
+      94
+    ],
+    "offset": [
+      0,
+      -0.5
+    ],
+    "originalSize": [
+      88,
+      97
+    ]
+  }
+}

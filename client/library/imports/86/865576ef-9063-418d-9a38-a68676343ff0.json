@@ -1,0 +1,22 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "btn_pay_n",
+    "texture": "ac2b52fd-f4b9-45bc-b9ed-efa9f7ad33c1",
+    "atlas": "",
+    "rect": [
+      0,
+      0,
+      44,
+      46
+    ],
+    "offset": [
+      0,
+      0
+    ],
+    "originalSize": [
+      44,
+      46
+    ]
+  }
+}

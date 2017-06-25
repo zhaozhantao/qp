@@ -1,0 +1,22 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "menu_gamemode_senior_n",
+    "texture": "43994b15-356f-48fb-83c9-611bbdb6bd86",
+    "atlas": "",
+    "rect": [
+      0,
+      0,
+      219,
+      228
+    ],
+    "offset": [
+      -2.5,
+      0.5
+    ],
+    "originalSize": [
+      224,
+      229
+    ]
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "joy_rotate_point",
+    "texture": "9820056b-6849-46c6-b782-e5add97ff886",
+    "atlas": "",
+    "rect": [
+      0,
+      0,
+      88,
+      121
+    ],
+    "offset": [
+      0,
+      0
+    ],
+    "originalSize": [
+      88,
+      121
+    ]
+  }
+}

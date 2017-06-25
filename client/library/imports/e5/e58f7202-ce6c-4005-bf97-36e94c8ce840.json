@@ -1,0 +1,22 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "btn_exit_s",
+    "texture": "9c64b060-7f56-4fb3-a0ba-9dabcd409adc",
+    "atlas": "",
+    "rect": [
+      0,
+      0,
+      41,
+      42
+    ],
+    "offset": [
+      0,
+      0
+    ],
+    "originalSize": [
+      41,
+      42
+    ]
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "loudspeaker",
+    "texture": "4a218763-0557-4d1b-a962-702219e001f1",
+    "atlas": "",
+    "rect": [
+      0,
+      0,
+      151,
+      147
+    ],
+    "offset": [
+      0,
+      0
+    ],
+    "originalSize": [
+      151,
+      147
+    ]
+  }
+}

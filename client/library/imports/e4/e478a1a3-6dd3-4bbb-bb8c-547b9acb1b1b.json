@@ -1,0 +1,22 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "menu_gamemode_sports",
+    "texture": "251893d5-581e-47c7-999a-c33bc26258f0",
+    "atlas": "",
+    "rect": [
+      0,
+      0,
+      236,
+      229
+    ],
+    "offset": [
+      0,
+      0
+    ],
+    "originalSize": [
+      236,
+      229
+    ]
+  }
+}

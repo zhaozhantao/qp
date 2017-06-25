@@ -1,0 +1,16 @@
+{
+  "version": 3,
+  "sources": [
+    "unknown"
+  ],
+  "names": [
+    "require",
+    "module",
+    "exports"
+  ],
+  "mappings": ";;AAAAA,QAAQ,mBAAR;AACAC,OAAOC,OAAP,GAAe,EAAf",
+  "file": "unknown",
+  "sourcesContent": [
+    "require('pomelo-cocos2d-js');\nmodule.exports={};"
+  ]
+}
