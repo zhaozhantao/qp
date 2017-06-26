@@ -65,8 +65,13 @@ module.exports = {
         };
         return index;
     },
+    // 退出房间
+    exit:function(roomId, chair) {
+        this.data[roomId].chr[chair] = null;
+    },
     // 准备
     prepare:function(roomId,chair) {
+        console.log("prepare", roomId, chair, this.data[roomId]);
         this.data[roomId].chr[chair].pre = true;
     },
     // 检测一个房间是不是可以开始了

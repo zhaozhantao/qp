@@ -4,6 +4,10 @@ module.exports = {
     enter : function(chair, uid, gold){
         this.data.chr[chair] = {uid:uid,gold:gold};
     },
+    // 退出房间
+    exit : function(chair){
+        this.data.chr[chair] = null;
+    },
     // 准备
     prepare:function(chair) {
         this.data.chr[chair].pre = true;

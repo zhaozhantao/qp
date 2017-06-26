@@ -1695,8 +1695,8 @@
     "relativePath": "scene"
   },
   "d0618ec7-7d40-4b0f-b6f0-f1cdc3ea79dd": {
-    "asset": 1498361654000,
-    "meta": 1498369375000,
+    "asset": 1498495274000,
+    "meta": 1498495274000,
     "relativePath": "scene/Scene.fire"
   },
   "c73f0de3-039a-4458-a9a8-4908803a972e": {
@@ -1725,8 +1725,8 @@
     "relativePath": "ui/game/GameCardUi.prefab"
   },
   "e64fc978-9cce-4e4e-8610-ba2234bb489d": {
-    "asset": 1498490097000,
-    "meta": 1498490097000,
+    "asset": 1498496762000,
+    "meta": 1498496762000,
     "relativePath": "ui/game/GamePlayerUi.prefab"
   },
   "5256a1ae-30aa-4c27-a468-36dfa36b2736": {
@@ -1735,8 +1735,8 @@
     "relativePath": "ui/login"
   },
   "08186786-8425-4dd5-90c4-fed8b95d30b8": {
-    "asset": 1498401927000,
-    "meta": 1498401927000,
+    "asset": 1498495264000,
+    "meta": 1498495264000,
     "relativePath": "ui/game/GameUi.prefab"
   },
   "9367fe22-df2f-4aff-9f8d-178710d388dc": {
@@ -1789,19 +1789,24 @@
     "meta": 1498401619000,
     "relativePath": "commSrc/data"
   },
-  "79cb2df9-1baa-4258-84da-bde0a703154a": {
-    "asset": 1498492633000,
-    "meta": 1498492650000,
-    "relativePath": "commSrc/data/RoomData.js"
-  },
   "a2b8ea57-a892-4c6a-95a3-b8cd6cb32006": {
     "asset": 1498492774000,
     "meta": 1498492775000,
     "relativePath": "ui/main/MainUi.js"
   },
+  "79cb2df9-1baa-4258-84da-bde0a703154a": {
+    "asset": 1498494530000,
+    "meta": 1498494589000,
+    "relativePath": "commSrc/data/RoomData.js"
+  },
   "cf61e21b-d039-40b8-8d00-61f9b9871163": {
-    "asset": 1498493220000,
-    "meta": 1498493224000,
+    "asset": 1498497044000,
+    "meta": 1498497045000,
     "relativePath": "ui/game/GameUi.js"
+  },
+  "4cf32553-324f-4799-9c93-2b7023a49d6c": {
+    "asset": 1498497174000,
+    "meta": 1498497177000,
+    "relativePath": "ui/game/GamePlayerUi.js"
   }
 }

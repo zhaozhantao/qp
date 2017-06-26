@@ -1,4 +1,5 @@
 var RoomData = require("../../commSrc/data/RoomData");
+var GamePlayerUi = require("./GamePlayerUi");
 cc.Class({
     extends: cc.Component,
 
@@ -34,6 +35,8 @@ cc.Class({
     // 注册pomelo监听
     registPomeloOn:function(){
         pomelo.on("onEnterRoom", this.onEnterRoom.bind(this));
+        pomelo.on("onExitRoom", this.onExitRoom.bind(this));
+        pomelo.on("onPrepare", this.onPrepare.bind(this));
     },
     // 有玩家进入房间
     onEnterRoom:function(data){
@@ -42,6 +45,30 @@ cc.Class({
 
         var localChair = (data.chair - RoomData.myChair+5)%5;
         this.chairs[localChair].active = true;
+    },
+    // 有玩家退出房间
+    onExitRoom:function(data){
+        console.log("onExitRoom", data);
+        RoomData.exit(data.chair);
+
+        var localChair = (data.chair - RoomData.myChair+5)%5;
+        this.chairs[localChair].active = false;
+    },
+    // 有玩家退出房间
+    onPrepare:function(data){
+        console.log("onPrepare", data);
+        RoomData.prepare(data.chair);
+
+        var localChair = (data.chair - RoomData.myChair+5)%5;
+        console.log("localChair", localChair,this.chairUis[localChair]);
+        this.chairUis[localChair].getComponent("GamePlayerUi").prepare();
+    },
+
+    // 点击了准备
+    onPrepareClick:function(){
+        pomelo.request("connector.entryHandler.prepare", {}, function(){
+
+        });
     },
 
 });

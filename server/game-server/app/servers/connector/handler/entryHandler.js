@@ -22,11 +22,33 @@ Handler.prototype.login = function(msg, session, next) {
 // 进入房间
 Handler.prototype.enterRoom = function(msg, session, next) {
     var uid = session.uid;
+    var sid = this.app.get('serverId');
+    var roomId = "1";
     console.log("uid为", uid);
-    session.set("roomId", 1);
-    var chair = RoomData.enter("1", uid);
-    var channel = this.channelService.getChannel("roomChannel_1", true);
+    var chair = RoomData.enter(roomId, uid);
+    session.set("roomId", roomId);
+    session.set("chair", chair);
+    session.pushAll();
+    var channel = this.channelService.getChannel("roomChannel_"+ roomId, true);
     channel.pushMessage("onEnterRoom", {uid:uid,chair:chair,gold:1000});
-    channel.add(uid, this.app.get('serverId'));
-    next(null, {ret:0, data:{roomId:"1",chair:chair,roomData:RoomData.data["1"]}});
+    channel.add(uid, sid);
+    next(null, {ret:0, data:{roomId:roomId,chair:chair,roomData:RoomData.data[roomId]}});
+
+    // 断开时的处理
+    session.on("closed", function() {
+        channel.leave(uid, sid);
+        RoomData.exit(roomId, chair);
+        channel.pushMessage("onExitRoom", {chair:chair});
+    });
+}
+
+// 准备
+Handler.prototype.prepare = function(msg, session, next) {
+    var uid = session.uid;
+    var roomId = session.get("roomId");
+    var chair = session.get("chair");
+    var channel = this.channelService.getChannel("roomChannel_"+ roomId, true);
+    RoomData.prepare(roomId, chair);
+    channel.pushMessage("onPrepare", {chair:chair});
+    next(null, {ret:0});
 }
