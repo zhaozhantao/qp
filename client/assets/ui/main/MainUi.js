@@ -12,7 +12,7 @@ cc.Class({
                 console.log(data.data.roomData);
                 console.log(data.data.chair);
                 console.log(data.data.roomId);
-                RoomData.data = {[data.data.roomId]:data.data.roomData};
+                RoomData.data = data.data.roomData;
                 RoomData.myChair = data.data.chair;
                 RoomData.roomId = data.data.roomId;
                 Comm.scene.enterRoom();

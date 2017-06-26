@@ -18,7 +18,7 @@
                 "children": [
                   "hierarchy"
                 ],
-                "height": 300,
+                "height": 327,
                 "type": "panel",
                 "width": 204
               },
@@ -27,12 +27,12 @@
                 "children": [
                   "assets"
                 ],
-                "height": 326,
+                "height": 356,
                 "type": "panel",
                 "width": 204
               }
             ],
-            "height": 629,
+            "height": 686,
             "type": "dock-v",
             "width": 204
           },
@@ -45,7 +45,7 @@
                     "children": [
                       "scene"
                     ],
-                    "height": 326,
+                    "height": 356,
                     "type": "panel",
                     "width": 476.984375
                   },
@@ -54,12 +54,12 @@
                     "children": [
                       "node-library"
                     ],
-                    "height": 326,
+                    "height": 356,
                     "type": "panel",
                     "width": 204
                   }
                 ],
-                "height": 326,
+                "height": 356,
                 "type": "dock-h",
                 "width": 683.984375
               },
@@ -69,12 +69,12 @@
                   "console",
                   "timeline"
                 ],
-                "height": 300,
+                "height": 327,
                 "type": "panel",
                 "width": 683.984375
               }
             ],
-            "height": 629,
+            "height": 686,
             "type": "dock-v",
             "width": 683.984375
           },
@@ -83,7 +83,7 @@
             "children": [
               "inspector"
             ],
-            "height": 629,
+            "height": 686,
             "type": "panel",
             "width": 304
           }
@@ -102,5 +102,12 @@
     },
     "worker": {}
   },
-  "panels": {}
+  "panels": {
+    "store": {
+      "x": 83,
+      "y": 23,
+      "width": 1121,
+      "height": 777
+    }
+  }
 }

@@ -26,7 +26,7 @@ Handler.prototype.enterRoom = function(msg, session, next) {
     session.set("roomId", 1);
     var chair = RoomData.enter("1", uid);
     var channel = this.channelService.getChannel("roomChannel_1", true);
-    channel.pushMessage("onEnterRoom", {uid:uid});
+    channel.pushMessage("onEnterRoom", {uid:uid,chair:chair,gold:1000});
     channel.add(uid, this.app.get('serverId'));
     next(null, {ret:0, data:{roomId:"1",chair:chair,roomData:RoomData.data["1"]}});
 }
