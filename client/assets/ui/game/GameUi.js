@@ -21,6 +21,7 @@ cc.Class({
             var serverChair = (RoomData.myChair + i)%5;
             if (RoomData.data.chr[serverChair] != null) {
                 this.chairs[i].active = true;
+
             } else {
                 this.chairs[i].active = false;
             }
@@ -37,6 +38,7 @@ cc.Class({
         pomelo.on("onEnterRoom", this.onEnterRoom.bind(this));
         pomelo.on("onExitRoom", this.onExitRoom.bind(this));
         pomelo.on("onPrepare", this.onPrepare.bind(this));
+        pomelo.on("onDispatch", this.onDispatch.bind(this));
     },
     // 有玩家进入房间
     onEnterRoom:function(data){
@@ -45,6 +47,7 @@ cc.Class({
 
         var localChair = (data.chair - RoomData.myChair+5)%5;
         this.chairs[localChair].active = true;
+        this.chairUis[localChair].getComponent(GamePlayerUi).initUi();
     },
     // 有玩家退出房间
     onExitRoom:function(data){
@@ -60,8 +63,21 @@ cc.Class({
         RoomData.prepare(data.chair);
 
         var localChair = (data.chair - RoomData.myChair+5)%5;
-        console.log("localChair", localChair,this.chairUis[localChair]);
         this.chairUis[localChair].getComponent("GamePlayerUi").prepare();
+    },
+    // 开始游戏（发牌）
+    onDispatch:function(data){
+        console.log("onDispatch", data);
+        RoomData.start();
+
+        for (var i = 0; i < 5; i++) {
+            var player = RoomData.data.chr[i];
+            if (player != null && player.pre == true) {
+                var localChair = (i - RoomData.myChair+5)%5;
+                this.chairUis[localChair].getComponent("GamePlayerUi").dispatch();
+
+            }
+        }
     },
 
     // 点击了准备

@@ -50,5 +50,10 @@ Handler.prototype.prepare = function(msg, session, next) {
     var channel = this.channelService.getChannel("roomChannel_"+ roomId, true);
     RoomData.prepare(roomId, chair);
     channel.pushMessage("onPrepare", {chair:chair});
+    if (RoomData.checkCanStart(roomId)) {
+        RoomData.dispatchCard(roomId, [[[1],[1]],[[1],[1]],[[1],[1]]]);
+        channel.pushMessage("onDispatch", {chair:chair});
+
+    }
     next(null, {ret:0});
 }

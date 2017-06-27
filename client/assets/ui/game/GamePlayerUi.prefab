@@ -724,6 +724,9 @@
     },
     "sayPrepare": {
       "__uuid__": "79af8098-50d5-42e9-aaaf-c61d4800acab"
+    },
+    "GameCardUiPrefab": {
+      "__uuid__": "13d12b5c-77d6-4a9e-ac22-eef219358361"
     }
   },
   {
