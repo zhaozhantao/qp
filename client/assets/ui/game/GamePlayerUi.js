@@ -1,3 +1,4 @@
+var RoomData = require("../../commSrc/data/RoomData");
 var GameCardUi = require("./GameCardUi");
 cc.Class({
     extends: cc.Component,
@@ -14,7 +15,23 @@ cc.Class({
     },
     // 初始化ui
     initUi: function() {
-        this.saySprite.node.active = false;
+        var chair = RoomData.data.chr[this.serverIdx];
+        if (chair == null) {
+            this.node.active = false;
+        } else {
+            this.node.active = true;
+            this.saySprite.node.active = (chair.pre == true);
+        }
+    },
+    // 设置本地椅子号
+    setLocalChairIndex : function(chairIndex) {
+        // 本地椅子号
+        this.localIdx = chairIndex;
+
+        // 本地椅子号转服务器椅子号
+        var serverChair = (RoomData.myChair + chairIndex)%5;
+        this.serverIdx = serverChair;
+        this.initUi();
     },
     // 准备
     prepare:function(){

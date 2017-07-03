@@ -2203,6 +2203,27 @@
     ],
     "GamePlayerPrefab": {
       "__uuid__": "e64fc978-9cce-4e4e-8610-ba2234bb489d"
+    },
+    "prepareButton": {
+      "__id__": 24
+    },
+    "optNode": {
+      "__id__": 27
+    },
+    "lookBtn": {
+      "__id__": 33
+    },
+    "compareBtn": {
+      "__id__": 40
+    },
+    "followBtn": {
+      "__id__": 47
+    },
+    "addBtn": {
+      "__id__": 54
+    },
+    "giveupBtn": {
+      "__id__": 61
     }
   },
   {

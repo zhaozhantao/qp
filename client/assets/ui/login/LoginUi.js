@@ -1,4 +1,5 @@
 var Comm = require("../../commSrc/Comm");
+var serverCfg = require("../../cfg/serverCfg");
 cc.Class({
     extends: cc.Component,
 
@@ -9,9 +10,9 @@ cc.Class({
     onLoginClick:function(){
         var self = this;
         pomelo.init({
-            host:"192.168.8.103",
+            host:serverCfg.serverIp,
             // host:"127.0.0.1",
-            port:3010
+            port:serverCfg.serverPort,
         }, function(err){
             pomelo.request("connector.entryHandler.login", {username:self.usernameLabel.string}, function(data){
                 if (data.ret == 0) {

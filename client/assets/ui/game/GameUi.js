@@ -1,11 +1,19 @@
 var RoomData = require("../../commSrc/data/RoomData");
 var GamePlayerUi = require("./GamePlayerUi");
+var GamePlayerUi = require("./GamePlayerUi");
 cc.Class({
     extends: cc.Component,
 
     properties: {
         chairs:{default:[],type:cc.Node},
         GamePlayerPrefab:cc.Prefab,
+        prepareButton:cc.Button,
+        optNode:cc.Node,
+        lookBtn:cc.Button,
+        compareBtn:cc.Button,
+        followBtn:cc.Button,
+        addBtn:cc.Button,
+        giveupBtn:cc.Button,
     },
 
     // use this for initialization
@@ -17,17 +25,12 @@ cc.Class({
         }
 
         for(var i=0; i < 5; i++) {
-            // 本地椅子号转服务器椅子号
-            var serverChair = (RoomData.myChair + i)%5;
-            if (RoomData.data.chr[serverChair] != null) {
-                this.chairs[i].active = true;
-
-            } else {
-                this.chairs[i].active = false;
-            }
+            this.chairUis[i].getComponent(GamePlayerUi).setLocalChairIndex(i);
         }
 
         this.registPomeloOn();
+        // 刷新按钮状态
+        this.refreshButton();
     },
     // 当被消毁的时候调用
     onDestroy:function(){
@@ -78,13 +81,25 @@ cc.Class({
 
             }
         }
+        this.refreshButton();
     },
 
     // 点击了准备
     onPrepareClick:function(){
+        var self = this;
         pomelo.request("connector.entryHandler.prepare", {}, function(){
-
+            self.refreshButton();
         });
     },
-
+    // 刷新按钮状态
+    refreshButton:function() {
+        var myChairData = RoomData.data.chr[RoomData.myChair];
+        this.prepareButton.node.active = ((RoomData.data.ing != true) && myChairData.pre != true);
+        this.optNode.active = (RoomData.data.ing == true);
+        this.lookBtn.interactable = (myChairData.look != true);
+        this.compareBtn.interactable = (RoomData.data.s == RoomData.myChair);
+        this.followBtn.interactable = (RoomData.data.s == RoomData.myChair);
+        this.addBtn.interactable = (RoomData.data.s == RoomData.myChair);
+        this.giveupBtn.interactable = (RoomData.data.s == RoomData.myChair);
+    },
 });

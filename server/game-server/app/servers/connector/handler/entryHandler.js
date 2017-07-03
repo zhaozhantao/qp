@@ -18,7 +18,7 @@ Handler.prototype.login = function(msg, session, next) {
     session.bind(username, function(){
         next(null, {ret: 0});
     });
-}
+};
 // 进入房间
 Handler.prototype.enterRoom = function(msg, session, next) {
     var uid = session.uid;
@@ -40,7 +40,7 @@ Handler.prototype.enterRoom = function(msg, session, next) {
         RoomData.exit(roomId, chair);
         channel.pushMessage("onExitRoom", {chair:chair});
     });
-}
+};
 
 // 准备
 Handler.prototype.prepare = function(msg, session, next) {
@@ -56,4 +56,61 @@ Handler.prototype.prepare = function(msg, session, next) {
 
     }
     next(null, {ret:0});
-}
+};
+// 看牌
+Handler.prototype.look = function(msg, session, next) {
+    var uid = session.uid;
+    var roomId = session.get("roomId");
+    var chair = session.get("chair");
+    var channel = this.channelService.getChannel("roomChannel_"+ roomId, true);
+    RoomData.look(roomId, chair);
+    channel.pushMessage("onLook", {});
+    next(null, {ret:0, data:RoomData.data[roomid].chr[chair].card});
+};
+// 跟注
+Handler.prototype.follow = function(msg, session, next) {
+    var uid = session.uid;
+    var roomId = session.get("roomId");
+    var chair = session.get("chair");
+    var channel = this.channelService.getChannel("roomChannel_"+ roomId, true);
+    RoomData.follow(roomId);
+    channel.pushMessage("onFollow", {speaker:RoomData.data[roomid].s});
+    next(null, {ret:0});
+};
+// 加注
+Handler.prototype.addGold = function(msg, session, next) {
+    var uid = session.uid;
+    var roomId = session.get("roomId");
+    var chair = session.get("chair");
+    var gold = msg.gold;
+    var channel = this.channelService.getChannel("roomChannel_"+ roomId, true);
+    RoomData.addGold(roomId, gold);
+    channel.pushMessage("onAddGold", {speaker:RoomData.data[roomid].s, gold:gold});
+    next(null, {ret:0});
+};
+// 放弃
+Handler.prototype.giveup = function(msg, session, next) {
+    var uid = session.uid;
+    var roomId = session.get("roomId");
+    var chair = session.get("chair");
+    var gold = msg.gold;
+    var channel = this.channelService.getChannel("roomChannel_"+ roomId, true);
+    RoomData.giveup(roomId);
+    channel.pushMessage("onGiveup", {speaker:RoomData.data[roomid].s});
+    next(null, {ret:0});
+};
+// 比牌
+Handler.prototype.compare = function(msg, session, next) {
+    var uid = session.uid;
+    var roomId = session.get("roomId");
+    var chair = session.get("chair");
+    var toChair = msg.toChair;
+    var channel = this.channelService.getChannel("roomChannel_"+ roomId, true);
+    var ret = RoomData.compare(roomId, toChair);
+    channel.pushMessage("onCompare", {speaker:RoomData.data[roomid].s, win:ret});
+    next(null, {ret:0});
+    if (RoomData.checkCanOver(roomId)) {
+        RoomData.over(roomId);
+        channel.pushMessage("onOver", {});
+    }
+};

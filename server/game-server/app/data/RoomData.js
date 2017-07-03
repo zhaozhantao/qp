@@ -19,6 +19,8 @@ module.exports = {
                     look:true,
                     // 是否已弃牌
                     gu:false,
+                    // 是否已失败
+                    lose:false,
                 },
                 null,
                 null,
@@ -68,6 +70,17 @@ module.exports = {
     // 退出房间
     exit:function(roomId, chair) {
         this.data[roomId].chr[chair] = null;
+    },
+    // 设置下一位为发言人
+    nextSpeaker:function(roomId) {
+        for (var i = 1; i < 5; i++) {
+            var idx = (this.data[roomId].s + i) % 5;
+            var chair = this.data[roomId].chr[idx];
+            if (chair != null && chair.pre == true && chair.gu != true) {
+                this.data[roomId].s = idx;
+                break;
+            }
+        }
     },
     // 准备
     prepare:function(roomId,chair) {
@@ -132,5 +145,72 @@ module.exports = {
         // 设置发言人
         this.data[roomId].s = speaker;
     },
+    // 看牌
+    look:function(roomId, chairIdx) {
+        var room = this.data[roomId];
+        room[chairIdx].look = true;
+    },
+    // 跟注
+    follow:function(roomId) {
+        var room = this.data[roomId];
+        var speaker = room.s;
+        room[speaker].cg += room.sg;
+        room[speaker].tg -= room.sg;
+        room.tg += room.sg;
+        this.nextSpeaker(roomId);
+    },
+    // 加注,gold为加到的钱，而不是增加的钱
+    addGold:function(roomId, gold) {
+        var room = this.data[roomId];
+        var speaker = room.s;
+        room.sg = gold;
+        room[speaker].cg += room.sg;
+        room[speaker].tg -= room.sg;
+        room.tg += room.sg;
+        this.nextSpeaker(roomId);
+    },
+    // 弃牌
+    giveup:function(roomId) {
+        var room = this.data[roomId];
+        var speaker = room.s;
+        room[speaker].gu = true;
+        this.nextSpeaker(roomId);
+    },
+    // 比牌 toChair 和谁比
+    compare:function(roomId, toChair) {
+        var room = this.data[roomId];
+        var speaker = room.s;
+        var ret = compareCard.do(room.chr[speaker].card, room.chr[toChair].card);
+        if (ret == true) {
+            room.chr[toChair].lose = true;
+        } else {
+            room.chr[speaker].lose = true;
+        }
+        return ret;
+    },
+    // 检测是否可以结束这一局了
+    checkCanOver: function(roomId) {
+        var room = this.data[roomId];
+        var count = 0;
+        for (var i = 0; i < room.chr.length; i++) {
+            var chair = room.chr[i];
+            if (chair != null && chair.pre = true && chair.gu != true && chair.lose != true) {
+                count ++;
+            }
+        }
+        return count == 1;
+    },
+    // 结算一局
+    over:function(roomId) {
+        var room = this.data[roomId];
 
+        // for (var i = 0; i < room.chr.length; i++) {
+        //     var chair = room.chr[i];
+        //     if (chair != null && chair.pre = true && chair.gu != true && chair.lose != true) {
+        //         // 获胜者
+        //         chair
+        //     }
+        // }
+        room.ing = false;
+    },
 };
